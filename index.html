@@ -328,6 +328,7 @@ async function sha256(msg){
 
 async function doLogin(){
   const pw=document.getElementById("login-pw").value;
+  if(!pw){toast("Entrez le mot de passe",true);return;}
   const hash=await sha256(pw);
   if(hash===PWD_HASH){
     isAuth=true;
@@ -336,6 +337,7 @@ async function doLogin(){
   } else {
     document.getElementById("login-err").style.display="block";
     document.getElementById("login-pw").value="";
+    toast("Mot de passe incorrect",true);
   }
 }
 
@@ -361,11 +363,15 @@ async function showDash(){
   if(!checkAuth()){showView("login");return;}
   showView("dash");load("Chargement...");
   try{
-    const all=await sb("clients?order=created_at.desc");
+    const all=await sb("clients?order=created_at.desc&select=*");
     const pending=all.filter(c=>c.status==="pending");
     const active=all.filter(c=>c.status!=="pending");
     renderDash(active,pending);
-  }catch(e){toast("Erreur: "+e.message,true);renderDash([],[]);}
+  }catch(e){
+    hideLoad();
+    toast("Erreur BD: "+e.message,true);
+    renderDash([],[]);
+  }
   hideLoad();
 }
 
