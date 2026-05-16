@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mamadou Diallo — Print Legacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97E;
+    --gold-dark: #8B6914;
+    --ink: #0D0D0D;
+    --cream: #FAF6EF;
+    --cream-dark: #F0E9DA;
+    --white: #FFFFFF;
+    --muted: #6B6560;
+  }
+ 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F2EDE3;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 0 3rem;
+  }
+ 
+  .profile-container {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  /* HEADER */
+  .profile-header {
+    background: linear-gradient(160deg, #0D0D0D 0%, #1A1A1A 100%);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(201,168,76,0.03) 20px,
+      rgba(201,168,76,0.03) 21px
+    );
+  }
+ 
+  .profile-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 40px;
+    background: var(--white);
+    border-radius: 50% 50% 0 0 / 40px 40px 0 0;
+  }
+ 
+  .brand-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 100px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+ 
+  .avatar-wrapper {
+    position: relative; z-index: 1;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+  }
+ 
+  .avatar {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+    border: 4px solid rgba(201,168,76,0.3);
+    margin: 0 auto;
+  }
+ 
+  .avatar-nfc {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 28px; height: 28px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--white);
+    font-size: 12px;
+  }
+ 
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    position: relative; z-index: 1;
+  }
+ 
+  .profile-title {
+    font-size: 0.8rem;
+    color: rgba(250,246,239,0.6);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    position: relative; z-index: 1;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .profile-company {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-weight: 600;
+    position: relative; z-index: 1;
+  }
+ 
+  /* BODY */
+  .profile-body { padding: 1.5rem; }
+ 
+  /* SAVE BUTTON */
+  .btn-save {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.9rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: all 0.2s;
+    margin-bottom: 1.5rem;
+    border: none; cursor: pointer;
+  }
+  .btn-save:hover { background: var(--gold); color: var(--ink); }
+ 
+  /* BIO */
+  .bio-card {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+ 
+  .bio-text {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+ 
+  /* SECTION TITLE */
+  .section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    padding-left: 4px;
+  }
+ 
+  /* CONTACT LINKS */
+  .links-section { margin-bottom: 1.5rem; }
+ 
+  .link-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 0.6rem;
+    border: 1px solid var(--cream-dark);
+    background: var(--white);
+  }
+ 
+  .link-btn:hover { transform: translateX(4px); border-color: var(--gold); }
+ 
+  .link-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+ 
+  .link-content { flex: 1; }
+ 
+  .link-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+  }
+ 
+  .link-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    margin-top: 1px;
+  }
+ 
+  .link-arrow {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+ 
+  /* SOCIAL */
+  .social-section { margin-bottom: 1.5rem; }
+ 
+  .social-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+  }
+ 
+  .social-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 0.9rem 0.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    background: var(--cream);
+    border: 1px solid var(--cream-dark);
+    transition: all 0.2s;
+    gap: 6px;
+  }
+ 
+  .social-btn:hover { background: var(--cream-dark); transform: translateY(-2px); }
+ 
+  .social-icon { font-size: 1.2rem; }
+  .social-name { font-size: 0.6rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
+ 
+  /* PORTFOLIO */
+  .portfolio-section { margin-bottom: 1.5rem; }
+ 
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+ 
+  .portfolio-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--cream-dark);
+    background: var(--cream);
+    aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    position: relative;
+  }
+ 
+  .portfolio-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(13,13,13,0.8) 0%, transparent 60%);
+    display: flex; align-items: flex-end; padding: 0.6rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+ 
+  .portfolio-card:hover .portfolio-card-overlay { opacity: 1; }
+ 
+  .portfolio-card-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--cream);
+  }
+ 
+  /* QR */
+  .qr-section {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--cream-dark);
+  }
+ 
+  .qr-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+ 
+  .qr-box {
+    display: inline-block;
+    background: var(--white);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--cream-dark);
+    margin-bottom: 0.75rem;
+  }
+ 
+  .qr-hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+ 
+  /* SHARE */
+  .share-section {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+ 
+  .share-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    background: var(--cream);
+    color: var(--ink);
+    border: 1px solid var(--cream-dark);
+  }
+  .share-btn:hover { background: var(--ink); color: var(--cream); }
+ 
+  /* FOOTER */
+  .profile-footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid var(--cream-dark);
+  }
+ 
+  .powered-by {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+ 
+  .powered-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--ink);
+  }
+ 
+  .powered-logo span { color: var(--gold); }
+ 
+  /* STATS STRIP */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--cream-dark);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+ 
+  .stat-item {
+    background: var(--white);
+    padding: 0.9rem;
+    text-align: center;
+  }
+ 
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+ 
+  .stat-lbl {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+ 
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: transform 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+ 
+<div class="profile-container">
+ 
+  <!-- HEADER -->
+  <div class="profile-header">
+    <div class="brand-tag">✦ Print Legacy · Dakar</div>
+    <div class="avatar-wrapper">
+      <div class="avatar">MD</div>
+      <div class="avatar-nfc">📶</div>
+    </div>
+    <div class="profile-name">Mamadou Diallo</div>
+    <div class="profile-title">Directeur Général · Fondateur</div>
+    <div class="profile-company">
+      <span>🏢</span>
+      <span>Print Legacy Studio</span>
+    </div>
+  </div>
+ 
+  <!-- BODY -->
+  <div class="profile-body">
+ 
+    <!-- SAVE CONTACT -->
+    <button class="btn-save" onclick="saveContact()">
+      <span>💾</span>
+      <span>Enregistrer le contact</span>
+    </button>
+ 
+    <!-- BIO -->
+    <div class="bio-card">
+      <p class="bio-text">
+        Studio graphique et impression premium basé à Dakar. Spécialiste des cartes de visite NFC, supports de communication et identité visuelle pour entreprises et professionnels sénégalais.
+      </p>
+    </div>
+ 
+    <!-- STATS -->
+    <div class="stats-strip">
+      <div class="stat-item">
+        <span class="stat-num">500+</span>
+        <span class="stat-lbl">Clients</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">1.2k</span>
+        <span class="stat-lbl">Vues</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">48h</span>
+        <span class="stat-lbl">Livraison</span>
+      </div>
+    </div>
+ 
+    <!-- CONTACT LINKS -->
+    <div class="links-section">
+      <div class="section-label">Contact</div>
+ 
+      <a href="tel:+221770000000" class="link-btn">
+        <div class="link-icon" style="background:#E8F5E9">📞</div>
+        <div class="link-content">
+          <span class="link-label">Téléphone</span>
+          <span class="link-value">+221 77 000 00 00</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+ 
+      <a href="https://wa.me/221770000000" class="link-btn">
+        <div class="link-icon" style="background:#E8F5E9">💬</div>
+        <div class="link-content">
+          <span class="link-label">WhatsApp</span>
+          <span class="link-value">Message direct</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+ 
+      <a href="mailto:contact@printlegacy.sn" class="link-btn">
+        <div class="link-icon" style="background:#FFF3E0">✉️</div>
+        <div class="link-content">
+          <span class="link-label">Email</span>
+          <span class="link-value">contact@printlegacy.sn</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+ 
+      <a href="https://printlegacy-platform.vercel.app" class="link-btn">
+        <div class="link-icon" style="background:rgba(201,168,76,0.1)">🌐</div>
+        <div class="link-content">
+          <span class="link-label">Site web</span>
+          <span class="link-value">printlegacy-platform.vercel.app</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+ 
+      <a href="https://maps.google.com/?q=Dakar,Senegal" class="link-btn">
+        <div class="link-icon" style="background:#FCE4EC">📍</div>
+        <div class="link-content">
+          <span class="link-label">Adresse</span>
+          <span class="link-value">Plateau, Dakar, Sénégal</span>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+    </div>
+ 
+    <!-- SOCIAL -->
+    <div class="social-section">
+      <div class="section-label">Réseaux sociaux</div>
+      <div class="social-grid">
+        <a href="#" class="social-btn">
+          <span class="social-icon">📘</span>
+          <span class="social-name">Facebook</span>
+        </a>
+        <a href="#" class="social-btn">
+          <span class="social-icon">📸</span>
+          <span class="social-name">Instagram</span>
+        </a>
+        <a href="#" class="social-btn">
+          <span class="social-icon">💼</span>
+          <span class="social-name">LinkedIn</span>
+        </a>
+        <a href="#" class="social-btn">
+          <span class="social-icon">🐦</span>
+          <span class="social-name">X/Twitter</span>
+        </a>
+      </div>
+    </div>
+ 
+    <!-- PORTFOLIO -->
+    <div class="portfolio-section">
+      <div class="section-label">Nos réalisations</div>
+      <div class="portfolio-grid">
+        <div class="portfolio-card" style="background:linear-gradient(135deg,#1A1A1A,#333)">
+          <span>💳</span>
+          <div class="portfolio-card-overlay">
+            <span class="portfolio-card-title">Cartes NFC Premium</span>
+          </div>
+        </div>
+        <div class="portfolio-card" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
+          <span>🎨</span>
+          <div class="portfolio-card-overlay">
+            <span class="portfolio-card-title">Identité visuelle</span>
+          </div>
+        </div>
+        <div class="portfolio-card" style="background:linear-gradient(135deg,#F0E9DA,#D4C4A0)">
+          <span>📋</span>
+          <div class="portfolio-card-overlay">
+            <span class="portfolio-card-title">Supports print</span>
+          </div>
+        </div>
+        <div class="portfolio-card" style="background:linear-gradient(135deg,#0D0D0D,#C9A84C)">
+          <span>🏢</span>
+          <div class="portfolio-card-overlay">
+            <span class="portfolio-card-title">Solutions entreprise</span>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- QR CODE -->
+    <div class="qr-section">
+      <div class="qr-title">QR Code · Partager ce profil</div>
+      <div class="qr-box">
+        <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <rect fill="white" width="120" height="120"/>
+          <!-- TL block -->
+          <rect x="8" y="8" width="42" height="42" rx="4" fill="none" stroke="#0D0D0D" stroke-width="3"/>
+          <rect x="16" y="16" width="26" height="26" rx="2" fill="#0D0D0D"/>
+          <!-- TR block -->
+          <rect x="70" y="8" width="42" height="42" rx="4" fill="none" stroke="#0D0D0D" stroke-width="3"/>
+          <rect x="78" y="16" width="26" height="26" rx="2" fill="#0D0D0D"/>
+          <!-- BL block -->
+          <rect x="8" y="70" width="42" height="42" rx="4" fill="none" stroke="#0D0D0D" stroke-width="3"/>
+          <rect x="16" y="78" width="26" height="26" rx="2" fill="#0D0D0D"/>
+          <!-- Center data dots -->
+          <rect x="58" y="8" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="58" y="20" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="58" y="32" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="8" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="20" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="32" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="70" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="82" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="94" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="106" y="58" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="70" y="70" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="82" y="82" width="8" height="8" fill="#C9A84C"/>
+          <rect x="94" y="70" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="106" y="82" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="70" y="94" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="82" y="106" width="8" height="8" fill="#0D0D0D"/>
+          <rect x="94" y="94" width="8" height="8" fill="#C9A84C"/>
+          <rect x="106" y="106" width="8" height="8" fill="#0D0D0D"/>
+        </svg>
+      </div>
+      <div class="qr-hint">Scannez pour partager ce profil</div>
+    </div>
+ 
+    <!-- SHARE ACTIONS -->
+    <div class="share-section">
+      <button class="share-btn" onclick="copyLink()">
+        📋 Copier le lien
+      </button>
+      <button class="share-btn" onclick="shareProfile()">
+        📤 Partager
+      </button>
+    </div>
+ 
+  </div>
+ 
+  <!-- FOOTER -->
+  <div class="profile-footer">
+    <a href="https://printlegacy-platform.vercel.app" class="powered-by">
+      Propulsé par <span class="powered-logo">Print <span>Legacy</span></span>
+    </a>
+  </div>
+ 
+</div>
+ 
+<div class="toast" id="toast">✓ Lien copié !</div>
+ 
+<script>
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).catch(() => {});
+  showToast('✓ Lien copié !');
+}
+ 
+function shareProfile() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mamadou Diallo — Print Legacy',
+      text: 'Découvrez mon profil professionnel',
+      url: window.location.href
+    });
+  } else {
+    copyLink();
+  }
+}
+ 
+function saveContact() {
+  const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:Mamadou Diallo\nORG:Print Legacy Studio\nTITLE:Directeur Général\nTEL;TYPE=CELL:+221770000000\nEMAIL:contact@printlegacy.sn\nURL:https://printlegacy-platform.vercel.app\nADR:;;Plateau;Dakar;;;Sénégal\nNOTE:Studio Graphique & Cartes NFC\nEND:VCARD`;
+  const blob = new Blob([vcard], { type: 'text/vcard' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mamadou-diallo.vcf'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Contact enregistré !');
+}
+ 
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+ 
+</body>
+</html>
