@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Legacy — Mon Profil Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0A0A0A;--ink2:#1C1C1C;
+  --gold:#B8953A;--gold2:#D4AF6A;--gold3:#EDD89A;--gold4:#F5EDD0;
+  --cream:#F9F5EE;--cream2:#EDE5D0;--cream3:#E3D8C0;
+  --smoke:#6B6560;--smoke2:#9A948E;
+  --w:#FFFFFF;--r:4px;
+  --sidebar:320px;
+}
+ 
+html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);overflow:hidden}
+ 
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh}
+ 
+/* ── LEFT PANEL (editor) ── */
+.editor{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--w);border-right:1px solid var(--cream2);
+  display:flex;flex-direction:column;overflow:hidden
+}
+ 
+.ed-header{
+  padding:20px 24px 18px;border-bottom:1px solid var(--cream2);
+  display:flex;align-items:center;gap:12px
+}
+.ed-back{
+  width:30px;height:30px;border-radius:var(--r);border:1px solid var(--cream2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--smoke);font-size:14px;cursor:pointer;flex-shrink:0
+}
+.ed-title-wrap{}
+.ed-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:var(--ink)}
+.ed-sub{font-size:10px;color:var(--smoke2);letter-spacing:.05em}
+ 
+/* TABS */
+.ed-tabs{display:flex;border-bottom:1px solid var(--cream2);background:var(--cream)}
+.tab{
+  flex:1;padding:11px 8px;text-align:center;
+  font-size:10.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--smoke2);cursor:pointer;border-bottom:2px solid transparent;
+  transition:.15s;user-select:none
+}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--w)}
+ 
+/* EDITOR BODY */
+.ed-body{flex:1;overflow-y:auto;padding:20px 24px}
+.ed-body::-webkit-scrollbar{width:3px}
+.ed-body::-webkit-scrollbar-thumb{background:var(--cream2);border-radius:2px}
+ 
+.ed-section{margin-bottom:24px}
+.ed-section-label{
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--smoke2);margin-bottom:12px;display:flex;align-items:center;gap:8px
+}
+.ed-section-label::after{content:'';flex:1;height:1px;background:var(--cream2)}
+ 
+.field{margin-bottom:14px}
+.field label{font-size:11px;font-weight:500;color:var(--smoke);display:block;margin-bottom:5px;letter-spacing:.03em}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--cream);border:1px solid var(--cream2);
+  border-radius:var(--r);padding:9px 12px;font-size:12.5px;
+  font-family:'Jost',sans-serif;color:var(--ink);
+  transition:.15s;resize:none;outline:none
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold);background:var(--w)}
+.field textarea{min-height:70px;line-height:1.5}
+ 
+/* AVATAR UPLOAD */
+.avatar-upload{
+  display:flex;align-items:center;gap:14px;margin-bottom:16px
+}
+.av-preview{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--ink));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;
+  font-weight:300;flex-shrink:0;overflow:hidden;position:relative;cursor:pointer
+}
+.av-preview img{width:100%;height:100%;object-fit:cover;display:none}
+.av-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.4);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:.2s;border-radius:50%
+}
+.av-preview:hover .av-overlay{opacity:1}
+.av-overlay i{color:#fff;font-size:18px}
+.av-info{}
+.av-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);
+  padding:7px 14px;font-size:11px;font-weight:500;cursor:pointer;
+  font-family:'Jost',sans-serif;color:var(--ink);margin-bottom:4px
+}
+.av-hint{font-size:10px;color:var(--smoke2)}
+ 
+/* COLOR THEME PICKER */
+.themes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.theme-opt{
+  aspect-ratio:1;border-radius:var(--r);cursor:pointer;
+  border:2px solid transparent;transition:.15s;position:relative;overflow:hidden
+}
+.theme-opt.selected{border-color:var(--gold)}
+.theme-opt .tc{height:60%;width:100%}
+.theme-opt .tb{height:40%;width:100%}
+.theme-opt .check{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.25);opacity:0;transition:.15s
+}
+.theme-opt.selected .check{opacity:1}
+.check i{color:#fff;font-size:14px}
+ 
+/* LINKS EDITOR */
+.links-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.link-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);
+  padding:8px 10px
+}
+.link-ico{width:28px;height:28px;border-radius:var(--r);background:var(--ink);display:flex;align-items:center;justify-content:center;color:var(--gold2);font-size:12px;flex-shrink:0}
+.link-input{flex:1;background:transparent;border:none;font-size:11.5px;font-family:'Jost',sans-serif;color:var(--ink);outline:none}
+.link-del{width:22px;height:22px;border-radius:3px;border:none;background:none;color:var(--smoke2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.link-del:hover{color:#c62828;background:rgba(198,40,40,.08)}
+ 
+.add-link-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;padding:8px;background:transparent;border:1px dashed var(--cream3);
+  border-radius:var(--r);color:var(--smoke2);font-size:11px;font-weight:500;
+  cursor:pointer;font-family:'Jost',sans-serif;transition:.15s
+}
+.add-link-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
+ 
+/* GALLERY SECTION */
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.gal-item{
+  aspect-ratio:1;border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;
+  background:var(--cream);border:1px solid var(--cream2)
+}
+.gal-item img{width:100%;height:100%;object-fit:cover}
+.gal-del{
+  position:absolute;top:4px;right:4px;width:22px;height:22px;
+  border-radius:3px;background:rgba(0,0,0,.6);border:none;
+  color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:.15s
+}
+.gal-item:hover .gal-del{opacity:1}
+.gal-add{
+  aspect-ratio:1;border-radius:var(--r);
+  border:1.5px dashed var(--cream3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:.15s;gap:4px
+}
+.gal-add:hover{border-color:var(--gold);background:var(--gold4)}
+.gal-add i{font-size:20px;color:var(--smoke2)}
+.gal-add span{font-size:9px;color:var(--smoke2);text-transform:uppercase;letter-spacing:.1em}
+ 
+/* BOTTOM BAR */
+.ed-footer{
+  padding:14px 24px;border-top:1px solid var(--cream2);
+  display:flex;gap:8px;background:var(--w)
+}
+.btn-save{
+  flex:1;background:var(--ink);color:var(--gold2);border:none;
+  padding:11px;border-radius:var(--r);font-size:11.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  font-family:'Jost',sans-serif;transition:.15s;
+  display:flex;align-items:center;justify-content:center;gap:7px
+}
+.btn-save:hover{background:var(--ink2)}
+.btn-share{
+  background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);
+  width:42px;display:flex;align-items:center;justify-content:center;
+  color:var(--smoke);font-size:16px;cursor:pointer;transition:.15s
+}
+.btn-share:hover{border-color:var(--gold);color:var(--gold)}
+ 
+/* ── DIVIDER ── */
+.divider{
+  width:4px;background:var(--cream);display:flex;align-items:center;justify-content:center;
+  cursor:col-resize;flex-shrink:0
+}
+ 
+/* ── RIGHT PANEL (preview) ── */
+.preview{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--cream)
+}
+ 
+.prev-topbar{
+  height:52px;min-height:52px;background:var(--w);
+  border-bottom:1px solid var(--cream2);
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px
+}
+.prev-title{
+  font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;
+  color:var(--smoke);letter-spacing:.04em
+}
+.prev-modes{display:flex;gap:6px}
+.prev-mode{
+  display:flex;align-items:center;gap:5px;padding:5px 12px;
+  border-radius:var(--r);border:1px solid var(--cream2);
+  background:var(--cream);font-size:11px;font-weight:500;cursor:pointer;
+  color:var(--smoke2);transition:.15s
+}
+.prev-mode.active{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
+.prev-mode i{font-size:13px}
+ 
+.prev-body{
+  flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;
+  padding:30px 20px
+}
+.prev-body::-webkit-scrollbar{width:3px}
+.prev-body::-webkit-scrollbar-thumb{background:var(--cream2);border-radius:2px}
+ 
+/* ── CARD PREVIEW ── */
+.card-preview{
+  width:360px;background:var(--w);border-radius:20px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);
+  transition:all .3s;position:relative
+}
+.card-preview.desktop-mode{width:100%;max-width:680px;border-radius:12px}
+ 
+/* CARD HEADER */
+.cp-header{
+  padding:0 0 28px;position:relative;overflow:hidden;
+  background:#0A0A0A;min-height:200px
+}
+.cp-header-bg{position:absolute;inset:0;opacity:.08}
+.cp-header-bg svg{width:100%;height:100%}
+.cp-cover{width:100%;height:120px;object-fit:cover;display:block;opacity:.6}
+.cp-cover-placeholder{width:100%;height:100px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a)}
+.cp-header-inner{position:relative;z-index:2;text-align:center;padding:0 20px}
+.cp-av-wrap{margin-top:-35px;margin-bottom:12px;display:inline-block;position:relative}
+.cp-av{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#8B6914);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;font-weight:300;
+  border:3px solid rgba(255,255,255,.15);overflow:hidden
+}
+.cp-av img{width:100%;height:100%;object-fit:cover}
+.cp-nfc-badge{
+  position:absolute;bottom:-2px;right:-2px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--gold);border:2px solid var(--w);
+  display:flex;align-items:center;justify-content:center;font-size:10px
+}
+ 
+.cp-name{
+  font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;
+  color:#fff;margin-bottom:4px;letter-spacing:.02em
+}
+.cp-role{font-size:11.5px;color:rgba(255,255,255,.55);letter-spacing:.04em}
+.cp-company{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:8px;font-size:11px;color:rgba(255,255,255,.35);
+  border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:3px 12px
+}
+ 
+/* CARD BODY */
+.cp-body{padding:20px}
+ 
+.cp-bio{
+  background:var(--cream);border-radius:8px;padding:12px 14px;
+  margin-bottom:16px;font-size:12.5px;line-height:1.6;color:var(--smoke)
+}
+ 
+.cp-section-tag{
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--smoke2);margin-bottom:10px
+}
+ 
+.cp-links{display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.cp-link{
+  display:flex;align-items:center;gap:11px;
+  background:var(--cream);border:1px solid var(--cream2);
+  border-radius:8px;padding:11px 13px;transition:.15s;cursor:pointer
+}
+.cp-link:hover{border-color:var(--gold);transform:translateX(3px)}
+.cp-link-icon{
+  width:36px;height:36px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0
+}
+.cp-link-label{font-size:10px;color:var(--smoke2);display:block;letter-spacing:.04em}
+.cp-link-val{font-size:12.5px;font-weight:500;color:var(--ink);display:block}
+.cp-link-arr{margin-left:auto;color:var(--smoke2);font-size:12px}
+ 
+/* GALLERY */
+.cp-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px}
+.cp-gal-item{
+  aspect-ratio:1;border-radius:6px;overflow:hidden;
+  background:var(--cream);border:1px solid var(--cream2)
+}
+.cp-gal-item img{width:100%;height:100%;object-fit:cover}
+.cp-gal-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  color:var(--smoke2);font-size:20px
+}
+ 
+/* CONTACT BTN */
+.cp-contact-btn{
+  width:100%;padding:13px;border-radius:8px;border:none;
+  background:var(--ink);color:var(--gold2);
+  font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;font-family:'Jost',sans-serif;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:center;gap:8px
+}
+ 
+.cp-qr{
+  background:var(--cream);border:1px solid var(--cream2);border-radius:8px;
+  padding:14px;text-align:center
+}
+.cp-qr-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--smoke2);margin-bottom:10px}
+ 
+/* FOOTER */
+.cp-footer{
+  text-align:center;padding:14px;border-top:1px solid var(--cream2);
+  font-size:10px;color:var(--smoke2)
+}
+.cp-footer span{color:var(--gold);font-weight:600}
+ 
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;
+  font-size:12px;font-weight:500;transition:.3s;z-index:999;white-space:nowrap;
+  display:flex;align-items:center;gap:7px
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast i{color:var(--gold)}
+ 
+/* MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:500;align-items:center;justify-content:center
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--w);border-radius:12px;padding:24px;width:320px;
+  max-width:90vw
+}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:14px}
+.modal-close{float:right;cursor:pointer;color:var(--smoke2);font-size:16px}
+.link-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.lt-opt{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 8px;border-radius:var(--r);border:1px solid var(--cream2);
+  background:var(--cream);cursor:pointer;transition:.15s
+}
+.lt-opt:hover{border-color:var(--gold);background:var(--gold4)}
+.lt-opt i{font-size:20px;color:var(--gold)}
+.lt-opt span{font-size:10px;color:var(--smoke);font-weight:500}
+ 
+/* FILE INPUT HIDDEN */
+input[type=file]{display:none}
+ 
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--cream2)}
+</style>
+</head>
+<body>
+ 
+<div class="app">
+ 
+  <!-- ═══════════════════════════════ EDITOR PANEL ═══════════════════════════════ -->
+  <div class="editor">
+    <div class="ed-header">
+      <div class="ed-back"><i class="ti ti-arrow-left"></i></div>
+      <div class="ed-title-wrap">
+        <div class="ed-title">Mon profil digital</div>
+        <div class="ed-sub">Personnalisez votre carte NFC</div>
+      </div>
+    </div>
+ 
+    <!-- TABS -->
+    <div class="ed-tabs">
+      <div class="tab active" onclick="switchTab('identity')"><i class="ti ti-user" style="font-size:12px"></i> Identité</div>
+      <div class="tab" onclick="switchTab('links')"><i class="ti ti-link" style="font-size:12px"></i> Liens</div>
+      <div class="tab" onclick="switchTab('gallery')"><i class="ti ti-photo" style="font-size:12px"></i> Galerie</div>
+      <div class="tab" onclick="switchTab('style')"><i class="ti ti-palette" style="font-size:12px"></i> Style</div>
+    </div>
+ 
+    <!-- ── IDENTITY TAB ── -->
+    <div class="ed-body" id="tab-identity">
+ 
+      <div class="ed-section">
+        <div class="ed-section-label">Photo de profil</div>
+        <div class="avatar-upload">
+          <div class="av-preview" id="avPreview" onclick="document.getElementById('avatarInput').click()">
+            <span id="avInitials">MD</span>
+            <img id="avImg">
+            <div class="av-overlay"><i class="ti ti-camera"></i></div>
+          </div>
+          <div class="av-info">
+            <button class="av-btn" onclick="document.getElementById('avatarInput').click()">
+              <i class="ti ti-upload" style="font-size:13px"></i> Téléverser
+            </button>
+            <div class="av-hint">JPG, PNG · Max 5MB</div>
+          </div>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" onchange="loadAvatar(event)">
+      </div>
+ 
+      <div class="ed-section">
+        <div class="ed-section-label">Informations personnelles</div>
+        <div class="field">
+          <label>Prénom & Nom</label>
+          <input type="text" id="f-name" value="Mamadou Diallo" oninput="updatePreview()" placeholder="Votre nom complet">
+        </div>
+        <div class="field">
+          <label>Titre / Poste</label>
+          <input type="text" id="f-role" value="Directeur Général" oninput="updatePreview()" placeholder="Ex: CEO, Consultant, Designer...">
+        </div>
+        <div class="field">
+          <label>Entreprise / Structure</label>
+          <input type="text" id="f-company" value="Print Legacy Studio" oninput="updatePreview()" placeholder="Nom de votre entreprise">
+        </div>
+        <div class="field">
+          <label>Bio courte</label>
+          <textarea id="f-bio" oninput="updatePreview()" placeholder="Décrivez votre activité en 2-3 phrases...">Studio graphique & cartes NFC premium basé à Dakar. Spécialiste de l'identité visuelle et du networking digital pour professionnels sénégalais.</textarea>
+        </div>
+        <div class="field">
+          <label>Localisation</label>
+          <input type="text" id="f-location" value="Plateau, Dakar, Sénégal" oninput="updatePreview()" placeholder="Ville, Pays">
+        </div>
+      </div>
+ 
+    </div>
+ 
+    <!-- ── LINKS TAB ── -->
+    <div class="ed-body" id="tab-links" style="display:none">
+      <div class="ed-section">
+        <div class="ed-section-label">Vos liens de contact</div>
+        <div class="links-list" id="linksList"></div>
+        <button class="add-link-btn" onclick="openLinkModal()">
+          <i class="ti ti-plus" style="font-size:14px"></i> Ajouter un lien
+        </button>
+      </div>
+    </div>
+ 
+    <!-- ── GALLERY TAB ── -->
+    <div class="ed-body" id="tab-gallery" style="display:none">
+      <div class="ed-section">
+        <div class="ed-section-label">Photos de votre activité</div>
+        <div style="font-size:11.5px;color:var(--smoke2);margin-bottom:14px;line-height:1.6">
+          Ajoutez jusqu'à <strong style="color:var(--ink)">9 photos</strong> pour présenter vos réalisations, votre équipe ou votre espace de travail.
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <input type="file" id="galleryInput" accept="image/*" multiple onchange="loadGalleryImages(event)">
+      </div>
+    </div>
+ 
+    <!-- ── STYLE TAB ── -->
+    <div class="ed-body" id="tab-style" style="display:none">
+      <div class="ed-section">
+        <div class="ed-section-label">Thème couleur</div>
+        <div class="themes" id="themePicker">
+          <div class="theme-opt selected" data-theme="noir" onclick="setTheme(this,'noir','#0A0A0A','#B8953A')">
+            <div class="tc" style="background:#0A0A0A"></div>
+            <div class="tb" style="background:#D4AF6A"></div>
+            <div class="check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="theme-opt" data-theme="emerald" onclick="setTheme(this,'emerald','#0D3B2E','#4CAF50')">
+            <div class="tc" style="background:#0D3B2E"></div>
+            <div class="tb" style="background:#4CAF50"></div>
+            <div class="check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="theme-opt" data-theme="navy" onclick="setTheme(this,'navy','#0A1628','#4A90D9')">
+            <div class="tc" style="background:#0A1628"></div>
+            <div class="tb" style="background:#4A90D9"></div>
+            <div class="check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="theme-opt" data-theme="crimson" onclick="setTheme(this,'crimson','#1A0808','#C62828')">
+            <div class="tc" style="background:#1A0808"></div>
+            <div class="tb" style="background:#C62828"></div>
+            <div class="check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="theme-opt" data-theme="ivory" onclick="setTheme(this,'ivory','#F5F0E8','#8B6914')">
+            <div class="tc" style="background:#F5F0E8"></div>
+            <div class="tb" style="background:#8B6914"></div>
+            <div class="check"><i class="ti ti-check"></i></div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="ed-section">
+        <div class="ed-section-label">Typographie du nom</div>
+        <div class="field">
+          <label>Police d'affichage</label>
+          <select id="f-font" onchange="updatePreview()">
+            <option value="Cormorant Garamond">Cormorant Garamond (Élégant)</option>
+            <option value="Playfair Display">Playfair Display (Classique)</option>
+            <option value="Jost">Jost (Moderne)</option>
+            <option value="Georgia">Georgia (Traditionnel)</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="ed-section">
+        <div class="ed-section-label">Options d'affichage</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12.5px;color:var(--ink)">
+            <input type="checkbox" id="opt-bio" checked onchange="updatePreview()" style="width:auto;accent-color:var(--gold)"> Afficher la bio
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12.5px;color:var(--ink)">
+            <input type="checkbox" id="opt-location" checked onchange="updatePreview()" style="width:auto;accent-color:var(--gold)"> Afficher la localisation
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12.5px;color:var(--ink)">
+            <input type="checkbox" id="opt-gallery" checked onchange="updatePreview()" style="width:auto;accent-color:var(--gold)"> Afficher la galerie
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12.5px;color:var(--ink)">
+            <input type="checkbox" id="opt-qr" checked onchange="updatePreview()" style="width:auto;accent-color:var(--gold)"> Afficher le QR code
+          </label>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="ed-footer">
+      <button class="btn-save" onclick="showToast('✦ Profil sauvegardé avec succès !')">
+        <i class="ti ti-device-floppy"></i> Sauvegarder
+      </button>
+      <button class="btn-share" title="Partager" onclick="showToast('Lien copié dans le presse-papier !')">
+        <i class="ti ti-share"></i>
+      </button>
+    </div>
+  </div>
+ 
+  <!-- ═══════════════════════════════ PREVIEW PANEL ═══════════════════════════════ -->
+  <div class="preview">
+    <div class="prev-topbar">
+      <div class="prev-title">Aperçu en temps réel</div>
+      <div class="prev-modes">
+        <div class="prev-mode active" id="mode-mobile" onclick="setMode('mobile')">
+          <i class="ti ti-device-mobile"></i> Mobile
+        </div>
+        <div class="prev-mode" id="mode-desktop" onclick="setMode('desktop')">
+          <i class="ti ti-device-laptop"></i> Bureau
+        </div>
+      </div>
+    </div>
+ 
+    <div class="prev-body" id="prevBody">
+      <!-- CARD PREVIEW -->
+      <div class="card-preview" id="cardPreview">
+ 
+        <!-- HEADER -->
+        <div class="cp-header" id="cpHeader">
+          <div class="cp-header-bg">
+            <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
+              <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="white" stroke-width="0.5"/>
+              </pattern>
+              <rect width="400" height="200" fill="url(#grid)"/>
+            </svg>
+          </div>
+          <div class="cp-cover-placeholder"></div>
+          <div class="cp-header-inner">
+            <div class="cp-av-wrap">
+              <div class="cp-av" id="cpAv">
+                <span id="cpAvInitials">MD</span>
+                <img id="cpAvImg" style="display:none">
+              </div>
+              <div class="cp-nfc-badge" id="cpNfcBadge">📶</div>
+            </div>
+            <div class="cp-name" id="cpName">Mamadou Diallo</div>
+            <div class="cp-role" id="cpRole">Directeur Général</div>
+            <div class="cp-company" id="cpCompany">
+              <i class="ti ti-building" style="font-size:11px"></i>
+              <span id="cpCompanyName">Print Legacy Studio</span>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- BODY -->
+        <div class="cp-body">
+ 
+          <!-- BIO -->
+          <div class="cp-bio" id="cpBio">
+            Studio graphique &amp; cartes NFC premium basé à Dakar. Spécialiste de l'identité visuelle et du networking digital pour professionnels sénégalais.
+          </div>
+ 
+          <!-- LINKS -->
+          <div class="cp-section-tag">Contact &amp; Réseaux</div>
+          <div class="cp-links" id="cpLinks"></div>
+ 
+          <!-- GALLERY -->
+          <div id="cpGallerySection">
+            <div class="cp-section-tag">Nos réalisations</div>
+            <div class="cp-gallery" id="cpGallery"></div>
+          </div>
+ 
+          <!-- SAVE CONTACT -->
+          <button class="cp-contact-btn" id="cpContactBtn">
+            <i class="ti ti-address-book"></i> Enregistrer le contact
+          </button>
+ 
+          <!-- QR -->
+          <div class="cp-qr" id="cpQr">
+            <div class="cp-qr-label">QR Code · Partager ce profil</div>
+            <svg width="80" height="80" viewBox="0 0 64 64"><rect fill="white" width="64" height="64"/><rect x="4" y="4" width="24" height="24" rx="2" fill="none" stroke="#0A0A0A" stroke-width="2"/><rect x="9" y="9" width="14" height="14" fill="#0A0A0A"/><rect x="36" y="4" width="24" height="24" rx="2" fill="none" stroke="#0A0A0A" stroke-width="2"/><rect x="41" y="9" width="14" height="14" fill="#0A0A0A"/><rect x="4" y="36" width="24" height="24" rx="2" fill="none" stroke="#0A0A0A" stroke-width="2"/><rect x="9" y="41" width="14" height="14" fill="#0A0A0A"/><rect x="36" y="36" width="6" height="6" fill="#B8953A"/><rect x="44" y="36" width="6" height="6" fill="#0A0A0A"/><rect x="54" y="36" width="6" height="6" fill="#0A0A0A"/><rect x="36" y="44" width="6" height="6" fill="#0A0A0A"/><rect x="54" y="44" width="6" height="6" fill="#B8953A"/><rect x="36" y="54" width="6" height="6" fill="#0A0A0A"/><rect x="44" y="54" width="6" height="6" fill="#0A0A0A"/><rect x="54" y="54" width="6" height="6" fill="#0A0A0A"/></svg>
+          </div>
+ 
+        </div>
+ 
+        <div class="cp-footer">
+          Propulsé par <span>Print Legacy</span> · Studio NFC Dakar
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+</div>
+ 
+<!-- MODAL AJOUT LIEN -->
+<div class="modal-overlay" id="linkModal">
+  <div class="modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="modal-title">Ajouter un lien</div>
+      <i class="ti ti-x modal-close" onclick="closeLinkModal()"></i>
+    </div>
+    <div class="link-type-grid" id="linkTypeGrid">
+      <div class="lt-opt" onclick="addLink('phone','ti-phone','📞','Téléphone','+221 77 000 00 00','#E8F5E9')">
+        <i class="ti ti-phone"></i><span>Téléphone</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('whatsapp','ti-brand-whatsapp','💬','WhatsApp','wa.me/221770000000','#E8F5E9')">
+        <i class="ti ti-brand-whatsapp"></i><span>WhatsApp</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('email','ti-mail','✉️','Email','contact@monsite.sn','#FFF3E0')">
+        <i class="ti ti-mail"></i><span>Email</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('website','ti-world','🌐','Site web','https://monsite.sn','#E3F2FD')">
+        <i class="ti ti-world"></i><span>Site web</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('instagram','ti-brand-instagram','📸','Instagram','@moncompte','#FCE4EC')">
+        <i class="ti ti-brand-instagram"></i><span>Instagram</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('facebook','ti-brand-facebook','📘','Facebook','facebook.com/page','#E8EAF6')">
+        <i class="ti ti-brand-facebook"></i><span>Facebook</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('linkedin','ti-brand-linkedin','💼','LinkedIn','linkedin.com/in/profil','#E1F5FE')">
+        <i class="ti ti-brand-linkedin"></i><span>LinkedIn</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('location','ti-map-pin','📍','Adresse','Plateau, Dakar','#FCE4EC')">
+        <i class="ti ti-map-pin"></i><span>Adresse</span>
+      </div>
+      <div class="lt-opt" onclick="addLink('tiktok','ti-brand-tiktok','🎵','TikTok','@moncompte','#F3E5F5')">
+        <i class="ti ti-brand-tiktok"></i><span>TikTok</span>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-check"></i> <span id="toastMsg"></span></div>
+ 
+<script>
+// ─── STATE ───
+const state = {
+  name: 'Mamadou Diallo',
+  role: 'Directeur Général',
+  company: 'Print Legacy Studio',
+  bio: "Studio graphique & cartes NFC premium basé à Dakar. Spécialiste de l'identité visuelle et du networking digital pour professionnels sénégalais.",
+  location: 'Plateau, Dakar, Sénégal',
+  avatarSrc: null,
+  headerBg: '#0A0A0A',
+  accentColor: '#B8953A',
+  font: 'Cormorant Garamond',
+  links: [
+    {type:'phone',icon:'ti-phone',emoji:'📞',label:'Téléphone',value:'+221 77 000 00 00',bg:'#E8F5E9'},
+    {type:'whatsapp',icon:'ti-brand-whatsapp',emoji:'💬',label:'WhatsApp',value:'wa.me/221770000000',bg:'#E8F5E9'},
+    {type:'email',icon:'ti-mail',emoji:'✉️',label:'Email',value:'contact@printlegacy.sn',bg:'#FFF3E0'},
+    {type:'website',icon:'ti-world',emoji:'🌐',label:'Site web',value:'printlegacy-platform.vercel.app',bg:'#E3F2FD'},
+  ],
+  gallery: [],
+  opts: {bio:true,location:true,gallery:true,qr:true}
+};
+ 
+// ─── TABS ───
+function switchTab(t) {
+  ['identity','links','gallery','style'].forEach(id => {
+    document.getElementById('tab-'+id).style.display = id===t ? 'block' : 'none';
+    document.querySelectorAll('.tab')[['identity','links','gallery','style'].indexOf(id)].classList.toggle('active', id===t);
+  });
+}
+ 
+// ─── AVATAR ───
+function loadAvatar(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = r => {
+    state.avatarSrc = r.target.result;
+    const avImg = document.getElementById('avImg');
+    avImg.src = r.target.result; avImg.style.display = 'block';
+    document.getElementById('avInitials').style.display = 'none';
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+ 
+// ─── LINKS ───
+function renderLinksList() {
+  const list = document.getElementById('linksList');
+  list.innerHTML = '';
+  state.links.forEach((lk, i) => {
+    const row = document.createElement('div');
+    row.className = 'link-row';
+    row.innerHTML = `
+      <div class="link-ico" style="background:#0A0A0A"><i class="ti ${lk.icon}" style="color:#D4AF6A"></i></div>
+      <div style="display:flex;flex-direction:column;flex:1;gap:2px">
+        <span style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2)">${lk.label}</span>
+        <input class="link-input" value="${lk.value}" onchange="state.links[${i}].value=this.value;renderPreviewLinks()" placeholder="${lk.label}">
+      </div>
+      <button class="link-del" onclick="removeLink(${i})"><i class="ti ti-x"></i></button>
+    `;
+    list.appendChild(row);
+  });
+}
+ 
+function removeLink(i) {
+  state.links.splice(i,1);
+  renderLinksList(); renderPreviewLinks();
+}
+ 
+function openLinkModal() { document.getElementById('linkModal').classList.add('open') }
+function closeLinkModal() { document.getElementById('linkModal').classList.remove('open') }
+ 
+function addLink(type,icon,emoji,label,value,bg) {
+  state.links.push({type,icon,emoji,label,value,bg});
+  closeLinkModal(); renderLinksList(); renderPreviewLinks();
+  showToast('Lien ajouté !');
+}
+ 
+// ─── GALLERY ───
+function loadGalleryImages(e) {
+  const files = Array.from(e.target.files);
+  const remaining = 9 - state.gallery.length;
+  files.slice(0,remaining).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = r => { state.gallery.push(r.target.result); renderGallery(); };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+ 
+function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  state.gallery.forEach((src, i) => {
+    const div = document.createElement('div'); div.className = 'gal-item';
+    div.innerHTML = `<img src="${src}"><button class="gal-del" onclick="removeGalleryImg(${i})"><i class="ti ti-x"></i></button>`;
+    grid.appendChild(div);
+  });
+  if (state.gallery.length < 9) {
+    const add = document.createElement('div'); add.className = 'gal-add';
+    add.innerHTML = '<i class="ti ti-plus"></i><span>Ajouter</span>';
+    add.onclick = () => document.getElementById('galleryInput').click();
+    grid.appendChild(add);
+  }
+  renderPreviewGallery();
+}
+ 
+function removeGalleryImg(i) {
+  state.gallery.splice(i,1); renderGallery();
+}
+ 
+// ─── THEME ───
+function setTheme(el, name, bg, accent) {
+  document.querySelectorAll('.theme-opt').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  state.headerBg = bg; state.accentColor = accent;
+  updatePreview();
+}
+ 
+// ─── PREVIEW ───
+function updatePreview() {
+  const name = document.getElementById('f-name').value;
+  const role = document.getElementById('f-role').value;
+  const company = document.getElementById('f-company').value;
+  const bio = document.getElementById('f-bio').value;
+  const font = document.getElementById('f-font').value;
+  const opts = {
+    bio: document.getElementById('opt-bio').checked,
+    location: document.getElementById('opt-location').checked,
+    gallery: document.getElementById('opt-gallery').checked,
+    qr: document.getElementById('opt-qr').checked
+  };
+ 
+  // Initials
+  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || '?';
+  document.getElementById('cpAvInitials').textContent = initials;
+  document.getElementById('avInitials').textContent = initials;
+  document.getElementById('cpName').textContent = name;
+  document.getElementById('cpName').style.fontFamily = font+', serif';
+  document.getElementById('cpRole').textContent = role;
+  document.getElementById('cpCompanyName').textContent = company;
+  document.getElementById('cpBio').textContent = bio;
+ 
+  // Avatar
+  if (state.avatarSrc) {
+    const cpImg = document.getElementById('cpAvImg');
+    cpImg.src = state.avatarSrc; cpImg.style.display = 'block';
+    document.getElementById('cpAvInitials').style.display = 'none';
+  }
+ 
+  // Header BG
+  document.getElementById('cpHeader').style.background = state.headerBg;
+  document.getElementById('cpContactBtn').style.background = state.headerBg;
+  document.getElementById('cpContactBtn').style.color = state.accentColor;
+  document.getElementById('cpNfcBadge').style.background = state.accentColor;
+ 
+  // Options
+  document.getElementById('cpBio').style.display = opts.bio ? 'block' : 'none';
+  document.getElementById('cpGallerySection').style.display = opts.gallery ? 'block' : 'none';
+  document.getElementById('cpQr').style.display = opts.qr ? 'block' : 'none';
+}
+ 
+function renderPreviewLinks() {
+  const container = document.getElementById('cpLinks');
+  container.innerHTML = '';
+  state.links.forEach(lk => {
+    const div = document.createElement('div'); div.className = 'cp-link';
+    div.innerHTML = `
+      <div class="cp-link-icon" style="background:${lk.bg||'#F5EDD0'}">
+        <i class="ti ${lk.icon}" style="font-size:16px;color:#555"></i>
+      </div>
+      <div>
+        <span class="cp-link-label">${lk.label}</span>
+        <span class="cp-link-val">${lk.value}</span>
+      </div>
+      <i class="ti ti-chevron-right cp-link-arr"></i>
+    `;
+    container.appendChild(div);
+  });
+}
+ 
+function renderPreviewGallery() {
+  const container = document.getElementById('cpGallery');
+  container.innerHTML = '';
+  if (state.gallery.length === 0) {
+    // Placeholder items
+    ['🎨','💳','🏢'].forEach(emoji => {
+      const d = document.createElement('div'); d.className = 'cp-gal-item';
+      d.innerHTML = `<div class="cp-gal-placeholder">${emoji}</div>`;
+      container.appendChild(d);
+    });
+  } else {
+    state.gallery.forEach(src => {
+      const d = document.createElement('div'); d.className = 'cp-gal-item';
+      d.innerHTML = `<img src="${src}">`;
+      container.appendChild(d);
+    });
+  }
+}
+ 
+// ─── MODE ───
+function setMode(m) {
+  document.getElementById('mode-mobile').classList.toggle('active', m==='mobile');
+  document.getElementById('mode-desktop').classList.toggle('active', m==='desktop');
+  const card = document.getElementById('cardPreview');
+  if (m==='desktop') card.classList.add('desktop-mode');
+  else card.classList.remove('desktop-mode');
+}
+ 
+// ─── TOAST ───
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast'); t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+ 
+// ─── INIT ───
+renderLinksList();
+renderPreviewLinks();
+renderGallery();
+updatePreview();
+</script>
+</body>
+</html>
+ 
