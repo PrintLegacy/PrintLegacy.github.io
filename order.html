@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Legacy — Commander ma carte NFC</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;--gold2:#E8C97E;--gold-dark:#8B6914;--gold4:#F5EDD0;
+  --ink:#0D0D0D;--ink2:#1C1C1C;
+  --cream:#FAF6EF;--cream2:#F0E9DA;--cream3:#EDE5D0;
+  --smoke:#6B6560;--smoke2:#9A948E;
+  --w:#fff;--r:3px;
+  --success:#2e7d32;
+}
+ 
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+ 
+/* NAV */
+.nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 3rem;background:rgba(250,246,239,0.95);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3)
+}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--ink)}
+.nav-logo em{color:var(--gold);font-style:italic}
+.nav-back{display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:500;color:var(--smoke);text-decoration:none;letter-spacing:0.05em;transition:.15s}
+.nav-back:hover{color:var(--gold)}
+ 
+/* HERO */
+.hero{
+  background:var(--ink);padding:4rem 3rem 3rem;text-align:center;
+  position:relative;overflow:hidden
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 25px,rgba(201,168,76,0.03) 25px,rgba(201,168,76,0.03) 26px)
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);
+  border-radius:100px;padding:0.35rem 1rem;
+  font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.5rem;position:relative;z-index:1
+}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:2.4rem;color:#fff;font-weight:400;margin-bottom:.75rem;position:relative;z-index:1}
+.hero h1 em{color:var(--gold);font-style:italic}
+.hero p{font-size:.95rem;color:rgba(255,255,255,.45);max-width:500px;margin:0 auto;line-height:1.8;position:relative;z-index:1}
+ 
+/* STEPS */
+.steps{
+  display:flex;align-items:center;justify-content:center;gap:0;
+  padding:1.5rem 3rem;background:var(--w);border-bottom:1px solid var(--cream3);
+  flex-wrap:wrap
+}
+.step{display:flex;align-items:center;gap:10px;padding:.5rem 1.5rem}
+.step-num{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;
+  background:var(--cream2);color:var(--smoke2);transition:.3s
+}
+.step.active .step-num{background:var(--ink);color:var(--gold)}
+.step.done .step-num{background:var(--gold);color:var(--ink)}
+.step-label{font-size:11.5px;font-weight:500;color:var(--smoke2);white-space:nowrap}
+.step.active .step-label{color:var(--ink);font-weight:600}
+.step.done .step-label{color:var(--gold)}
+.step-sep{width:30px;height:1px;background:var(--cream3)}
+ 
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 340px;gap:2rem;max-width:1100px;margin:0 auto;padding:2.5rem 2rem}
+ 
+/* FORM WRAPPER */
+.form-wrap{}
+ 
+/* SECTION CARD */
+.s-card{
+  background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);
+  overflow:hidden;margin-bottom:1.5rem
+}
+.s-card-header{
+  display:flex;align-items:center;gap:12px;
+  padding:1.2rem 1.5rem;border-bottom:1px solid var(--cream3);
+  background:var(--cream)
+}
+.s-card-num{
+  width:26px;height:26px;border-radius:50%;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0
+}
+.s-card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:400;color:var(--ink)}
+.s-card-sub{font-size:11px;color:var(--smoke2);margin-left:auto}
+.s-card-body{padding:1.5rem}
+ 
+/* FIELDS */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.field-row.single{grid-template-columns:1fr}
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+.field label{
+  font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--smoke);display:block;margin-bottom:5px
+}
+.field label span{color:var(--gold);margin-left:2px}
+.field input,.field textarea,.field select{
+  width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);
+  font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);
+  background:var(--w);outline:none;transition:.15s
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold);background:#FFFDF7}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239A948E' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+ 
+/* UPLOAD ZONES */
+.upload-zone{
+  border:2px dashed var(--cream3);border-radius:var(--r);
+  padding:1.5rem;text-align:center;cursor:pointer;
+  transition:.2s;position:relative;overflow:hidden
+}
+.upload-zone:hover{border-color:var(--gold);background:var(--gold4)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.upload-title{font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+.upload-hint{font-size:.75rem;color:var(--smoke2)}
+.upload-preview{
+  display:none;align-items:center;gap:12px;
+  padding:.75rem 1rem;background:var(--cream);border-radius:var(--r);
+  border:1px solid var(--cream3);margin-top:.75rem
+}
+.upload-preview.visible{display:flex}
+.upload-preview-icon{font-size:1.5rem}
+.upload-preview-name{font-size:.8rem;font-weight:500;color:var(--ink);flex:1;text-align:left}
+.upload-preview-size{font-size:.7rem;color:var(--smoke2)}
+.upload-remove{background:none;border:none;color:var(--smoke2);cursor:pointer;font-size:16px;padding:2px}
+.upload-remove:hover{color:#c62828}
+ 
+/* AVATAR UPLOAD */
+.avatar-row{display:flex;align-items:center;gap:1.5rem}
+.avatar-circle{
+  width:80px;height:80px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);
+  font-weight:400;overflow:hidden;border:3px solid var(--cream3);position:relative
+}
+.avatar-circle img{width:100%;height:100%;object-fit:cover;display:none}
+.avatar-circle-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.4);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s
+}
+.avatar-circle:hover .avatar-circle-overlay{opacity:1}
+.avatar-circle-overlay span{font-size:1.2rem}
+.avatar-upload-area{flex:1}
+.avatar-upload-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--cream);border:1px solid var(--cream3);border-radius:var(--r);
+  padding:.65rem 1.2rem;font-size:.8rem;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;color:var(--ink);margin-bottom:5px;transition:.15s
+}
+.avatar-upload-btn:hover{border-color:var(--gold);color:var(--gold)}
+.avatar-hint{font-size:.7rem;color:var(--smoke2)}
+ 
+/* SOCIAL LINKS */
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.social-field{position:relative}
+.social-field label{
+  font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--smoke);display:flex;align-items:center;gap:6px;margin-bottom:5px
+}
+.social-field label .ico{
+  width:18px;height:18px;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;font-size:11px
+}
+.social-field input{
+  width:100%;padding:.75rem 1rem .75rem 2.2rem;border:1px solid var(--cream3);border-radius:var(--r);
+  font-size:.8rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s
+}
+.social-field input:focus{border-color:var(--gold);background:#FFFDF7}
+.social-field .prefix{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  font-size:.75rem;color:var(--smoke2);pointer-events:none;margin-top:12px
+}
+ 
+/* THEME PICKER */
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem}
+.theme-opt{
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  border:2px solid transparent;transition:.15s;position:relative
+}
+.theme-opt.sel{border-color:var(--gold)}
+.theme-top{height:36px}
+.theme-bot{height:20px;display:flex;align-items:center;justify-content:center}
+.theme-name{font-size:.6rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.theme-check{
+  position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;
+  background:var(--gold);display:none;align-items:center;justify-content:center;font-size:9px
+}
+.theme-opt.sel .theme-check{display:flex}
+ 
+/* OFFRE CARDS */
+.offre-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.offre-card{
+  border:2px solid var(--cream3);border-radius:var(--r);padding:1.2rem;
+  cursor:pointer;transition:.15s;position:relative;text-align:center
+}
+.offre-card:hover{border-color:var(--cream3);background:var(--cream)}
+.offre-card.sel{border-color:var(--gold);background:var(--gold4)}
+.offre-card.featured{border-color:var(--ink)}
+.offre-card.featured.sel{border-color:var(--gold)}
+.offre-badge{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--gold);font-size:.6rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:100px
+}
+.offre-name{font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.offre-price{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:400;color:var(--gold);line-height:1}
+.offre-period{font-size:.65rem;color:var(--smoke2);margin-bottom:.75rem}
+.offre-features{list-style:none;text-align:left;display:flex;flex-direction:column;gap:.4rem}
+.offre-features li{font-size:.7rem;color:var(--smoke);display:flex;align-items:center;gap:5px}
+.offre-features li::before{content:'✓';color:var(--gold);font-weight:700;font-size:.65rem}
+.offre-card.sel .offre-features li{color:var(--ink)}
+input[type=radio].offre-radio{display:none}
+ 
+/* QUANTITE */
+.qty-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.qty-opt{
+  padding:.5rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);
+  font-size:.8rem;font-weight:500;cursor:pointer;transition:.15s;
+  background:var(--w);color:var(--smoke)
+}
+.qty-opt:hover{border-color:var(--gold);color:var(--gold)}
+.qty-opt.sel{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+ 
+/* SIDEBAR */
+.sidebar{position:sticky;top:80px;align-self:start}
+ 
+.summary-card{
+  background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);
+  overflow:hidden;margin-bottom:1rem
+}
+.summary-header{
+  background:var(--ink);padding:1.2rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between
+}
+.summary-title{font-family:'Playfair Display',serif;font-size:.95rem;color:#fff;font-weight:400}
+.summary-badge{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.summary-body{padding:1.2rem 1.5rem}
+.summary-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.6rem 0;border-bottom:1px solid var(--cream3);
+  font-size:.8rem
+}
+.summary-row:last-child{border-bottom:none}
+.summary-label{color:var(--smoke2)}
+.summary-val{font-weight:600;color:var(--ink)}
+.summary-val.gold{color:var(--gold);font-family:'Playfair Display',serif;font-size:1rem}
+.summary-total{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1rem 1.5rem;background:var(--cream);border-top:2px solid var(--cream3)
+}
+.summary-total-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--smoke)}
+.summary-total-val{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:400;color:var(--gold)}
+ 
+.submit-btn{
+  width:100%;padding:1rem;background:var(--ink);color:var(--gold2);border:none;
+  border-radius:var(--r);font-size:.85rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:.75rem
+}
+.submit-btn:hover{background:var(--gold);color:var(--ink)}
+.submit-btn:disabled{background:var(--cream3);color:var(--smoke2);cursor:not-allowed}
+ 
+.wa-btn{
+  width:100%;padding:.85rem;background:#25D366;color:#fff;border:none;
+  border-radius:var(--r);font-size:.8rem;font-weight:700;letter-spacing:.05em;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px
+}
+.wa-btn:hover{background:#128C7E}
+ 
+.security-note{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:.75rem;background:var(--cream);border-radius:var(--r);margin-top:.75rem;
+  font-size:.7rem;color:var(--smoke2);line-height:1.5
+}
+ 
+/* SUCCESS */
+.success-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:999;align-items:center;justify-content:center
+}
+.success-overlay.open{display:flex}
+.success-box{
+  background:var(--w);border-radius:8px;padding:3rem 2.5rem;
+  text-align:center;max-width:420px;width:90%;
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1)
+}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.success-icon{font-size:3.5rem;margin-bottom:1rem;display:block}
+.success-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.75rem}
+.success-text{font-size:.9rem;color:var(--smoke);line-height:1.7;margin-bottom:1.5rem}
+.success-ref{
+  background:var(--cream);border-radius:var(--r);padding:.75rem 1.25rem;
+  font-size:.8rem;color:var(--smoke2);margin-bottom:1.5rem;
+  border:1px solid var(--cream3)
+}
+.success-ref strong{color:var(--gold);font-size:1rem}
+.success-close{
+  background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);
+  padding:.85rem 2rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif
+}
+ 
+/* PROGRESS BAR */
+.progress-bar{height:3px;background:var(--cream3);position:relative;margin-bottom:2rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:.5s;border-radius:2px}
+ 
+/* REQUIRED INDICATOR */
+.required-note{font-size:.7rem;color:var(--smoke2);margin-bottom:1.5rem}
+.required-note span{color:var(--gold)}
+ 
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr;padding:1rem}
+  .sidebar{position:static}
+  .field-row{grid-template-columns:1fr}
+  .social-grid{grid-template-columns:1fr}
+  .offre-grid{grid-template-columns:1fr}
+  .hero{padding:2.5rem 1.5rem 2rem}
+  .nav{padding:.75rem 1.5rem}
+  .steps{padding:1rem;gap:0}
+  .step{padding:.4rem .6rem}
+  .step-sep{width:15px}
+}
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Print <em>Legacy</em></div>
+  <a href="https://printlegacy.github.io/" class="nav-back">← Retour au site</a>
+</nav>
+ 
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Commande en ligne · Dakar, Sénégal 🇸🇳</div>
+  <h1>Créez votre carte<br><em>NFC professionnelle</em></h1>
+  <p>Remplissez le formulaire ci-dessous. Notre équipe crée votre profil digital et vous livre votre carte sous 48h.</p>
+</div>
+ 
+<!-- STEPS -->
+<div class="steps">
+  <div class="step active" id="step1"><div class="step-num">1</div><div class="step-label">Identité</div></div>
+  <div class="step-sep"></div>
+  <div class="step" id="step2"><div class="step-num">2</div><div class="step-label">Liens</div></div>
+  <div class="step-sep"></div>
+  <div class="step" id="step3"><div class="step-num">3</div><div class="step-label">Fichiers</div></div>
+  <div class="step-sep"></div>
+  <div class="step" id="step4"><div class="step-num">4</div><div class="step-label">Offre</div></div>
+</div>
+ 
+<!-- LAYOUT -->
+<div class="layout">
+ 
+  <!-- ══ FORM ══ -->
+  <div class="form-wrap">
+ 
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:25%"></div></div>
+    <p class="required-note">Les champs marqués d'un <span>*</span> sont obligatoires.</p>
+ 
+    <!-- ── 1. IDENTITÉ ── -->
+    <div class="s-card">
+      <div class="s-card-header">
+        <div class="s-card-num">1</div>
+        <div class="s-card-title">Informations personnelles</div>
+        <div class="s-card-sub">Identité professionnelle</div>
+      </div>
+      <div class="s-card-body">
+ 
+        <!-- AVATAR -->
+        <div style="margin-bottom:1.5rem">
+          <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Photo de profil</label>
+          <div class="avatar-row">
+            <div class="avatar-circle" id="avatarCircle" onclick="document.getElementById('avatarInput').click()">
+              <span id="avatarInitials">?</span>
+              <img id="avatarImg">
+              <div class="avatar-circle-overlay"><span>📷</span></div>
+            </div>
+            <div class="avatar-upload-area">
+              <button class="avatar-upload-btn" type="button" onclick="document.getElementById('avatarInput').click()">
+                📤 Choisir une photo
+              </button>
+              <input type="file" id="avatarInput" accept="image/*" onchange="loadAvatar(event)">
+              <div class="avatar-hint">JPG, PNG, WEBP · Max 5MB<br>Votre photo apparaîtra sur votre carte digitale</div>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="field-row">
+          <div class="field">
+            <label>Prénom <span>*</span></label>
+            <input type="text" id="f-prenom" placeholder="Mamadou" oninput="updateSummary();updateInitials();updateProgress()" required>
+          </div>
+          <div class="field">
+            <label>Nom <span>*</span></label>
+            <input type="text" id="f-nom" placeholder="Diallo" oninput="updateSummary();updateInitials();updateProgress()" required>
+          </div>
+        </div>
+ 
+        <div class="field-row">
+          <div class="field">
+            <label>Titre / Poste <span>*</span></label>
+            <input type="text" id="f-titre" placeholder="Directeur Général, CEO, Consultant..." oninput="updateSummary()" required>
+          </div>
+          <div class="field">
+            <label>Entreprise / Structure</label>
+            <input type="text" id="f-entreprise" placeholder="Nom de votre entreprise" oninput="updateSummary()">
+          </div>
+        </div>
+ 
+        <div class="field-row">
+          <div class="field">
+            <label>Téléphone principal <span>*</span></label>
+            <input type="tel" id="f-tel" placeholder="+221 77 000 00 00" oninput="updateProgress()" required>
+          </div>
+          <div class="field">
+            <label>Email professionnel</label>
+            <input type="email" id="f-email" placeholder="contact@monentreprise.sn">
+          </div>
+        </div>
+ 
+        <div class="field-row single">
+          <div class="field">
+            <label>Adresse / Localisation</label>
+            <input type="text" id="f-adresse" placeholder="Quartier, Ville, Pays — ex: Plateau, Dakar">
+          </div>
+        </div>
+ 
+        <div class="field-row single">
+          <div class="field">
+            <label>Bio professionnelle</label>
+            <textarea id="f-bio" placeholder="Décrivez votre activité, votre expertise, vos services... (2-3 phrases recommandées)" rows="4"></textarea>
+          </div>
+        </div>
+ 
+      </div>
+    </div>
+ 
+    <!-- ── 2. LIENS & RÉSEAUX ── -->
+    <div class="s-card">
+      <div class="s-card-header">
+        <div class="s-card-num">2</div>
+        <div class="s-card-title">Liens & Réseaux sociaux</div>
+        <div class="s-card-sub">Ajoutez ceux que vous utilisez</div>
+      </div>
+      <div class="s-card-body">
+ 
+        <div style="font-size:.8rem;color:var(--smoke2);margin-bottom:1.2rem;padding:.75rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+          💡 Remplissez uniquement les liens que vous souhaitez afficher sur votre carte. Laissez vide ce que vous ne voulez pas montrer.
+        </div>
+ 
+        <!-- CONTACT -->
+        <div style="margin-bottom:1.2rem">
+          <div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--smoke2);margin-bottom:.75rem;display:flex;align-items:center;gap:8px">
+            Contact direct
+            <div style="flex:1;height:1px;background:var(--cream3)"></div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>📞 Téléphone 2 (fixe)</label>
+              <input type="tel" id="l-tel2" placeholder="+221 33 000 00 00">
+            </div>
+            <div class="field">
+              <label>💬 WhatsApp</label>
+              <input type="tel" id="l-whatsapp" placeholder="+221 77 000 00 00">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>✉️ Email 2</label>
+              <input type="email" id="l-email2" placeholder="autre@email.com">
+            </div>
+            <div class="field">
+              <label>🌐 Site web</label>
+              <input type="url" id="l-website" placeholder="https://monsite.sn">
+            </div>
+          </div>
+        </div>
+ 
+        <!-- RÉSEAUX SOCIAUX -->
+        <div style="margin-bottom:1.2rem">
+          <div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--smoke2);margin-bottom:.75rem;display:flex;align-items:center;gap:8px">
+            Réseaux sociaux
+            <div style="flex:1;height:1px;background:var(--cream3)"></div>
+          </div>
+          <div class="social-grid">
+            <div class="field">
+              <label>📘 Facebook</label>
+              <input type="text" id="l-facebook" placeholder="facebook.com/votrepage">
+            </div>
+            <div class="field">
+              <label>📸 Instagram</label>
+              <input type="text" id="l-instagram" placeholder="@votrecompte">
+            </div>
+            <div class="field">
+              <label>💼 LinkedIn</label>
+              <input type="text" id="l-linkedin" placeholder="linkedin.com/in/votrenom">
+            </div>
+            <div class="field">
+              <label>🐦 X / Twitter</label>
+              <input type="text" id="l-twitter" placeholder="@votrecompte">
+            </div>
+            <div class="field">
+              <label>🎵 TikTok</label>
+              <input type="text" id="l-tiktok" placeholder="@votrecompte">
+            </div>
+            <div class="field">
+              <label>▶️ YouTube</label>
+              <input type="text" id="l-youtube" placeholder="youtube.com/c/votrechaine">
+            </div>
+            <div class="field">
+              <label>📌 Pinterest</label>
+              <input type="text" id="l-pinterest" placeholder="pinterest.com/votrepage">
+            </div>
+            <div class="field">
+              <label>💻 GitHub / Portfolio</label>
+              <input type="text" id="l-github" placeholder="github.com/votrenom">
+            </div>
+          </div>
+        </div>
+ 
+        <!-- BUSINESS -->
+        <div>
+          <div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--smoke2);margin-bottom:.75rem;display:flex;align-items:center;gap:8px">
+            Business & Paiement
+            <div style="flex:1;height:1px;background:var(--cream3)"></div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>🟠 Wave</label>
+              <input type="text" id="l-wave" placeholder="Lien ou numéro Wave">
+            </div>
+            <div class="field">
+              <label>🔵 Orange Money</label>
+              <input type="text" id="l-orange" placeholder="Numéro Orange Money">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>🛒 Boutique en ligne</label>
+              <input type="url" id="l-shop" placeholder="https://maboutique.sn">
+            </div>
+            <div class="field">
+              <label>📅 Calendly / Booking</label>
+              <input type="url" id="l-booking" placeholder="https://calendly.com/...">
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+    </div>
+ 
+    <!-- ── 3. FICHIERS ── -->
+    <div class="s-card">
+      <div class="s-card-header">
+        <div class="s-card-num">3</div>
+        <div class="s-card-title">Fichiers & Documents</div>
+        <div class="s-card-sub">CV, logo, brochure...</div>
+      </div>
+      <div class="s-card-body">
+ 
+        <div class="field-row">
+ 
+          <!-- CV -->
+          <div>
+            <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">📄 CV / Portfolio PDF</label>
+            <div class="upload-zone" onclick="document.getElementById('cvInput').click()">
+              <input type="file" id="cvInput" accept=".pdf,.doc,.docx" onchange="handleUpload(event,'cv')">
+              <span class="upload-icon">📄</span>
+              <div class="upload-title">Glissez votre CV ici</div>
+              <div class="upload-hint">PDF, DOC, DOCX · Max 10MB</div>
+            </div>
+            <div class="upload-preview" id="cv-preview">
+              <span class="upload-preview-icon">📄</span>
+              <span class="upload-preview-name" id="cv-name"></span>
+              <span class="upload-preview-size" id="cv-size"></span>
+              <button class="upload-remove" onclick="removeUpload('cv')">✕</button>
+            </div>
+          </div>
+ 
+          <!-- LOGO -->
+          <div>
+            <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🏢 Logo entreprise</label>
+            <div class="upload-zone" onclick="document.getElementById('logoInput').click()">
+              <input type="file" id="logoInput" accept="image/*,.svg" onchange="handleUpload(event,'logo')">
+              <span class="upload-icon">🏢</span>
+              <div class="upload-title">Glissez votre logo</div>
+              <div class="upload-hint">JPG, PNG, SVG · Max 5MB</div>
+            </div>
+            <div class="upload-preview" id="logo-preview">
+              <span class="upload-preview-icon">🏢</span>
+              <span class="upload-preview-name" id="logo-name"></span>
+              <span class="upload-preview-size" id="logo-size"></span>
+              <button class="upload-remove" onclick="removeUpload('logo')">✕</button>
+            </div>
+          </div>
+ 
+        </div>
+ 
+        <!-- BROCHURE -->
+        <div style="margin-top:1rem">
+          <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">📋 Brochure / Catalogue (optionnel)</label>
+          <div class="upload-zone" onclick="document.getElementById('brochureInput').click()">
+            <input type="file" id="brochureInput" accept=".pdf,image/*" onchange="handleUpload(event,'brochure')">
+            <span class="upload-icon">📋</span>
+            <div class="upload-title">Glissez votre brochure ou catalogue</div>
+            <div class="upload-hint">PDF ou image · Max 15MB · Sera accessible depuis votre profil digital</div>
+          </div>
+          <div class="upload-preview" id="brochure-preview">
+            <span class="upload-preview-icon">📋</span>
+            <span class="upload-preview-name" id="brochure-name"></span>
+            <span class="upload-preview-size" id="brochure-size"></span>
+            <button class="upload-remove" onclick="removeUpload('brochure')">✕</button>
+          </div>
+        </div>
+ 
+        <!-- NOTES DESIGN -->
+        <div style="margin-top:1rem">
+          <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">✏️ Notes pour le design</label>
+          <textarea id="f-notes" placeholder="Couleurs souhaitées, style préféré (sobre, coloré, minimaliste...), inspirations, contraintes particulières..." rows="3" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none;resize:vertical;transition:.15s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--cream3)'"></textarea>
+        </div>
+ 
+      </div>
+    </div>
+ 
+    <!-- ── 4. OFFRE & THÈME ── -->
+    <div class="s-card">
+      <div class="s-card-header">
+        <div class="s-card-num">4</div>
+        <div class="s-card-title">Offre & Personnalisation</div>
+        <div class="s-card-sub">Choisissez votre formule</div>
+      </div>
+      <div class="s-card-body">
+ 
+        <!-- OFFRES -->
+        <div style="margin-bottom:1.5rem">
+          <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Formule <span style="color:var(--gold)">*</span></label>
+          <div class="offre-grid">
+            <div class="offre-card" onclick="selectOffre('Starter Digital - Gratuit','0',this)">
+              <input type="radio" class="offre-radio" name="offre" value="starter">
+              <div class="offre-name">Starter Digital</div>
+              <div class="offre-price">Gratuit</div>
+              <div class="offre-period">Profil digital seul</div>
+              <ul class="offre-features">
+                <li>Profil digital personnalisé</li>
+                <li>QR Code partageable</li>
+                <li>5 liens contact</li>
+                <li>Photo de profil</li>
+              </ul>
+            </div>
+            <div class="offre-card featured" onclick="selectOffre('Pro NFC — 16 000 FCFA','16 000',this)">
+              <div class="offre-badge">Populaire</div>
+              <div class="offre-name">Pro NFC</div>
+              <div class="offre-price">16 000</div>
+              <div class="offre-period">FCFA · paiement unique</div>
+              <ul class="offre-features">
+                <li>1 carte NFC physique</li>
+                <li>Profil digital complet</li>
+                <li>Liens illimités</li>
+                <li>Galerie photos</li>
+                <li>CV téléchargeable</li>
+                <li>Statistiques</li>
+              </ul>
+            </div>
+            <div class="offre-card" onclick="selectOffre('Entreprise - Sur devis','Devis',this)">
+              <div class="offre-name">Entreprise</div>
+              <div class="offre-price" style="font-size:1.1rem">Sur devis</div>
+              <div class="offre-period">Pour toute une équipe</div>
+              <ul class="offre-features">
+                <li>Cartes NFC en masse</li>
+                <li>Branding unifié</li>
+                <li>Gestion centralisée</li>
+                <li>Analytics avancés</li>
+                <li>Support dédié</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- QUANTITÉ -->
+        <div style="margin-bottom:1.5rem" id="qty-section">
+          <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Nombre de cartes</label>
+          <div class="qty-row">
+            <div class="qty-opt sel" onclick="selectQty('1',this)">1</div>
+            <div class="qty-opt" onclick="selectQty('5',this)">5</div>
+            <div class="qty-opt" onclick="selectQty('10',this)">10</div>
+            <div class="qty-opt" onclick="selectQty('20',this)">20</div>
+            <div class="qty-opt" onclick="selectQty('50',this)">50</div>
+            <div class="qty-opt" onclick="selectQty('100+',this)">100+</div>
+          </div>
+        </div>
+ 
+        <!-- THÈME COULEUR -->
+        <div>
+          <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Thème couleur souhaité</label>
+          <div class="theme-grid">
+            <div class="theme-opt sel" onclick="selectTheme('Noir & Or',this)">
+              <div class="theme-top" style="background:#0A0A0A"></div>
+              <div class="theme-bot" style="background:#D4AF6A"><span class="theme-name" style="color:#0A0A0A">Noir & Or</span></div>
+              <div class="theme-check">✓</div>
+            </div>
+            <div class="theme-opt" onclick="selectTheme('Émeraude',this)">
+              <div class="theme-top" style="background:#0D3B2E"></div>
+              <div class="theme-bot" style="background:#4CAF50"><span class="theme-name" style="color:#fff">Émeraude</span></div>
+              <div class="theme-check">✓</div>
+            </div>
+            <div class="theme-opt" onclick="selectTheme('Navy Bleu',this)">
+              <div class="theme-top" style="background:#0A1628"></div>
+              <div class="theme-bot" style="background:#4A90D9"><span class="theme-name" style="color:#fff">Navy</span></div>
+              <div class="theme-check">✓</div>
+            </div>
+            <div class="theme-opt" onclick="selectTheme('Cramoisi',this)">
+              <div class="theme-top" style="background:#1A0808"></div>
+              <div class="theme-bot" style="background:#C62828"><span class="theme-name" style="color:#fff">Cramoisi</span></div>
+              <div class="theme-check">✓</div>
+            </div>
+            <div class="theme-opt" onclick="selectTheme('Ivoire',this)">
+              <div class="theme-top" style="background:#F5F0E8"></div>
+              <div class="theme-bot" style="background:#8B6914"><span class="theme-name" style="color:#fff">Ivoire</span></div>
+              <div class="theme-check">✓</div>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+    </div>
+ 
+  </div>
+ 
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+ 
+    <div class="summary-card">
+      <div class="summary-header">
+        <div class="summary-title">Récapitulatif</div>
+        <div class="summary-badge">Commande</div>
+      </div>
+      <div class="summary-body">
+        <div class="summary-row">
+          <span class="summary-label">Client</span>
+          <span class="summary-val" id="sum-name">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Poste</span>
+          <span class="summary-val" id="sum-titre">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Formule</span>
+          <span class="summary-val" id="sum-offre">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Quantité</span>
+          <span class="summary-val" id="sum-qty">1 carte</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Thème</span>
+          <span class="summary-val" id="sum-theme">Noir & Or</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Délai</span>
+          <span class="summary-val">48h ⚡</span>
+        </div>
+      </div>
+      <div class="summary-total">
+        <span class="summary-total-label">Total estimé</span>
+        <span class="summary-total-val" id="sum-total">—</span>
+      </div>
+    </div>
+ 
+    <button class="submit-btn" onclick="submitForm()" id="submitBtn">
+      ✦ Envoyer ma commande
+    </button>
+ 
+    <button class="wa-btn" onclick="submitViaWhatsApp()">
+      💬 Commander via WhatsApp
+    </button>
+ 
+    <div class="security-note">
+      🔒 Vos données sont transmises directement à Print Legacy. Aucun paiement en ligne. Vous serez contacté sous 24h pour confirmer.
+    </div>
+ 
+  </div>
+ 
+</div>
+ 
+<!-- SUCCESS MODAL -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <span class="success-icon">✦</span>
+    <h2 class="success-title">Commande envoyée !</h2>
+    <p class="success-text">Merci pour votre confiance. Notre équipe Print Legacy vous contactera sous <strong>24h</strong> pour confirmer votre commande et démarrer la création de votre carte NFC.</p>
+    <div class="success-ref">
+      Référence : <strong id="successRef">#PL-00000</strong>
+    </div>
+    <button class="success-close" onclick="document.getElementById('successOverlay').classList.remove('open')">
+      Fermer
+    </button>
+  </div>
+</div>
+ 
+<script>
+// ── STATE ──
+const state = {
+  offre: '',
+  prix: '',
+  qty: '1',
+  theme: 'Noir & Or',
+  avatarFile: null,
+  cvFile: null,
+  logoFile: null,
+  brochureFile: null
+};
+ 
+// ── AVATAR ──
+function loadAvatar(e) {
+  const file = e.target.files[0]; if (!file) return;
+  state.avatarFile = file;
+  const reader = new FileReader();
+  reader.onload = r => {
+    const img = document.getElementById('avatarImg');
+    img.src = r.target.result; img.style.display = 'block';
+    document.getElementById('avatarInitials').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+ 
+// ── INITIALS ──
+function updateInitials() {
+  const p = document.getElementById('f-prenom').value.trim();
+  const n = document.getElementById('f-nom').value.trim();
+  const init = ((p[0]||'') + (n[0]||'')).toUpperCase() || '?';
+  document.getElementById('avatarInitials').textContent = init;
+}
+ 
+// ── FILE UPLOAD ──
+function handleUpload(e, type) {
+  const file = e.target.files[0]; if (!file) return;
+  state[type+'File'] = file;
+  const size = file.size > 1024*1024
+    ? (file.size/1024/1024).toFixed(1)+' MB'
+    : (file.size/1024).toFixed(0)+' KB';
+  document.getElementById(type+'-name').textContent = file.name;
+  document.getElementById(type+'-size').textContent = size;
+  document.getElementById(type+'-preview').classList.add('visible');
+}
+function removeUpload(type) {
+  state[type+'File'] = null;
+  document.getElementById(type+'-preview').classList.remove('visible');
+  document.getElementById(type+'Input').value = '';
+}
+ 
+// ── OFFRE ──
+function selectOffre(name, prix, el) {
+  document.querySelectorAll('.offre-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  state.offre = name; state.prix = prix;
+  document.getElementById('sum-offre').textContent = name.split('—')[0].trim() || name.split('-')[0].trim();
+  document.getElementById('sum-total').textContent = prix === '0' ? 'Gratuit' : prix === 'Devis' ? 'Sur devis' : prix + ' FCFA';
+  updateProgress();
+}
+ 
+// ── QUANTITÉ ──
+function selectQty(val, el) {
+  document.querySelectorAll('.qty-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  state.qty = val;
+  document.getElementById('sum-qty').textContent = val + ' carte' + (val !== '1' ? 's' : '');
+}
+ 
+// ── THÈME ──
+function selectTheme(name, el) {
+  document.querySelectorAll('.theme-opt').forEach(t => t.classList.remove('sel'));
+  el.classList.add('sel');
+  state.theme = name;
+  document.getElementById('sum-theme').textContent = name;
+}
+ 
+// ── SUMMARY UPDATE ──
+function updateSummary() {
+  const p = document.getElementById('f-prenom').value.trim();
+  const n = document.getElementById('f-nom').value.trim();
+  const t = document.getElementById('f-titre').value.trim();
+  document.getElementById('sum-name').textContent = (p+' '+n).trim() || '—';
+  document.getElementById('sum-titre').textContent = t || '—';
+}
+ 
+// ── PROGRESS ──
+function updateProgress() {
+  let score = 0;
+  if (document.getElementById('f-prenom').value.trim()) score += 25;
+  if (document.getElementById('f-tel').value.trim()) score += 25;
+  if (state.offre) score += 25;
+  if (document.getElementById('f-titre').value.trim()) score += 25;
+  document.getElementById('progressFill').style.width = score + '%';
+ 
+  // Update steps
+  const s1 = document.getElementById('f-prenom').value && document.getElementById('f-tel').value;
+  const s4 = state.offre;
+  if (s1) { document.getElementById('step1').className = 'step done'; document.getElementById('step2').className = 'step active'; }
+  if (s4) { document.getElementById('step4').className = 'step done'; }
+}
+ 
+// ── BUILD MESSAGE ──
+function buildMessage() {
+  const get = id => document.getElementById(id).value.trim();
+  const links = [
+    get('l-tel2') ? '📞 Tel 2: ' + get('l-tel2') : '',
+    get('l-whatsapp') ? '💬 WhatsApp: ' + get('l-whatsapp') : '',
+    get('l-email2') ? '✉️ Email 2: ' + get('l-email2') : '',
+    get('l-website') ? '🌐 Site: ' + get('l-website') : '',
+    get('l-facebook') ? '📘 Facebook: ' + get('l-facebook') : '',
+    get('l-instagram') ? '📸 Instagram: ' + get('l-instagram') : '',
+    get('l-linkedin') ? '💼 LinkedIn: ' + get('l-linkedin') : '',
+    get('l-twitter') ? '🐦 Twitter: ' + get('l-twitter') : '',
+    get('l-tiktok') ? '🎵 TikTok: ' + get('l-tiktok') : '',
+    get('l-youtube') ? '▶️ YouTube: ' + get('l-youtube') : '',
+    get('l-pinterest') ? '📌 Pinterest: ' + get('l-pinterest') : '',
+    get('l-github') ? '💻 GitHub: ' + get('l-github') : '',
+    get('l-wave') ? '🟠 Wave: ' + get('l-wave') : '',
+    get('l-orange') ? '🔵 Orange Money: ' + get('l-orange') : '',
+    get('l-shop') ? '🛒 Boutique: ' + get('l-shop') : '',
+    get('l-booking') ? '📅 Booking: ' + get('l-booking') : '',
+  ].filter(Boolean).join('\n');
+ 
+  return `🌟 *NOUVELLE COMMANDE — Print Legacy*\n\n` +
+    `━━━━━━━━━━━━━━━━━━━━━\n` +
+    `👤 *IDENTITÉ*\n` +
+    `Nom : ${get('f-prenom')} ${get('f-nom')}\n` +
+    `Poste : ${get('f-titre') || 'Non renseigné'}\n` +
+    `Entreprise : ${get('f-entreprise') || 'Non renseignée'}\n` +
+    `━━━━━━━━━━━━━━━━━━━━━\n` +
+    `📞 *CONTACT*\n` +
+    `Tél principal : ${get('f-tel')}\n` +
+    `Email : ${get('f-email') || 'Non renseigné'}\n` +
+    `Adresse : ${get('f-adresse') || 'Non renseignée'}\n` +
+    `━━━━━━━━━━━━━━━━━━━━━\n` +
+    (links ? `🔗 *LIENS & RÉSEAUX*\n${links}\n━━━━━━━━━━━━━━━━━━━━━\n` : '') +
+    `📦 *COMMANDE*\n` +
+    `Formule : ${state.offre || 'Non choisie'}\n` +
+    `Quantité : ${state.qty} carte(s)\n` +
+    `Thème : ${state.theme}\n` +
+    `━━━━━━━━━━━━━━━━━━━━━\n` +
+    (get('f-bio') ? `📝 Bio : ${get('f-bio')}\n━━━━━━━━━━━━━━━━━━━━━\n` : '') +
+    (get('f-notes') ? `✏️ Notes design : ${get('f-notes')}\n━━━━━━━━━━━━━━━━━━━━━\n` : '') +
+    `📎 Fichiers joints : ` +
+    [state.cvFile ? 'CV ✓' : '', state.logoFile ? 'Logo ✓' : '', state.brochureFile ? 'Brochure ✓' : '', state.avatarFile ? 'Photo ✓' : ''].filter(Boolean).join(', ') + ((!state.cvFile && !state.logoFile && !state.brochureFile && !state.avatarFile) ? 'Aucun' : '') + '\n' +
+    `━━━━━━━━━━━━━━━━━━━━━`;
+}
+ 
+// ── SUBMIT ──
+function submitForm() {
+  const prenom = document.getElementById('f-prenom').value.trim();
+  const tel = document.getElementById('f-tel').value.trim();
+  if (!prenom || !tel) { alert('Veuillez renseigner au minimum votre prénom et votre téléphone.'); return; }
+  if (!state.offre) { alert('Veuillez choisir une formule.'); return; }
+ 
+  submitViaWhatsApp();
+ 
+  // Show success
+  const ref = '#PL-' + Date.now().toString().slice(-5);
+  document.getElementById('successRef').textContent = ref;
+  document.getElementById('successOverlay').classList.add('open');
+}
+ 
+function submitViaWhatsApp() {
+  const msg = buildMessage();
+  window.open('https://wa.me/221770000000?text=' + encodeURIComponent(msg), '_blank');
+}
+ 
+// ── INIT ──
+updateSummary();
+</script>
+</body>
+</html>
