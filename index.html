@@ -806,7 +806,7 @@
           <div class="biz-card-title">Directeur Général</div>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:0.65rem;color:rgba(13,13,13,0.6)">+221 77 000 00 00</div>
+          <div style="font-size:0.65rem;color:rgba(13,13,13,0.6)">+221 78 400 00 66</div>
           <div style="width:24px;height:24px;background:rgba(13,13,13,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
           </div>
@@ -904,7 +904,7 @@
       <div class="pm-links">
         <div class="pm-link">
           <div class="pm-link-icon">📞</div>
-          <span>+221 77 000 00 00</span>
+          <span>+221 78 400 00 66</span>
         </div>
         <div class="pm-link">
           <div class="pm-link-icon" style="background:#25D366">💬</div>
@@ -916,7 +916,7 @@
         </div>
         <div class="pm-link">
           <div class="pm-link-icon" style="background:#C9A84C">🌐</div>
-          <span>printlegacy.sn</span>
+          <span>printlegacy.github.io</span>
         </div>
       </div>
       <div class="pm-qr">
@@ -1070,8 +1070,8 @@
  
       <div style="margin-top:2.5rem;padding:1.5rem;border:1px solid rgba(201,168,76,0.2);border-radius:4px">
         <div style="font-size:0.75rem;color:rgba(250,246,239,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem">Besoin d'aide ?</div>
-        <a href="https://wa.me/221770000000" style="display:flex;align-items:center;gap:8px;color:var(--gold);text-decoration:none;font-size:0.9rem;font-weight:600">
-          <span style="font-size:1.2rem">💬</span> WhatsApp +221 77 000 00 00
+        <a href="https://wa.me/221784000066" style="display:flex;align-items:center;gap:8px;color:var(--gold);text-decoration:none;font-size:0.9rem;font-weight:600">
+          <span style="font-size:1.2rem">💬</span> WhatsApp +221 78 400 00 66
         </a>
       </div>
     </div>
@@ -1092,7 +1092,7 @@
         </div>
         <div style="margin-bottom:1.2rem">
           <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6B6560;display:block;margin-bottom:6px">Téléphone / WhatsApp *</label>
-          <input id="cmd-tel" type="tel" placeholder="+221 77 000 00 00" style="width:100%;padding:0.85rem 1rem;border:1px solid #EDE5D0;border-radius:2px;font-size:0.9rem;font-family:'DM Sans',sans-serif;background:#fff;outline:none;transition:border 0.2s" onfocus="this.style.borderColor='#C9A84C'" onblur="this.style.borderColor='#EDE5D0'">
+          <input id="cmd-tel" type="tel" placeholder="+221 78 400 00 66" style="width:100%;padding:0.85rem 1rem;border:1px solid #EDE5D0;border-radius:2px;font-size:0.9rem;font-family:'DM Sans',sans-serif;background:#fff;outline:none;transition:border 0.2s" onfocus="this.style.borderColor='#C9A84C'" onblur="this.style.borderColor='#EDE5D0'">
         </div>
         <div style="margin-bottom:1.2rem">
           <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6B6560;display:block;margin-bottom:6px">Email</label>
@@ -1154,7 +1154,7 @@ function submitOrder() {
     "🔢 Quantité : " + quantite + " carte(s)\n" +
     "💬 Message : " + (message || "Aucun")
   );
-  window.open("https://wa.me/221770000000?text=" + text, "_blank");
+  window.open("https://wa.me/221784000066?text=" + text, "_blank");
   document.getElementById('form-fields').style.display = 'none';
   document.getElementById('form-success').style.display = 'block';
 }
@@ -1164,12 +1164,70 @@ function submitOrder() {
 <footer>
   <div class="footer-logo">Print <span>Legacy</span></div>
   <div class="footer-links">
-    <a href="mailto:contact@printlegacy.sn">Mentions légales</a>
-    <a href="mailto:contact@printlegacy.sn">Confidentialité</a>
-    <a href="mailto:contact@printlegacy.sn">Contact</a>
+    <a href="mailto:printlegacy2@gmail.com">Mentions légales</a>
+    <a href="mailto:printlegacy2@gmail.com">Confidentialité</a>
+    <a href="mailto:printlegacy2@gmail.com">Contact</a>
   </div>
   <div class="footer-text">© 2025 Print Legacy · Studio Graphique & NFC · Dakar, Sénégal 🇸🇳</div>
+  <div style="margin-top:.5rem">
+    <span onclick="openAdminLogin()" style="font-size:0.65rem;color:rgba(250,246,239,0.15);cursor:pointer;letter-spacing:.05em;user-select:none" title="Administration">⚙ Admin</span>
+  </div>
 </footer>
+ 
+<!-- LOGIN MODAL -->
+<div id="adminModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#FAF6EF;border-radius:6px;padding:2.5rem;width:340px;max-width:90vw;text-align:center;animation:popIn .3s ease">
+    <div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:#0D0D0D;margin-bottom:.25rem">Print <span style="color:#C9A84C;font-style:italic">Legacy</span></div>
+    <div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:#9A948E;margin-bottom:2rem">Accès Administration</div>
+    <div style="margin-bottom:1rem;text-align:left">
+      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6B6560;display:block;margin-bottom:5px">Mot de passe</label>
+      <input type="password" id="adminPwd" placeholder="••••••••"
+        style="width:100%;padding:.85rem 1rem;border:1px solid #EDE5D0;border-radius:3px;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none"
+        onfocus="this.style.borderColor='#C9A84C'" onblur="this.style.borderColor='#EDE5D0'"
+        onkeydown="if(event.key==='Enter')checkAdmin()">
+    </div>
+    <div id="adminError" style="display:none;font-size:.75rem;color:#c62828;margin-bottom:.75rem;padding:.5rem;background:#fdecea;border-radius:3px">
+      ❌ Mot de passe incorrect
+    </div>
+    <button onclick="checkAdmin()" style="width:100%;background:#0D0D0D;color:#D4AF6A;border:none;border-radius:3px;padding:.9rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:.75rem">
+      Accéder au tableau de bord
+    </button>
+    <button onclick="closeAdminLogin()" style="background:none;border:none;font-size:.75rem;color:#9A948E;cursor:pointer;font-family:'DM Sans',sans-serif">
+      Annuler
+    </button>
+  </div>
+</div>
+ 
+<style>
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+ 
+<script>
+function openAdminLogin(){
+  const m=document.getElementById('adminModal');
+  m.style.display='flex';
+  setTimeout(()=>document.getElementById('adminPwd').focus(),100);
+}
+function closeAdminLogin(){
+  document.getElementById('adminModal').style.display='none';
+  document.getElementById('adminPwd').value='';
+  document.getElementById('adminError').style.display='none';
+}
+function checkAdmin(){
+  const pwd=document.getElementById('adminPwd').value;
+  if(pwd==='esaie4110'){
+    closeAdminLogin();
+    window.location.href='https://printlegacy.github.io/dashboard';
+  } else {
+    document.getElementById('adminError').style.display='block';
+    document.getElementById('adminPwd').value='';
+    document.getElementById('adminPwd').focus();
+  }
+}
+document.getElementById('adminModal').addEventListener('click',function(e){
+  if(e.target===this) closeAdminLogin();
+});
+</script>
  
 <script>
   const observer = new IntersectionObserver(entries => {
@@ -1182,4 +1240,3 @@ function submitOrder() {
  
 </body>
 </html>
- 
