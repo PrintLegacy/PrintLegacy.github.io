@@ -1,3 +1,6 @@
+L
+Copier
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -736,16 +739,111 @@
   }
   .footer-links a:hover { color: var(--gold); }
  
+ 
+  /* HAMBURGER */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 200;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(250,246,239,0.97);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 150;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    font-family: "Playfair Display", serif;
+    font-size: 1.8rem;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: var(--gold); }
+  .mobile-menu-cta {
+    background: var(--ink) !important;
+    color: var(--cream) !important;
+    padding: 0.85rem 2.5rem !important;
+    border-radius: 2px;
+    font-family: "DM Sans", sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+  }
+  @media (max-width: 768px) {
+    .nav-hamburger { display: flex; }
+    .nav-cta-desktop { display: none; }
+  }
+ 
   /* RESPONSIVE */
   @media (max-width: 768px) {
     nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
-    section, .hero, .profile-section, .cta-section { padding: 4rem 1.5rem; }
-    .stats-bar { padding: 2rem 1.5rem; }
-    .hero-visual { display: none; }
-    .profile-section { flex-direction: column; gap: 3rem; }
+ 
+    /* Hero mobile */
+    .hero { padding: 5.5rem 1.5rem 3rem; min-height: auto; }
+    .hero-content { max-width: 100%; }
+    .hero-content h1 { font-size: clamp(2rem, 9vw, 3rem); }
+    .hero-pattern { display: none; }
+ 
+    /* Stats mobile */
+    .stats-bar { padding: 1.5rem 1.5rem; gap: 1rem; flex-wrap: wrap; }
+    .stat-item { flex: 1 1 40%; text-align: center; }
+ 
+    /* Services mobile */
+    section { padding: 3rem 1.5rem; }
+    .services-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .service-card { padding: 1.5rem; }
+ 
+    /* Profile mobile */
+    .profile-section { flex-direction: column; gap: 2rem; padding: 3rem 1.5rem; }
+    .profile-mockup { width: 100%; max-width: 320px; margin: 0 auto; }
+ 
+    /* Pricing mobile */
+    .pricing-grid { grid-template-columns: 1fr; }
+    .price-card.featured { transform: none; }
+ 
+    /* Testimonials mobile */
+    .testi-grid { grid-template-columns: 1fr; }
+ 
+    /* Contact section mobile */
+    #contact { padding: 3rem 1.5rem !important; }
+    #contact > div { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+ 
+    /* Footer mobile */
     footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
-    .footer-links { justify-content: center; }
+    .footer-links { justify-content: center; flex-wrap: wrap; gap: 1rem; }
+ 
+    /* Hero visual */
+    .hero-visual { display: none; }
+  }
+ 
+  /* Extra small */
+  @media (max-width: 400px) {
+    .hero-content h1 { font-size: 1.9rem; }
+    .stat-item { flex: 1 1 100%; }
   }
  
   /* Animations */
@@ -762,6 +860,15 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo">Print <span>Legacy</span></div>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features" onclick="toggleMobileMenu()">Services</a>
+    <a href="https://printlegacy.github.io/profile" onclick="toggleMobileMenu()">Carte Digitale</a>
+    <a href="#pricing" onclick="toggleMobileMenu()">Tarifs</a>
+    <a href="https://printlegacy.github.io/order" class="mobile-menu-cta" onclick="toggleMobileMenu()">Commander →</a>
+  </div>
   <ul class="nav-links">
     <li><a href="#features">Services</a></li>
     <li><a href="https://printlegacy.github.io/profile">Carte Digitale</a></li>
@@ -1158,6 +1265,11 @@ function submitOrder() {
   document.getElementById('form-fields').style.display = 'none';
   document.getElementById('form-success').style.display = 'block';
 }
+ 
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+ 
 </script>
  
 <!-- FOOTER -->
@@ -1227,6 +1339,11 @@ function checkAdmin(){
 document.getElementById('adminModal').addEventListener('click',function(e){
   if(e.target===this) closeAdminLogin();
 });
+ 
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+ 
 </script>
  
 <script>
@@ -1236,6 +1353,11 @@ document.getElementById('adminModal').addEventListener('click',function(e){
     });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+ 
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+ 
 </script>
  
 </body>
