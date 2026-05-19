@@ -2,658 +2,716 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mamadou Diallo — Print Legacy</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Print Legacy — Profil Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --gold: #C9A84C;
-    --gold-light: #E8C97E;
-    --gold-dark: #8B6914;
-    --ink: #0D0D0D;
-    --cream: #FAF6EF;
-    --cream-dark: #F0E9DA;
-    --white: #FFFFFF;
-    --muted: #6B6560;
-  }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --gold:#C9A84C;--gold2:#E8C97E;--gold3:#F5EDD0;--gold-dark:#8B6914;
+  --ink:#0A0A0A;--ink2:#1A1A1A;
+  --cream:#FAF6EF;--cream2:#F0E8D5;--cream3:#E8DCC8;
+  --smoke:#6B6560;--smoke2:#A09890;
+  --w:#FFFFFF;
+  --header-bg:#0A0A0A;
+  --accent:#C9A84C;
+}
  
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+html{scroll-behavior:smooth;background:var(--cream)}
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--cream);
+  min-height:100vh;
+  display:flex;align-items:flex-start;justify-content:center;
+}
  
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #F2EDE3;
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0 0 3rem;
-  }
+/* PHONE FRAME */
+.phone{
+  width:100%;max-width:400px;
+  min-height:100vh;
+  background:var(--w);
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06),0 32px 80px rgba(0,0,0,.12);
+}
  
-  .profile-container {
-    width: 100%;
-    max-width: 420px;
-    background: var(--white);
-    min-height: 100vh;
-    position: relative;
-    overflow: hidden;
-  }
+/* ── LOADING ── */
+.loading-screen{
+  position:fixed;inset:0;background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;transition:opacity .5s,transform .5s;
+}
+.loading-screen.hide{opacity:0;pointer-events:none;transform:scale(1.02)}
+.loading-logo{
+  font-family:'Cormorant Garamond',serif;font-size:2rem;color:#fff;
+  font-weight:300;letter-spacing:.1em;margin-bottom:1.5rem
+}
+.loading-logo em{color:var(--gold);font-style:italic}
+.loading-bar{width:120px;height:1px;background:rgba(255,255,255,.1);border-radius:1px;overflow:hidden}
+.loading-fill{height:100%;background:var(--gold);width:0;animation:load 1.2s ease forwards}
+@keyframes load{to{width:100%}}
  
-  /* HEADER */
-  .profile-header {
-    background: linear-gradient(160deg, #0D0D0D 0%, #1A1A1A 100%);
-    padding: 3rem 2rem 2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
+/* ── HEADER ── */
+.hdr{
+  position:relative;overflow:hidden;
+  background:var(--header-bg);
+  padding-bottom:60px;
+}
  
-  .profile-header::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 20px,
-      rgba(201,168,76,0.03) 20px,
-      rgba(201,168,76,0.03) 21px
-    );
-  }
+/* COVER IMAGE / PATTERN */
+.hdr-cover{
+  width:100%;height:180px;object-fit:cover;display:block;
+  filter:brightness(.5) saturate(.8);
+}
+.hdr-cover-placeholder{
+  width:100%;height:160px;
+  background:linear-gradient(160deg,#111 0%,#1a1a1a 100%);
+  position:relative;overflow:hidden;
+}
+.hdr-cover-placeholder::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(201,168,76,.04) 20px,rgba(201,168,76,.04) 21px);
+}
+.hdr-cover-placeholder::after{
+  content:'';position:absolute;
+  bottom:-40px;left:-20%;right:-20%;height:80px;
+  background:var(--header-bg);
+  border-radius:50%;
+}
  
-  .profile-header::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; left: 0; right: 0;
-    height: 40px;
-    background: var(--white);
-    border-radius: 50% 50% 0 0 / 40px 40px 0 0;
-  }
+/* BRAND PILL */
+.brand-pill{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);
+  border-radius:100px;padding:.3rem .9rem;
+  font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--gold);white-space:nowrap;z-index:2;
+}
+.brand-pill::before{content:'✦';font-size:.55rem}
  
-  .brand-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(201,168,76,0.15);
-    border: 1px solid rgba(201,168,76,0.3);
-    border-radius: 100px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.5rem;
-    position: relative; z-index: 1;
-  }
+/* AVATAR AREA */
+.av-area{
+  position:absolute;bottom:-48px;left:50%;transform:translateX(-50%);
+  z-index:3;text-align:center;
+}
+.av-ring{
+  width:96px;height:96px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:#fff;
+  border:3px solid var(--w);
+  box-shadow:0 8px 32px rgba(0,0,0,.25);
+  overflow:hidden;margin:0 auto;position:relative;
+}
+.av-ring img{width:100%;height:100%;object-fit:cover}
+.av-nfc{
+  position:absolute;bottom:0;right:0;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--gold);border:2px solid var(--w);
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+}
  
-  .avatar-wrapper {
-    position: relative; z-index: 1;
-    display: inline-block;
-    margin-bottom: 1.2rem;
-  }
+/* IDENTITY */
+.identity{
+  padding:64px 20px 20px;text-align:center;
+  border-bottom:1px solid var(--cream2);
+}
+.id-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.75rem;font-weight:400;color:var(--ink);
+  letter-spacing:.02em;margin-bottom:4px;line-height:1.2;
+}
+.id-role{
+  font-size:.75rem;color:var(--smoke2);letter-spacing:.08em;
+  font-weight:400;margin-bottom:8px;
+}
+.id-company{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--cream2);border-radius:100px;
+  padding:.3rem .9rem;font-size:.7rem;font-weight:600;color:var(--smoke);
+  letter-spacing:.04em;margin-bottom:12px;
+}
+.id-location{
+  font-size:.7rem;color:var(--smoke2);display:flex;align-items:center;justify-content:center;gap:4px
+}
  
-  .avatar {
-    width: 96px; height: 96px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--ink);
-    border: 4px solid rgba(201,168,76,0.3);
-    margin: 0 auto;
-  }
+/* BIO */
+.bio-wrap{
+  margin:0 16px;
+  background:var(--cream);border-radius:12px;
+  padding:14px 16px;margin-top:16px;
+  font-size:.8rem;line-height:1.7;color:var(--smoke);
+  border:1px solid var(--cream2);
+}
  
-  .avatar-nfc {
-    position: absolute;
-    bottom: 2px; right: 2px;
-    width: 28px; height: 28px;
-    background: var(--gold);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    border: 2px solid var(--white);
-    font-size: 12px;
-  }
+/* ── ACTIONS ── */
+.actions{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:16px;
+}
+.act-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:.8rem;border-radius:10px;
+  font-size:.75rem;font-weight:600;letter-spacing:.04em;
+  cursor:pointer;transition:all .2s;border:none;font-family:'Jost',sans-serif;
+}
+.act-save{background:var(--ink);color:var(--gold2);grid-column:1/-1}
+.act-save:hover{background:var(--gold);color:var(--ink)}
+.act-copy{background:var(--cream);color:var(--ink);border:1px solid var(--cream2)}
+.act-copy:hover{border-color:var(--gold);color:var(--gold)}
+.act-share{background:var(--cream);color:var(--ink);border:1px solid var(--cream2)}
+.act-share:hover{border-color:var(--gold);color:var(--gold)}
  
-  .profile-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--cream);
-    margin-bottom: 0.4rem;
-    position: relative; z-index: 1;
-  }
+/* ── SECTION ── */
+.sec{padding:0 16px;margin-bottom:20px}
+.sec-label{
+  font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--smoke2);margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--cream2)}
  
-  .profile-title {
-    font-size: 0.8rem;
-    color: rgba(250,246,239,0.6);
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    position: relative; z-index: 1;
-    margin-bottom: 0.5rem;
-  }
+/* ── LINKS ── */
+.link-item{
+  display:flex;align-items:center;gap:12px;
+  padding:.8rem .9rem;border-radius:10px;
+  text-decoration:none;margin-bottom:7px;
+  border:1px solid var(--cream2);background:var(--w);
+  transition:all .2s;
+}
+.link-item:hover,.link-item:active{border-color:var(--gold);transform:translateX(3px)}
+.link-ico{
+  width:38px;height:38px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;flex-shrink:0;
+}
+.link-lbl{font-size:.65rem;color:var(--smoke2);display:block;letter-spacing:.05em;text-transform:uppercase}
+.link-val{font-size:.825rem;font-weight:500;color:var(--ink);display:block}
+.link-arr{margin-left:auto;font-size:.7rem;color:var(--smoke2)}
  
-  .profile-company {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 0.75rem;
-    color: var(--gold);
-    font-weight: 600;
-    position: relative; z-index: 1;
-  }
+/* ── SOCIAL PILLS ── */
+.social-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.social-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:.5rem .9rem;border-radius:100px;
+  background:var(--cream);border:1px solid var(--cream2);
+  font-size:.72rem;font-weight:500;color:var(--ink);
+  text-decoration:none;transition:all .2s;
+}
+.social-pill:hover{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
+.social-pill-ico{font-size:.9rem}
  
-  /* BODY */
-  .profile-body { padding: 1.5rem; }
+/* ── GALLERY ── */
+.gallery{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:4px;
+  border-radius:12px;overflow:hidden;
+  margin:0 16px 20px;
+}
+.gal-item{
+  aspect-ratio:1;overflow:hidden;position:relative;
+  background:var(--cream2);cursor:pointer;
+}
+.gal-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.gal-item:hover img{transform:scale(1.08)}
+.gal-item-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;background:linear-gradient(135deg,var(--cream2),var(--cream3));
+}
+.gal-item:first-child{border-radius:12px 0 0 0}
+.gal-item:nth-child(3){border-radius:0 12px 0 0}
+.gal-item:nth-child(7){border-radius:0 0 0 12px}
+.gal-item:last-child:nth-child(9),.gal-item:last-child:nth-child(6){border-radius:0 0 12px 0}
  
-  /* SAVE BUTTON */
-  .btn-save {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%;
-    background: var(--ink);
-    color: var(--cream);
-    padding: 0.9rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    transition: all 0.2s;
-    margin-bottom: 1.5rem;
-    border: none; cursor: pointer;
-  }
-  .btn-save:hover { background: var(--gold); color: var(--ink); }
+/* ── CV ── */
+.cv-btn{
+  display:flex;align-items:center;gap:12px;
+  margin:0 16px 20px;padding:1rem 1.2rem;
+  background:var(--cream);border:1px solid var(--cream2);border-radius:12px;
+  text-decoration:none;transition:all .2s;
+}
+.cv-btn:hover{border-color:var(--gold);background:var(--gold3)}
+.cv-ico{
+  width:42px;height:42px;border-radius:10px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
+}
+.cv-text{}
+.cv-title{font-size:.85rem;font-weight:600;color:var(--ink);display:block}
+.cv-sub{font-size:.7rem;color:var(--smoke2)}
+.cv-arr{margin-left:auto;font-size:.8rem;color:var(--gold)}
  
-  /* BIO */
-  .bio-card {
-    background: var(--cream);
-    border-radius: 12px;
-    padding: 1.2rem;
-    margin-bottom: 1.5rem;
-  }
+/* ── QR ── */
+.qr-wrap{
+  margin:0 16px 20px;
+  background:var(--cream);border:1px solid var(--cream2);border-radius:12px;
+  padding:16px;text-align:center;
+}
+.qr-title{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--smoke2);margin-bottom:12px}
+.qr-box{
+  display:inline-block;background:var(--w);padding:10px;
+  border-radius:8px;border:1px solid var(--cream2);margin-bottom:8px;
+}
+.qr-hint{font-size:.7rem;color:var(--smoke2)}
  
-  .bio-text {
-    font-size: 0.875rem;
-    line-height: 1.7;
-    color: var(--muted);
-  }
+/* ── FOOTER ── */
+.prof-footer{
+  text-align:center;padding:16px;
+  border-top:1px solid var(--cream2);
+}
+.powered{
+  display:inline-flex;align-items:center;gap:6px;
+  text-decoration:none;font-size:.7rem;color:var(--smoke2);
+}
+.powered-brand{
+  font-family:'Cormorant Garamond',serif;font-size:.85rem;font-weight:600;color:var(--ink)
+}
+.powered-brand em{color:var(--gold);font-style:italic}
  
-  /* SECTION TITLE */
-  .section-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.75rem;
-    padding-left: 4px;
-  }
+/* ── LIGHTBOX ── */
+.lightbox{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
+  z-index:999;align-items:center;justify-content:center;
+}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain}
+.lb-close{position:absolute;top:20px;right:20px;color:#fff;font-size:1.5rem;cursor:pointer;background:rgba(255,255,255,.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}
  
-  /* CONTACT LINKS */
-  .links-section { margin-bottom: 1.5rem; }
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--ink);color:var(--cream);padding:.7rem 1.4rem;border-radius:100px;
+  font-size:.75rem;font-weight:500;transition:.3s;z-index:999;white-space:nowrap;
+  display:flex;align-items:center;gap:7px;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-ico{color:var(--gold)}
  
-  .link-btn {
-    display: flex; align-items: center; gap: 12px;
-    padding: 0.85rem 1rem;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.2s;
-    margin-bottom: 0.6rem;
-    border: 1px solid var(--cream-dark);
-    background: var(--white);
-  }
+/* ── NOT FOUND ── */
+.not-found{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:3rem;
+}
+.nf-icon{font-size:3rem;margin-bottom:1rem}
+.nf-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.5rem}
+.nf-text{font-size:.875rem;color:var(--smoke2);line-height:1.7;margin-bottom:1.5rem}
+.nf-btn{display:inline-block;background:var(--ink);color:var(--gold2);padding:.8rem 2rem;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
  
-  .link-btn:hover { transform: translateX(4px); border-color: var(--gold); }
+/* ── THEMES ── */
+/* 1. Noir & Or (défaut) */
+/* header-bg:#0A0A0A accent:#C9A84C */
  
-  .link-icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
+/* 2. Émeraude */
+body.th-emerald{--header-bg:#0D3B2E;--accent:#4CAF50;--gold:#4CAF50;--gold2:#81C784;--gold3:#E8F5E9;--gold-dark:#2E7D32}
  
-  .link-content { flex: 1; }
+/* 3. Navy */
+body.th-navy{--header-bg:#0A1628;--accent:#4A90D9;--gold:#4A90D9;--gold2:#90CAF9;--gold3:#E3F2FD;--gold-dark:#1565C0}
  
-  .link-label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: block;
-  }
+/* 4. Cramoisi */
+body.th-crimson{--header-bg:#1A0808;--accent:#C62828;--gold:#C62828;--gold2:#EF9A9A;--gold3:#FFEBEE;--gold-dark:#B71C1C}
  
-  .link-value {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--ink);
-    display: block;
-    margin-top: 1px;
-  }
+/* 5. Ivoire */
+body.th-ivory{--header-bg:#1C160A;--accent:#C9A84C;--gold:#C9A84C;--gold2:#E8C97E;--gold3:#FFF8E1;--gold-dark:#8B6914}
  
-  .link-arrow {
-    font-size: 0.7rem;
-    color: var(--muted);
-  }
+/* 6. Violet Royal */
+body.th-violet{--header-bg:#1A0A2E;--accent:#9C27B0;--gold:#9C27B0;--gold2:#CE93D8;--gold3:#F3E5F5;--gold-dark:#6A1B9A}
  
-  /* SOCIAL */
-  .social-section { margin-bottom: 1.5rem; }
+/* 7. Bordeaux */
+body.th-bordeaux{--header-bg:#1A0812;--accent:#880E4F;--gold:#C2185B;--gold2:#F48FB1;--gold3:#FCE4EC;--gold-dark:#880E4F}
  
-  .social-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem;
-  }
+/* 8. Sable & Bronze */
+body.th-sable{--header-bg:#1C1208;--accent:#A0522D;--gold:#CD853F;--gold2:#DEB887;--gold3:#FFF8EE;--gold-dark:#8B4513}
  
-  .social-btn {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 0.9rem 0.5rem;
-    border-radius: 10px;
-    text-decoration: none;
-    background: var(--cream);
-    border: 1px solid var(--cream-dark);
-    transition: all 0.2s;
-    gap: 6px;
-  }
+/* 9. Ardoise */
+body.th-slate{--header-bg:#0D1B2A;--accent:#37474F;--gold:#607D8B;--gold2:#B0BEC5;--gold3:#ECEFF1;--gold-dark:#263238}
  
-  .social-btn:hover { background: var(--cream-dark); transform: translateY(-2px); }
+/* 10. Rose Gold */
+body.th-rosegold{--header-bg:#1A0F0F;--accent:#C9748A;--gold:#E8A0B0;--gold2:#F4C2CC;--gold3:#FFF0F3;--gold-dark:#B5546A}
  
-  .social-icon { font-size: 1.2rem; }
-  .social-name { font-size: 0.6rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
+/* 11. Tropical */
+body.th-tropical{--header-bg:#051F0D;--accent:#00897B;--gold:#26A69A;--gold2:#80CBC4;--gold3:#E0F2F1;--gold-dark:#00695C}
  
-  /* PORTFOLIO */
-  .portfolio-section { margin-bottom: 1.5rem; }
- 
-  .portfolio-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-  }
- 
-  .portfolio-card {
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--cream-dark);
-    background: var(--cream);
-    aspect-ratio: 4/3;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
-    position: relative;
-  }
- 
-  .portfolio-card-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(13,13,13,0.8) 0%, transparent 60%);
-    display: flex; align-items: flex-end; padding: 0.6rem;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
- 
-  .portfolio-card:hover .portfolio-card-overlay { opacity: 1; }
- 
-  .portfolio-card-title {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--cream);
-  }
- 
-  /* QR */
-  .qr-section {
-    background: var(--cream);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--cream-dark);
-  }
- 
-  .qr-title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
- 
-  .qr-box {
-    display: inline-block;
-    background: var(--white);
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--cream-dark);
-    margin-bottom: 0.75rem;
-  }
- 
-  .qr-hint {
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
- 
-  /* SHARE */
-  .share-section {
-    display: flex;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
-  }
- 
-  .share-btn {
-    flex: 1;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 0.75rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    background: var(--cream);
-    color: var(--ink);
-    border: 1px solid var(--cream-dark);
-  }
-  .share-btn:hover { background: var(--ink); color: var(--cream); }
- 
-  /* FOOTER */
-  .profile-footer {
-    text-align: center;
-    padding: 1.5rem;
-    border-top: 1px solid var(--cream-dark);
-  }
- 
-  .powered-by {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 0.7rem;
-    color: var(--muted);
-    text-decoration: none;
-  }
- 
-  .powered-logo {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 0.8rem;
-    color: var(--ink);
-  }
- 
-  .powered-logo span { color: var(--gold); }
- 
-  /* STATS STRIP */
-  .stats-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--cream-dark);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-  }
- 
-  .stat-item {
-    background: var(--white);
-    padding: 0.9rem;
-    text-align: center;
-  }
- 
-  .stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--gold);
-    display: block;
-  }
- 
-  .stat-lbl {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    font-weight: 600;
-  }
- 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 2rem; left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--ink);
-    color: var(--cream);
-    padding: 0.75rem 1.5rem;
-    border-radius: 100px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: transform 0.3s;
-    z-index: 999;
-    white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+/* 12. Minuit Bleu */
+body.th-midnight{--header-bg:#05051A;--accent:#3949AB;--gold:#5C6BC0;--gold2:#9FA8DA;--gold3:#E8EAF6;--gold-dark:#283593}
 </style>
 </head>
 <body>
  
-<div class="profile-container">
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">Print <em>Legacy</em></div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+ 
+<!-- PHONE -->
+<div class="phone" id="phoneWrap" style="display:none">
  
   <!-- HEADER -->
-  <div class="profile-header">
-    <div class="brand-tag">✦ Print Legacy · Dakar</div>
-    <div class="avatar-wrapper">
-      <div class="avatar">MD</div>
-      <div class="avatar-nfc">📶</div>
-    </div>
-    <div class="profile-name">Mamadou Diallo</div>
-    <div class="profile-title">Directeur Général · Fondateur</div>
-    <div class="profile-company">
-      <span>🏢</span>
-      <span>Print Legacy Studio</span>
+  <div class="hdr" id="hdr">
+    <div class="hdr-cover-placeholder" id="hdrCover"></div>
+    <div class="brand-pill">Print Legacy · Dakar 🇸🇳</div>
+    <div class="av-area">
+      <div class="av-ring" id="avRing">
+        <span id="avInit">?</span>
+        <img id="avImg" style="display:none">
+      </div>
+      <div class="av-nfc">📶</div>
     </div>
   </div>
  
-  <!-- BODY -->
-  <div class="profile-body">
- 
-    <!-- SAVE CONTACT -->
-    <button class="btn-save" onclick="saveContact()">
-      <span>💾</span>
-      <span>Enregistrer le contact</span>
-    </button>
- 
-    <!-- BIO -->
-    <div class="bio-card">
-      <p class="bio-text">
-        Studio graphique et impression premium basé à Dakar. Spécialiste des cartes de visite NFC, supports de communication et identité visuelle pour entreprises et professionnels sénégalais.
-      </p>
+  <!-- IDENTITY -->
+  <div class="identity">
+    <div class="id-name" id="idName">—</div>
+    <div class="id-role" id="idRole"></div>
+    <div class="id-company" id="idCompany" style="display:none">
+      <span>🏢</span><span id="idCompanyName"></span>
     </div>
+    <div class="id-location" id="idLocation" style="display:none">
+      <span>📍</span><span id="idLocationText"></span>
+    </div>
+  </div>
  
-    <!-- STATS -->
-    <div class="stats-strip">
-      <div class="stat-item">
-        <span class="stat-num">500+</span>
-        <span class="stat-lbl">Clients</span>
+  <!-- BIO -->
+  <div class="bio-wrap" id="bioWrap" style="display:none">
+    <span id="bioText"></span>
+  </div>
+ 
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="act-btn act-save" onclick="saveContact()">💾 Enregistrer le contact</button>
+    <button class="act-btn act-copy" onclick="copyLink()">📋 Copier le lien</button>
+    <button class="act-btn act-share" onclick="shareProfile()">📤 Partager</button>
+  </div>
+ 
+  <!-- CONTACT LINKS -->
+  <div class="sec" id="secContact" style="display:none">
+    <div class="sec-label">Contact</div>
+    <div id="contactLinks"></div>
+  </div>
+ 
+  <!-- SOCIAL -->
+  <div class="sec" id="secSocial" style="display:none">
+    <div class="sec-label">Réseaux sociaux</div>
+    <div class="social-wrap" id="socialLinks"></div>
+  </div>
+ 
+  <!-- GALERIE -->
+  <div id="secGallery" style="display:none">
+    <div class="sec" style="margin-bottom:10px">
+      <div class="sec-label">Galerie</div>
+    </div>
+    <div class="gallery" id="galleryGrid"></div>
+  </div>
+ 
+  <!-- CV -->
+  <div id="secCv" style="display:none">
+    <a class="cv-btn" id="cvLink" href="#" target="_blank">
+      <div class="cv-ico">📄</div>
+      <div class="cv-text">
+        <span class="cv-title">Télécharger le CV</span>
+        <span class="cv-sub">Document PDF disponible</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-num">1.2k</span>
-        <span class="stat-lbl">Vues</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">48h</span>
-        <span class="stat-lbl">Livraison</span>
-      </div>
+      <span class="cv-arr">↓</span>
+    </a>
+  </div>
+ 
+  <!-- QR CODE -->
+  <div class="qr-wrap">
+    <div class="qr-title">QR Code · Partager ce profil</div>
+    <div class="qr-box">
+      <svg width="100" height="100" viewBox="0 0 64 64">
+        <rect fill="white" width="64" height="64"/>
+        <rect x="4" y="4" width="24" height="24" rx="2" fill="none" stroke="#0A0A0A" stroke-width="2"/>
+        <rect x="9" y="9" width="14" height="14" fill="#0A0A0A"/>
+        <rect x="36" y="4" width="24" height="24" rx="2" fill="none" stroke="#0A0A0A" stroke-width="2"/>
+        <rect x="41" y="9" width="14" height="14" fill="#0A0A0A"/>
+        <rect x="4" y="36" width="24" height="24" rx="2" fill="none" stroke="#0A0A0A" stroke-width="2"/>
+        <rect x="9" y="41" width="14" height="14" fill="#0A0A0A"/>
+        <rect x="36" y="36" width="6" height="6" fill="#C9A84C"/>
+        <rect x="44" y="36" width="6" height="6" fill="#0A0A0A"/>
+        <rect x="54" y="36" width="6" height="6" fill="#0A0A0A"/>
+        <rect x="36" y="44" width="6" height="6" fill="#0A0A0A"/>
+        <rect x="54" y="44" width="6" height="6" fill="#C9A84C"/>
+        <rect x="36" y="54" width="6" height="6" fill="#0A0A0A"/>
+        <rect x="44" y="54" width="6" height="6" fill="#0A0A0A"/>
+        <rect x="54" y="54" width="6" height="6" fill="#0A0A0A"/>
+      </svg>
     </div>
- 
-    <!-- CONTACT LINKS -->
-    <div class="links-section">
-      <div class="section-label">Contact</div>
- 
-      <a href="tel:+221770000000" class="link-btn">
-        <div class="link-icon" style="background:#E8F5E9">📞</div>
-        <div class="link-content">
-          <span class="link-label">Téléphone</span>
-          <span class="link-value">+221 77 000 00 00</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
- 
-      <a href="https://wa.me/221770000000" class="link-btn">
-        <div class="link-icon" style="background:#E8F5E9">💬</div>
-        <div class="link-content">
-          <span class="link-label">WhatsApp</span>
-          <span class="link-value">Message direct</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
- 
-      <a href="mailto:contact@printlegacy.sn" class="link-btn">
-        <div class="link-icon" style="background:#FFF3E0">✉️</div>
-        <div class="link-content">
-          <span class="link-label">Email</span>
-          <span class="link-value">contact@printlegacy.sn</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
- 
-      <a href="https://printlegacy-platform.vercel.app" class="link-btn">
-        <div class="link-icon" style="background:rgba(201,168,76,0.1)">🌐</div>
-        <div class="link-content">
-          <span class="link-label">Site web</span>
-          <span class="link-value">printlegacy-platform.vercel.app</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
- 
-      <a href="https://maps.google.com/?q=Dakar,Senegal" class="link-btn">
-        <div class="link-icon" style="background:#FCE4EC">📍</div>
-        <div class="link-content">
-          <span class="link-label">Adresse</span>
-          <span class="link-value">Plateau, Dakar, Sénégal</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
-    </div>
- 
-    <!-- SOCIAL -->
-    <div class="social-section">
-      <div class="section-label">Réseaux sociaux</div>
-      <div class="social-grid">
-        <a href="#" class="social-btn">
-          <span class="social-icon">📘</span>
-          <span class="social-name">Facebook</span>
-        </a>
-        <a href="#" class="social-btn">
-          <span class="social-icon">📸</span>
-          <span class="social-name">Instagram</span>
-        </a>
-        <a href="#" class="social-btn">
-          <span class="social-icon">💼</span>
-          <span class="social-name">LinkedIn</span>
-        </a>
-        <a href="#" class="social-btn">
-          <span class="social-icon">🐦</span>
-          <span class="social-name">X/Twitter</span>
-        </a>
-      </div>
-    </div>
- 
-    <!-- PORTFOLIO -->
-    <div class="portfolio-section">
-      <div class="section-label">Nos réalisations</div>
-      <div class="portfolio-grid">
-        <div class="portfolio-card" style="background:linear-gradient(135deg,#1A1A1A,#333)">
-          <span>💳</span>
-          <div class="portfolio-card-overlay">
-            <span class="portfolio-card-title">Cartes NFC Premium</span>
-          </div>
-        </div>
-        <div class="portfolio-card" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
-          <span>🎨</span>
-          <div class="portfolio-card-overlay">
-            <span class="portfolio-card-title">Identité visuelle</span>
-          </div>
-        </div>
-        <div class="portfolio-card" style="background:linear-gradient(135deg,#F0E9DA,#D4C4A0)">
-          <span>📋</span>
-          <div class="portfolio-card-overlay">
-            <span class="portfolio-card-title">Supports print</span>
-          </div>
-        </div>
-        <div class="portfolio-card" style="background:linear-gradient(135deg,#0D0D0D,#C9A84C)">
-          <span>🏢</span>
-          <div class="portfolio-card-overlay">
-            <span class="portfolio-card-title">Solutions entreprise</span>
-          </div>
-        </div>
-      </div>
-    </div>
- 
-    <!-- QR CODE -->
-    <div class="qr-section">
-      <div class="qr-title">QR Code · Partager ce profil</div>
-      <div class="qr-box">
-        <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <rect fill="white" width="120" height="120"/>
-          <!-- TL block -->
-          <rect x="8" y="8" width="42" height="42" rx="4" fill="none" stroke="#0D0D0D" stroke-width="3"/>
-          <rect x="16" y="16" width="26" height="26" rx="2" fill="#0D0D0D"/>
-          <!-- TR block -->
-          <rect x="70" y="8" width="42" height="42" rx="4" fill="none" stroke="#0D0D0D" stroke-width="3"/>
-          <rect x="78" y="16" width="26" height="26" rx="2" fill="#0D0D0D"/>
-          <!-- BL block -->
-          <rect x="8" y="70" width="42" height="42" rx="4" fill="none" stroke="#0D0D0D" stroke-width="3"/>
-          <rect x="16" y="78" width="26" height="26" rx="2" fill="#0D0D0D"/>
-          <!-- Center data dots -->
-          <rect x="58" y="8" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="58" y="20" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="58" y="32" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="8" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="20" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="32" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="70" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="82" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="94" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="106" y="58" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="70" y="70" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="82" y="82" width="8" height="8" fill="#C9A84C"/>
-          <rect x="94" y="70" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="106" y="82" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="70" y="94" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="82" y="106" width="8" height="8" fill="#0D0D0D"/>
-          <rect x="94" y="94" width="8" height="8" fill="#C9A84C"/>
-          <rect x="106" y="106" width="8" height="8" fill="#0D0D0D"/>
-        </svg>
-      </div>
-      <div class="qr-hint">Scannez pour partager ce profil</div>
-    </div>
- 
-    <!-- SHARE ACTIONS -->
-    <div class="share-section">
-      <button class="share-btn" onclick="copyLink()">
-        📋 Copier le lien
-      </button>
-      <button class="share-btn" onclick="shareProfile()">
-        📤 Partager
-      </button>
-    </div>
- 
+    <div class="qr-hint">Scannez pour partager ce profil</div>
   </div>
  
   <!-- FOOTER -->
-  <div class="profile-footer">
-    <a href="https://printlegacy-platform.vercel.app" class="powered-by">
-      Propulsé par <span class="powered-logo">Print <span>Legacy</span></span>
+  <div class="prof-footer">
+    <a href="https://printlegacy.github.io" class="powered">
+      Propulsé par
+      <span class="powered-brand">Print <em>Legacy</em></span>
     </a>
   </div>
  
 </div>
  
-<div class="toast" id="toast">✓ Lien copié !</div>
+<!-- NOT FOUND -->
+<div class="phone not-found" id="notFound" style="display:none">
+  <div class="nf-icon">🔍</div>
+  <div class="nf-title">Profil introuvable</div>
+  <div class="nf-text">Ce profil n'existe pas ou a été désactivé.<br>Vérifiez le lien ou contactez Print Legacy.</div>
+  <a href="https://printlegacy.github.io" class="nf-btn">Retour au site →</a>
+</div>
+ 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lb-close">✕</div>
+  <img id="lbImg" src="">
+</div>
+ 
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="toast-ico">✦</span><span id="toastMsg"></span></div>
  
 <script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://szpjpytpciptplqjfwyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+);
+ 
+let CLIENT = null;
+ 
+// ── GET SLUG FROM URL ──
+// Supports: /profile/mon-slug  OR  /profile/?slug=mon-slug  OR  /profile/#mon-slug
+function getSlug() {
+  const path = window.location.pathname;
+  const parts = path.split('/').filter(Boolean);
+  // Last segment after /profile/
+  const profileIdx = parts.indexOf('profile');
+  if (profileIdx !== -1 && parts[profileIdx + 1]) return parts[profileIdx + 1];
+  // Hash fallback
+  if (window.location.hash) return window.location.hash.replace('#','').replace(/\//g,'');
+  // Query param fallback
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('slug')) return params.get('slug');
+  return null;
+}
+ 
+// ── THEME ──
+const THEMES = {
+  noir:'',
+  emerald:'th-emerald',
+  navy:'th-navy',
+  crimson:'th-crimson',
+  ivory:'th-ivory',
+  violet:'th-violet',
+  bordeaux:'th-bordeaux',
+  sable:'th-sable',
+  slate:'th-slate',
+  rosegold:'th-rosegold',
+  tropical:'th-tropical',
+  midnight:'th-midnight'
+};
+function applyTheme(theme) {
+  const cls = THEMES[theme] || '';
+  if (cls) document.body.classList.add(cls);
+}
+ 
+// ── INITIALS ──
+function initials(fn, ln) {
+  return ((fn||'')[0] + (ln||'')[0]).toUpperCase() || '?';
+}
+ 
+// ── LINK CONFIGS ──
+const LINK_CFG = {
+  phone:    {ico:'📞', bg:'#E8F5E9', label:'Téléphone',  href: v => `tel:${v}`},
+  whatsapp: {ico:'💬', bg:'#DCF8C6', label:'WhatsApp',   href: v => `https://wa.me/${v.replace(/\D/g,'')}`},
+  email:    {ico:'✉️', bg:'#FFF3E0', label:'Email',      href: v => `mailto:${v}`},
+  website:  {ico:'🌐', bg:'#E3F2FD', label:'Site web',   href: v => v.startsWith('http')?v:'https://'+v},
+  location: {ico:'📍', bg:'#FCE4EC', label:'Adresse',    href: v => `https://maps.google.com/?q=${encodeURIComponent(v)}`},
+};
+ 
+const SOCIAL_CFG = {
+  instagram: {ico:'📸', label:'Instagram', href: v => v.startsWith('http')?v:`https://instagram.com/${v.replace('@','')}`},
+  linkedin:  {ico:'💼', label:'LinkedIn',  href: v => v.startsWith('http')?v:`https://linkedin.com/in/${v}`},
+  tiktok:    {ico:'🎵', label:'TikTok',    href: v => v.startsWith('http')?v:`https://tiktok.com/@${v.replace('@','')}`},
+  youtube:   {ico:'▶️', label:'YouTube',   href: v => v.startsWith('http')?v:`https://youtube.com/${v}`},
+  behance:   {ico:'🎨', label:'Behance',   href: v => v.startsWith('http')?v:`https://behance.net/${v}`},
+  facebook:  {ico:'📘', label:'Facebook',  href: v => v.startsWith('http')?v:`https://facebook.com/${v}`},
+};
+ 
+// ── BUILD CONTACT LINKS ──
+function buildContactLinks(c) {
+  let html = '';
+  if (c.phone)    html += linkHTML('phone', c.phone, c.phone);
+  if (c.whatsapp) html += linkHTML('whatsapp', c.whatsapp, 'Message WhatsApp');
+  if (c.email)    html += linkHTML('email', c.email, c.email);
+  if (c.website)  html += linkHTML('website', c.website, c.website.replace(/https?:\/\//,''));
+  if (c.location) html += linkHTML('location', c.location, c.location);
+  return html;
+}
+ 
+function linkHTML(type, val, display) {
+  const cfg = LINK_CFG[type];
+  if (!cfg || !val) return '';
+  return `
+    <a href="${cfg.href(val)}" class="link-item" target="${type!=='phone'&&type!=='whatsapp'?'_blank':'_self'}">
+      <div class="link-ico" style="background:${cfg.bg}">${cfg.ico}</div>
+      <div>
+        <span class="link-lbl">${cfg.label}</span>
+        <span class="link-val">${display}</span>
+      </div>
+      <span class="link-arr">→</span>
+    </a>`;
+}
+ 
+// ── BUILD SOCIAL PILLS ──
+function buildSocial(c) {
+  let html = '';
+  Object.entries(SOCIAL_CFG).forEach(([key, cfg]) => {
+    if (c[key]) html += `<a href="${cfg.href(c[key])}" class="social-pill" target="_blank"><span class="social-pill-ico">${cfg.ico}</span>${cfg.label}</a>`;
+  });
+  // custom_links
+  if (c.custom_links && Array.isArray(c.custom_links)) {
+    c.custom_links.forEach(lk => {
+      const cfg = SOCIAL_CFG[lk.type] || {ico:'🔗', label: lk.type};
+      html += `<a href="${lk.url}" class="social-pill" target="_blank"><span class="social-pill-ico">${cfg.ico}</span>${cfg.label}</a>`;
+    });
+  }
+  return html;
+}
+ 
+// ── RENDER ──
+function render(c) {
+  CLIENT = c;
+  applyTheme(c.theme || 'noir');
+ 
+  // Avatar
+  if (c.photo) {
+    const img = document.getElementById('avImg');
+    img.src = c.photo; img.style.display = 'block';
+    document.getElementById('avInit').style.display = 'none';
+  } else {
+    document.getElementById('avInit').textContent = initials(c.firstname, c.lastname);
+  }
+ 
+  // Identity
+  document.getElementById('idName').textContent = `${c.firstname||''} ${c.lastname||''}`.trim();
+  document.title = `${c.firstname||''} ${c.lastname||''} — Print Legacy`;
+ 
+  if (c.jobtitle) {
+    document.getElementById('idRole').textContent = c.jobtitle;
+  }
+  if (c.company) {
+    document.getElementById('idCompany').style.display = 'inline-flex';
+    document.getElementById('idCompanyName').textContent = c.company;
+  }
+  if (c.location) {
+    document.getElementById('idLocation').style.display = 'flex';
+    document.getElementById('idLocationText').textContent = c.location;
+  }
+ 
+  // Bio
+  if (c.bio) {
+    document.getElementById('bioWrap').style.display = 'block';
+    document.getElementById('bioText').textContent = c.bio;
+  }
+ 
+  // Contact links
+  const contactHtml = buildContactLinks(c);
+  if (contactHtml) {
+    document.getElementById('secContact').style.display = 'block';
+    document.getElementById('contactLinks').innerHTML = contactHtml;
+  }
+ 
+  // Social
+  const socialHtml = buildSocial(c);
+  if (socialHtml) {
+    document.getElementById('secSocial').style.display = 'block';
+    document.getElementById('socialLinks').innerHTML = socialHtml;
+  }
+ 
+  // Gallery — from custom_links type 'gallery' or a gallery array
+  const gallery = c.gallery || [];
+  if (gallery.length > 0) {
+    document.getElementById('secGallery').style.display = 'block';
+    document.getElementById('galleryGrid').innerHTML = gallery.map(src => `
+      <div class="gal-item" onclick="openLightbox('${src}')">
+        <img src="${src}" loading="lazy">
+      </div>`).join('');
+  }
+ 
+  // CV
+  if (c.cv_url) {
+    document.getElementById('secCv').style.display = 'block';
+    document.getElementById('cvLink').href = c.cv_url;
+  }
+ 
+  // Show
+  document.getElementById('phoneWrap').style.display = 'block';
+  setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 800);
+}
+ 
+// ── LOAD ──
+async function loadProfile() {
+  const slug = getSlug();
+ 
+  if (!slug) {
+    // No slug = show demo profile
+    render({
+      firstname:'Mamadou', lastname:'Diallo',
+      jobtitle:'Directeur Général', company:'Print Legacy Studio',
+      bio:'Studio graphique & cartes NFC premium basé à Dakar. Spécialiste de l\'identité visuelle et du networking digital.',
+      phone:'+221784000066', whatsapp:'+221784000066',
+      email:'printlegacy2@gmail.com', website:'https://printlegacy.github.io',
+      location:'Plateau, Dakar, Sénégal',
+      instagram:'@printlegacy', linkedin:'printlegacy',
+      theme:'noir', photo:null, cv_url:null
+    });
+    return;
+  }
+ 
+  const {data, error} = await sb.from('clients').select('*').eq('slug', slug).single();
+ 
+  if (error || !data) {
+    document.getElementById('loadingScreen').classList.add('hide');
+    setTimeout(() => { document.getElementById('notFound').style.display = 'flex'; }, 500);
+    return;
+  }
+ 
+  render(data);
+}
+ 
+// ── ACTIONS ──
+function saveContact() {
+  if (!CLIENT) return;
+  const c = CLIENT;
+  const vcard = [
+    'BEGIN:VCARD','VERSION:3.0',
+    `FN:${c.firstname||''} ${c.lastname||''}`,
+    c.company ? `ORG:${c.company}` : '',
+    c.jobtitle ? `TITLE:${c.jobtitle}` : '',
+    c.phone ? `TEL;TYPE=CELL:${c.phone}` : '',
+    c.email ? `EMAIL:${c.email}` : '',
+    c.website ? `URL:${c.website}` : '',
+    c.location ? `ADR:;;${c.location}` : '',
+    'END:VCARD'
+  ].filter(Boolean).join('\n');
+ 
+  const blob = new Blob([vcard], {type:'text/vcard'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${c.firstname||'contact'}-${c.lastname||''}.vcf`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✦ Contact enregistré !');
+}
+ 
 function copyLink() {
-  navigator.clipboard.writeText(window.location.href).catch(() => {});
-  showToast('✓ Lien copié !');
+  navigator.clipboard.writeText(window.location.href).catch(()=>{});
+  toast('✦ Lien copié !');
 }
  
 function shareProfile() {
-  if (navigator.share) {
+  if (navigator.share && CLIENT) {
     navigator.share({
-      title: 'Mamadou Diallo — Print Legacy',
-      text: 'Découvrez mon profil professionnel',
+      title:`${CLIENT.firstname} ${CLIENT.lastname} — Print Legacy`,
+      text:`Découvrez le profil professionnel de ${CLIENT.firstname} ${CLIENT.lastname}`,
       url: window.location.href
     });
   } else {
@@ -661,23 +719,25 @@ function shareProfile() {
   }
 }
  
-function saveContact() {
-  const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:Mamadou Diallo\nORG:Print Legacy Studio\nTITLE:Directeur Général\nTEL;TYPE=CELL:+221770000000\nEMAIL:contact@printlegacy.sn\nURL:https://printlegacy-platform.vercel.app\nADR:;;Plateau;Dakar;;;Sénégal\nNOTE:Studio Graphique & Cartes NFC\nEND:VCARD`;
-  const blob = new Blob([vcard], { type: 'text/vcard' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'mamadou-diallo.vcf'; a.click();
-  URL.revokeObjectURL(url);
-  showToast('✓ Contact enregistré !');
+function openLightbox(src) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
 }
  
-function showToast(msg) {
+let toastTimer;
+function toast(msg) {
+  clearTimeout(toastTimer);
+  document.getElementById('toastMsg').textContent = msg;
   const t = document.getElementById('toast');
-  t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
 }
-</script>
  
+// ── START ──
+loadProfile();
+</script>
 </body>
 </html>
