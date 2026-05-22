@@ -111,7 +111,7 @@ tr:hover td{background:var(--cream)}
     <div class="topbar">
       <div class="tb-title">Tableau de bord <span id="dateLabel"></span></div>
       <div class="tb-right">
-        <input class="tb-search" id="searchInput" placeholder="🔍 Rechercher un client..." oninput="filterTable(this.value)" style="border:1px solid var(--cream2);background:var(--cream);font-family:'Jost',sans-serif;font-size:12px;outline:none;min-width:200px;color:var(--smoke2)">
+        <div class="tb-search">🔍 Rechercher un client...</div>
         <div class="tb-btn" onclick="loadData()" title="Actualiser">🔄</div>
         <a href="https://printlegacy.github.io/order" class="tb-cta">+ Nouvelle commande</a>
       </div>
@@ -229,15 +229,11 @@ async function loadData(){
       <td><span class="badge b-p">${c.theme||'noir'}</span></td>
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
-      <td style="font-size:10px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-        <span style="color:var(--gold);cursor:pointer" onclick="copyNFC('${c.slug}')" title="Cliquer pour copier">printlegacy-platform.vercel.app/?carte=${c.slug}</span>
-      </td>
       <td>
-        <div style="display:flex;gap:6px;align-items:center">
+        <div style="display:flex;gap:6px">
           ${c.cv_url?`<a href="${c.cv_url}" target="_blank" title="Voir CV" style="font-size:13px;text-decoration:none">📄</a>`:''}
           <span title="${c.status==='active'?'Mettre en attente':'Activer'}" onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:13px">${c.status==='active'?'⏸️':'✅'}</span>
-          <a href="https://printlegacy-platform.vercel.app/?carte=${c.slug}" target="_blank" title="Voir la carte" style="font-size:13px;text-decoration:none">👁️</a>
-          <button onclick="copyNFC('${c.slug}')" title="Copier URL NFC" style="font-size:11px;padding:3px 8px;border-radius:2px;border:1px solid var(--cream2);background:var(--cream);cursor:pointer;font-family:'Jost',sans-serif;color:var(--gold);font-weight:600" id="nfc-${c.id}">📶 NFC</button>
+          <a href="https://printlegacy.github.io/profile?slug=${c.slug}" target="_blank" title="Voir profil" style="font-size:13px;text-decoration:none">👁️</a>
         </div>
       </td>
     </tr>
@@ -254,7 +250,6 @@ async function loadData(){
           <th>Thème</th>
           <th>Statut</th>
           <th>Date</th>
-          <th>URL NFC</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -265,39 +260,6 @@ async function loadData(){
  
 function logout(){
   window.location.href='https://printlegacy.github.io';
-}
- 
- 
-function filterTable(query) {
-  const q = query.toLowerCase();
-  const rows = document.querySelectorAll('tbody tr');
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(q) ? '' : 'none';
-  });
-}
- 
-function copyNFC(slug) {
-  const url = 'https://printlegacy-platform.vercel.app/?carte=' + slug;
-  navigator.clipboard ? navigator.clipboard.writeText(url) : (()=>{
-    const t=document.createElement('textarea');
-    t.value=url;document.body.appendChild(t);t.select();
-    document.execCommand('copy');document.body.removeChild(t);
-  })();
-  showToast('URL NFC copiée ! 📶');
-}
- 
-function showToast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--gold2);padding:10px 24px;border-radius:4px;font-size:12px;font-weight:500;letter-spacing:.08em;z-index:9999;transition:transform .3s;white-space:nowrap;font-family:"Jost",sans-serif';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.transform = 'translateX(-50%) translateY(0)';
-  setTimeout(() => t.style.transform = 'translateX(-50%) translateY(80px)', 2500);
 }
  
 loadData();
