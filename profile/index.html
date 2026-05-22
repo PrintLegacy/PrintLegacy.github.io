@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil — Print Legacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97E;
+    --gold-dark: #8B6914;
+    --ink: #0D0D0D;
+    --cream: #FAF6EF;
+    --cream-dark: #F0E9DA;
+    --white: #FFFFFF;
+    --muted: #6B6560;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "DM Sans", sans-serif;
+    background: #F2EDE3;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 0 3rem;
+  }
+  .profile-container {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-header {
+    background: linear-gradient(160deg, #0D0D0D 0%, #1A1A1A 100%);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(201,168,76,0.03) 20px,rgba(201,168,76,0.03) 21px);
+  }
+  .profile-header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 40px;
+    background: var(--white);
+    border-radius: 50% 50% 0 0 / 40px 40px 0 0;
+  }
+  /* Theme variants for header */
+  .header-emeraude { background: linear-gradient(160deg, #0D2B1A 0%, #1A4A2E 100%) !important; }
+  .header-navy { background: linear-gradient(160deg, #0A1628 0%, #1A2E4A 100%) !important; }
+  .header-cramoisi { background: linear-gradient(160deg, #2B0D0D 0%, #4A1A1A 100%) !important; }
+  .header-ivoire { background: linear-gradient(160deg, #2B2418 0%, #3A3020 100%) !important; }
+ 
+  .brand-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 100px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .avatar-wrapper {
+    position: relative; z-index: 1;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+  }
+  .avatar {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+    border: 4px solid rgba(201,168,76,0.3);
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-nfc {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 28px; height: 28px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--white);
+    font-size: 12px;
+  }
+  .profile-name {
+    font-family: "Playfair Display", serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    position: relative; z-index: 1;
+  }
+  .profile-title {
+    font-size: 0.8rem;
+    color: rgba(250,246,239,0.6);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    position: relative; z-index: 1;
+    margin-bottom: 0.5rem;
+  }
+  .profile-company {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-weight: 600;
+    position: relative; z-index: 1;
+  }
+  .profile-body { padding: 1.5rem; }
+  .btn-save {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.9rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: all 0.2s;
+    margin-bottom: 1.5rem;
+    border: none; cursor: pointer;
+  }
+  .btn-save:hover { background: var(--gold); color: var(--ink); }
+  .bio-card {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .bio-text {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    padding-left: 4px;
+  }
+  .links-section { margin-bottom: 1.5rem; }
+  .link-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 0.6rem;
+    border: 1px solid var(--cream-dark);
+    background: var(--white);
+  }
+  .link-btn:hover { transform: translateX(4px); border-color: var(--gold); }
+  .link-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .link-content { flex: 1; }
+  .link-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+  }
+  .link-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    margin-top: 1px;
+  }
+  .link-arrow { font-size: 0.7rem; color: var(--muted); }
+  .social-section { margin-bottom: 1.5rem; }
+  .social-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+  }
+  .social-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 0.9rem 0.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    background: var(--cream);
+    border: 1px solid var(--cream-dark);
+    transition: all 0.2s;
+    gap: 6px;
+  }
+  .social-btn:hover { background: var(--cream-dark); transform: translateY(-2px); }
+  .social-icon { font-size: 1.2rem; }
+  .social-name { font-size: 0.6rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; }
+  .share-section {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.75rem; margin-bottom: 1.5rem;
+  }
+  .share-btn {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--cream-dark);
+    background: var(--white);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: "DM Sans", sans-serif;
+  }
+  .share-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .profile-footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid var(--cream-dark);
+  }
+  .powered-by {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .powered-logo { font-weight: 700; color: var(--ink); }
+  .powered-logo span { color: var(--gold); }
+  .toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: transform 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  /* Loading */
+  .loading-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; gap: 1rem; color: var(--muted);
+  }
+  .spin {
+    width: 32px; height: 32px;
+    border: 3px solid var(--cream-dark);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: sp .7s linear infinite;
+  }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  /* 404 */
+  .not-found {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; gap: 1rem; text-align: center; padding: 2rem;
+  }
+  .not-found-ico { font-size: 3rem; }
+  .not-found h2 { font-family: "Playfair Display", serif; font-size: 1.5rem; }
+  .not-found p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+</style>
+</head>
+<body>
+ 
+<div class="profile-container" id="app">
+  <div class="loading-screen">
+    <div class="spin"></div>
+    <p>Chargement du profil...</p>
+  </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://szpjpytpciptplqjfwyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+);
+ 
+// Get slug from URL: /profile/jean-dupont OR ?slug=jean-dupont
+function getSlug() {
+  // Try path: printlegacy.github.io/profile/jean-dupont
+  const parts = location.pathname.split('/').filter(Boolean);
+  if (parts.length >= 2 && parts[0] === 'profile') return parts[1];
+  // Try query: ?slug=jean-dupont or ?carte=jean-dupont
+  const p = new URLSearchParams(location.search);
+  return p.get('slug') || p.get('carte') || null;
+}
+ 
+function ini(fn, ln) {
+  return ((fn||'')[0] + (ln||'')[0]).toUpperCase() || '?';
+}
+ 
+function headerClass(theme) {
+  if (!theme) return '';
+  const t = theme.toLowerCase();
+  if (t.includes('emer') || t.includes('vert') || t.includes('forest')) return 'header-emeraude';
+  if (t.includes('navy') || t.includes('bleu') || t.includes('ocean')) return 'header-navy';
+  if (t.includes('cram') || t.includes('rouge') || t.includes('crim')) return 'header-cramoisi';
+  if (t.includes('ivoi') || t.includes('cream')) return 'header-ivoire';
+  return '';
+}
+ 
+function themeAccent(theme) {
+  if (!theme) return '#C9A84C';
+  const t = theme.toLowerCase();
+  if (t.includes('emer') || t.includes('forest')) return '#4CAF50';
+  if (t.includes('navy') || t.includes('ocean')) return '#4A90D9';
+  if (t.includes('cram') || t.includes('rouge')) return '#C62828';
+  return '#C9A84C';
+}
+ 
+function buildSocialLinks(c) {
+  const socials = [];
+  if (c.instagram) socials.push({ href: 'https://' + c.instagram, ico: '📸', name: 'Instagram' });
+  if (c.tiktok) socials.push({ href: 'https://' + c.tiktok, ico: '🎵', name: 'TikTok' });
+  if (c.linkedin) socials.push({ href: 'https://' + c.linkedin, ico: '💼', name: 'LinkedIn' });
+  if (c.behance) socials.push({ href: 'https://' + c.behance, ico: '🎨', name: 'Behance' });
+  if (c.youtube) socials.push({ href: 'https://' + c.youtube, ico: '▶️', name: 'YouTube' });
+  // Custom links as social
+  if (c.custom_links) {
+    try {
+      const cl = typeof c.custom_links === 'string' ? JSON.parse(c.custom_links) : c.custom_links;
+      cl.forEach(l => socials.push({ href: l.url, ico: l.icon || '🔗', name: l.label }));
+    } catch(e) {}
+  }
+  return socials;
+}
+ 
+function buildContactLinks(c) {
+  const links = [];
+  if (c.phone) links.push({ href: 'tel:' + c.phone, ico: '📞', bg: '#E8F5E9', label: 'Téléphone', value: c.phone });
+  const wa = c.whatsapp || c.phone;
+  if (wa) links.push({ href: 'https://wa.me/' + wa.replace(/\D/g,''), ico: '💬', bg: '#E8F5E9', label: 'WhatsApp', value: 'Message direct' });
+  if (c.email) links.push({ href: 'mailto:' + c.email, ico: '✉️', bg: '#FFF3E0', label: 'Email', value: c.email });
+  if (c.website) links.push({ href: c.website, ico: '🌐', bg: 'rgba(201,168,76,0.1)', label: 'Site web', value: c.website.replace('https://','') });
+  if (c.location) {
+    const href = c.location.startsWith('http') ? c.location : 'https://maps.google.com/?q=' + encodeURIComponent(c.location);
+    links.push({ href, ico: '📍', bg: '#FCE4EC', label: 'Adresse', value: c.location.startsWith('http') ? 'Voir sur la carte' : c.location });
+  }
+  if (c.cv_url) links.push({ href: c.cv_url, ico: '📄', bg: 'rgba(90,200,250,0.15)', label: 'CV / Portfolio', value: 'Télécharger', target: '_blank' });
+  return links;
+}
+ 
+function saveVCard(c) {
+  const lines = ['BEGIN:VCARD','VERSION:3.0',
+    'FN:' + (c.firstname||'') + ' ' + (c.lastname||''),
+    'N:' + (c.lastname||'') + ';' + (c.firstname||'') + ';;;',
+  ];
+  if (c.jobtitle) lines.push('TITLE:' + c.jobtitle);
+  if (c.company) lines.push('ORG:' + c.company);
+  if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
+  if (c.email) lines.push('EMAIL:' + c.email);
+  if (c.website) lines.push('URL:' + c.website);
+  if (c.location && !c.location.startsWith('http')) lines.push('ADR:;;' + c.location + ';;;;');
+  lines.push('END:VCARD');
+  const blob = new Blob([lines.join('\n')], { type: 'text/vcard' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (c.firstname||'contact') + '-' + (c.lastname||'') + '.vcf';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Contact enregistré !');
+}
+ 
+function copyLink() {
+  navigator.clipboard ? navigator.clipboard.writeText(location.href) : (() => {
+    const t = document.createElement('textarea');
+    t.value = location.href;
+    document.body.appendChild(t); t.select();
+    document.execCommand('copy'); document.body.removeChild(t);
+  })();
+  showToast('✓ Lien copié !');
+}
+ 
+function shareProfile(name) {
+  if (navigator.share) {
+    navigator.share({ title: name + ' — Print Legacy', text: 'Découvrez ce profil professionnel', url: location.href });
+  } else { copyLink(); }
+}
+ 
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+ 
+function render(c) {
+  const fullName = (c.firstname || '') + ' ' + (c.lastname || '');
+  const initials = ini(c.firstname, c.lastname);
+  const accent = themeAccent(c.theme);
+  const hClass = headerClass(c.theme);
+  const contactLinks = buildContactLinks(c);
+  const socialLinks = buildSocialLinks(c);
+  const profileUrl = location.href;
+ 
+  const avatarHTML = c.photo
+    ? `<img src="${c.photo}" alt="${fullName}">`
+    : initials;
+ 
+  const contactHTML = contactLinks.map(l => `
+    <a href="${l.href}" class="link-btn" ${l.target ? 'target="_blank"' : ''}>
+      <div class="link-icon" style="background:${l.bg}">${l.ico}</div>
+      <div class="link-content">
+        <span class="link-label">${l.label}</span>
+        <span class="link-value">${l.value}</span>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>`).join('');
+ 
+  const socialHTML = socialLinks.length > 0 ? `
+    <div class="social-section">
+      <div class="section-label">Réseaux sociaux</div>
+      <div class="social-grid">
+        ${socialLinks.map(s => `
+          <a href="${s.href}" target="_blank" class="social-btn">
+            <span class="social-icon">${s.ico}</span>
+            <span class="social-name">${s.name}</span>
+          </a>`).join('')}
+      </div>
+    </div>` : '';
+ 
+  const bioHTML = c.bio ? `
+    <div class="bio-card">
+      <p class="bio-text">${c.bio}</p>
+    </div>` : '';
+ 
+  document.title = fullName + ' — Print Legacy';
+ 
+  document.getElementById('app').innerHTML = `
+    <div class="profile-header ${hClass}">
+      <div class="brand-tag">✦ Print Legacy · Dakar</div>
+      <div class="avatar-wrapper">
+        <div class="avatar">${avatarHTML}</div>
+        <div class="avatar-nfc">📶</div>
+      </div>
+      <div class="profile-name">${fullName}</div>
+      <div class="profile-title">${c.jobtitle || ''}${c.jobtitle && c.company ? ' · ' : ''}${c.company || ''}</div>
+      ${c.company ? `<div class="profile-company"><span>🏢</span><span>${c.company}</span></div>` : ''}
+    </div>
+ 
+    <div class="profile-body">
+      <button class="btn-save" onclick='saveVCard(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
+        <span>💾</span><span>Enregistrer le contact</span>
+      </button>
+ 
+      ${bioHTML}
+ 
+      <div class="links-section">
+        <div class="section-label">Contact</div>
+        ${contactHTML || '<p style="font-size:.8rem;color:var(--muted)">Aucun contact renseigné</p>'}
+      </div>
+ 
+      ${socialHTML}
+ 
+      <div class="share-section">
+        <button class="share-btn" onclick="copyLink()">📋 Copier le lien</button>
+        <button class="share-btn" onclick="shareProfile('${fullName}')">📤 Partager</button>
+      </div>
+    </div>
+ 
+    <div class="profile-footer">
+      <a href="https://printlegacy.github.io" class="powered-by">
+        Propulsé par <span class="powered-logo">Print <span>Legacy</span></span>
+      </a>
+    </div>
+  `;
+}
+ 
+async function init() {
+  const slug = getSlug();
+ 
+  if (!slug) {
+    document.getElementById('app').innerHTML = `
+      <div class="not-found">
+        <div class="not-found-ico">✦</div>
+        <h2>Profil introuvable</h2>
+        <p>Aucun identifiant de profil trouvé dans l'URL.</p>
+        <a href="https://printlegacy.github.io" style="margin-top:1rem;color:var(--gold);font-weight:600;text-decoration:none">← Retour à l'accueil</a>
+      </div>`;
+    return;
+  }
+ 
+  const { data, error } = await sb
+    .from('clients')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'active')
+    .single();
+ 
+  if (error || !data) {
+    document.getElementById('app').innerHTML = `
+      <div class="not-found">
+        <div class="not-found-ico">😕</div>
+        <h2>Carte introuvable</h2>
+        <p>Le profil "<strong>${slug}</strong>" n'existe pas ou n'est pas encore activé.</p>
+        <a href="https://printlegacy.github.io" style="margin-top:1rem;color:var(--gold);font-weight:600;text-decoration:none">← Retour à l'accueil</a>
+      </div>`;
+    return;
+  }
+ 
+  render(data);
+}
+ 
+init();
+</script>
+</body>
+</html>
