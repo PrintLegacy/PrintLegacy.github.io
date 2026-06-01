@@ -110,6 +110,50 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .tip{display:flex;align-items:flex-start;gap:8px;padding:.75rem;background:var(--cream);border-radius:var(--r);border:1px solid var(--cream3);font-size:.7rem;color:var(--smoke2);line-height:1.5}
 @media(max-width:768px){.layout{grid-template-columns:1fr;padding:1rem}.sidebar{position:static}.row2,.sg{grid-template-columns:1fr}.og{grid-template-columns:1fr}.nav{padding:.75rem 1.5rem}}
+ 
+/* PREVIEW CARD */
+.prev-card{
+  background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);
+  overflow:hidden;margin-bottom:1rem;
+}
+.prev-card-hd{
+  background:var(--ink);padding:.75rem 1rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.prev-card-title{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.prev-card-live{display:flex;align-items:center;gap:5px;font-size:.6rem;color:var(--gold);font-weight:600}
+.prev-card-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+ 
+/* MINI PROFILE CARD */
+.mini-profile{padding:.75rem}
+.mini-phone{
+  width:100%;border-radius:10px;overflow:hidden;
+  border:1px solid var(--cream3);background:#fff;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
+.mini-hero{
+  height:70px;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:0;position:relative;overflow:hidden;
+}
+.mini-hero-bg{position:absolute;inset:0}
+.mini-hero-pat{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(255,255,255,.03) 8px,rgba(255,255,255,.03) 9px)}
+.mini-av{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:600;color:#fff;
+  border:2px solid #fff;position:relative;z-index:2;
+  margin-bottom:-22px;overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+  font-family:'Playfair Display',serif;
+}
+.mini-av img{width:100%;height:100%;object-fit:cover}
+.mini-body{padding:28px 12px 12px;text-align:center}
+.mini-name{font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.mini-role{font-size:.6rem;color:var(--smoke2);margin-bottom:8px;letter-spacing:.05em}
+.mini-links{display:flex;flex-direction:column;gap:4px}
+.mini-link{display:flex;align-items:center;gap:6px;background:var(--cream);border-radius:5px;padding:4px 7px;font-size:.6rem;color:var(--smoke)}
+.mini-accent{height:2px;width:100%}
 </style>
 </head>
 <body>
@@ -207,25 +251,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     <div class="s-header"><div class="s-num">4</div><div class="s-title">Offre & Style</div><div class="s-sub">Choisissez votre formule</div></div>
     <div class="s-body">
       <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Formule <span class="req">*</span></label>
-      <div class="og">
-        <div class="ocard" onclick="selOffre('Starter Digital','0',this)">
-          <div class="oname">Starter Digital</div>
-          <div class="oprice">Gratuit</div>
-          <div class="operiod">Profil digital seul</div>
-          <ul class="ofeat"><li>Profil digital</li><li>QR Code</li><li>5 liens</li></ul>
-        </div>
-        <div class="ocard feat" onclick="selOffre('Pro NFC','16000',this)">
+      <div class="og" style="grid-template-columns:1fr 1fr">
+        <div class="ocard feat sel" onclick="selOffre('Pro NFC','16000',this)">
           <div class="obadge">Populaire</div>
           <div class="oname">Pro NFC</div>
           <div class="oprice">16 000</div>
-          <div class="operiod">FCFA · unique</div>
-          <ul class="ofeat"><li>Carte NFC physique</li><li>Profil complet</li><li>Liens illimités</li><li>CV téléchargeable</li><li>Statistiques</li></ul>
+          <div class="operiod">FCFA · paiement unique</div>
+          <ul class="ofeat">
+            <li>1 carte NFC physique</li>
+            <li>Profil digital complet</li>
+            <li>Liens illimités</li>
+            <li>Galerie photos</li>
+            <li>CV téléchargeable</li>
+            <li>QR Code personnalisé</li>
+            <li>Statistiques de vues</li>
+          </ul>
         </div>
         <div class="ocard" onclick="selOffre('Entreprise','devis',this)">
           <div class="oname">Entreprise</div>
           <div class="oprice" style="font-size:1rem">Sur devis</div>
-          <div class="operiod">Toute l'équipe</div>
-          <ul class="ofeat"><li>Cartes en masse</li><li>Branding unifié</li><li>Support dédié</li></ul>
+          <div class="operiod">Pour toute une équipe</div>
+          <ul class="ofeat">
+            <li>Cartes NFC en masse</li>
+            <li>Branding unifié</li>
+            <li>Gestion centralisée</li>
+            <li>Analytics avancés</li>
+            <li>Support dédié</li>
+            <li>Livraison prioritaire</li>
+          </ul>
         </div>
       </div>
  
@@ -239,13 +292,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         <div class="qopt" onclick="selQty('100+',this)">100+</div>
       </div>
  
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Thème couleur</label>
-      <div class="tg">
-        <div class="topt sel" onclick="selTheme('noir',this)"><div class="ttop" style="background:#0A0A0A"></div><div class="tbot" style="background:#D4AF6A"><span class="tname" style="color:#0A0A0A">Noir&Or</span></div><div class="tchk">✓</div></div>
+      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Thème couleur <span style="color:var(--smoke2);font-size:.65rem;text-transform:none;letter-spacing:0;font-weight:400">(20 choix)</span></label>
+      <div class="tg" style="grid-template-columns:repeat(5,1fr)">
+        <div class="topt sel" onclick="selTheme('noir',this)"><div class="ttop" style="background:#0A0A0A"></div><div class="tbot" style="background:#D4AF6A"><span class="tname" style="color:#0A0A0A">Noir Or</span></div><div class="tchk">✓</div></div>
         <div class="topt" onclick="selTheme('emerald',this)"><div class="ttop" style="background:#0D3B2E"></div><div class="tbot" style="background:#4CAF50"><span class="tname" style="color:#fff">Émeraude</span></div><div class="tchk">✓</div></div>
         <div class="topt" onclick="selTheme('navy',this)"><div class="ttop" style="background:#0A1628"></div><div class="tbot" style="background:#4A90D9"><span class="tname" style="color:#fff">Navy</span></div><div class="tchk">✓</div></div>
         <div class="topt" onclick="selTheme('crimson',this)"><div class="ttop" style="background:#1A0808"></div><div class="tbot" style="background:#C62828"><span class="tname" style="color:#fff">Cramoisi</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('ivory',this)"><div class="ttop" style="background:#F5F0E8"></div><div class="tbot" style="background:#8B6914"><span class="tname" style="color:#fff">Ivoire</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('ivory',this)"><div class="ttop" style="background:#1C160A"></div><div class="tbot" style="background:#C9A84C"><span class="tname" style="color:#fff">Ivoire</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('violet',this)"><div class="ttop" style="background:#1A0A2E"></div><div class="tbot" style="background:#9C27B0"><span class="tname" style="color:#fff">Violet</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('bordeaux',this)"><div class="ttop" style="background:#1A0812"></div><div class="tbot" style="background:#C2185B"><span class="tname" style="color:#fff">Bordeaux</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('sable',this)"><div class="ttop" style="background:#1C1208"></div><div class="tbot" style="background:#CD853F"><span class="tname" style="color:#fff">Sable</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('slate',this)"><div class="ttop" style="background:#0D1B2A"></div><div class="tbot" style="background:#607D8B"><span class="tname" style="color:#fff">Ardoise</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('rosegold',this)"><div class="ttop" style="background:#1A0F0F"></div><div class="tbot" style="background:#E8A0B0"><span class="tname" style="color:#4a2030">Rose Gold</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('tropical',this)"><div class="ttop" style="background:#051F0D"></div><div class="tbot" style="background:#26A69A"><span class="tname" style="color:#fff">Tropical</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('midnight',this)"><div class="ttop" style="background:#05051A"></div><div class="tbot" style="background:#5C6BC0"><span class="tname" style="color:#fff">Minuit</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('coffee',this)"><div class="ttop" style="background:#1A1008"></div><div class="tbot" style="background:#8D6E63"><span class="tname" style="color:#fff">Café</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('forest',this)"><div class="ttop" style="background:#0A1A0A"></div><div class="tbot" style="background:#388E3C"><span class="tname" style="color:#fff">Forêt</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('ocean',this)"><div class="ttop" style="background:#00101A"></div><div class="tbot" style="background:#0277BD"><span class="tname" style="color:#fff">Océan</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('sand',this)"><div class="ttop" style="background:#1A1510"></div><div class="tbot" style="background:#D4A853"><span class="tname" style="color:#fff">Désert</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('plum',this)"><div class="ttop" style="background:#140A1A"></div><div class="tbot" style="background:#6A1B9A"><span class="tname" style="color:#fff">Prune</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('coral',this)"><div class="ttop" style="background:#1A0A08"></div><div class="tbot" style="background:#E64A19"><span class="tname" style="color:#fff">Corail</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('arctic',this)"><div class="ttop" style="background:#0A1018"></div><div class="tbot" style="background:#80CBC4"><span class="tname" style="color:#004D40">Arctique</span></div><div class="tchk">✓</div></div>
+        <div class="topt" onclick="selTheme('bronze',this)"><div class="ttop" style="background:#120E08"></div><div class="tbot" style="background:#A0744C"><span class="tname" style="color:#fff">Bronze</span></div><div class="tchk">✓</div></div>
       </div>
     </div>
   </div>
@@ -265,6 +333,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     </div>
     <div class="sum-foot"><span class="sum-total-lbl">Total</span><span class="sum-total-val" id="s-total">—</span></div>
   </div>
+  <!-- PREVIEW CARD -->
+  <div class="prev-card">
+    <div class="prev-card-hd">
+      <div class="prev-card-title">Aperçu du profil</div>
+      <div class="prev-card-live"><div class="prev-card-dot"></div> En direct</div>
+    </div>
+    <div class="mini-profile">
+      <div class="mini-phone">
+        <div class="mini-hero">
+          <div class="mini-hero-bg" id="prevBg" style="background:#0A0A0A"></div>
+          <div class="mini-hero-pat"></div>
+          <div class="mini-av" id="prevAv" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
+            <span id="prevInit">?</span>
+            <img id="prevAvImg" style="display:none;width:100%;height:100%;object-fit:cover">
+          </div>
+        </div>
+        <div class="mini-body">
+          <div class="mini-name" id="prevName">Prénom Nom</div>
+          <div class="mini-role" id="prevRole">Votre poste</div>
+          <div class="mini-links">
+            <div class="mini-link" id="prevPhone" style="display:none">📞 <span id="prevPhoneTxt"></span></div>
+            <div class="mini-link" id="prevEmail" style="display:none">✉️ <span id="prevEmailTxt"></span></div>
+          </div>
+        </div>
+        <div class="mini-accent" id="prevAccent" style="background:linear-gradient(90deg,#C9A84C,#E8C97E)"></div>
+      </div>
+    </div>
+  </div>
+ 
   <button class="sbtn" onclick="submit()" id="submitBtn">✦ Envoyer ma commande</button>
   <div class="tip">🔒 Données sécurisées via Supabase. Aucun paiement en ligne. Contacté sous 24h.</div>
 </div>
@@ -297,6 +394,7 @@ function prevPhoto(e){
   r.onload=x=>{const i=document.getElementById('avImg');i.src=x.target.result;i.style.display='block';document.getElementById('avInit').style.display='none'};
   r.readAsDataURL(f);
   document.getElementById('photoOk').style.display='block';
+  updatePreview();
 }
  
 function upd(){
@@ -310,6 +408,7 @@ function upd(){
   let p=0;
   if(fn)p+=25;if(ln)p+=15;if(ph)p+=25;if(S.offre)p+=35;
   document.getElementById('pf').style.width=p+'%';
+  updatePreview();
 }
  
 function handleUp(e,t){
@@ -332,11 +431,76 @@ function selQty(v,el){
   el.classList.add('sel');S.qty=v;
   document.getElementById('s-qty').textContent=v+' carte'+(v!=='1'?'s':'');
 }
+// Theme colors map
+const THEME_COLORS={
+  noir:    {bg:'#0A0A0A',ac:'#C9A84C',ac2:'#E8C97E'},
+  emerald: {bg:'#0B3526',ac:'#3DAA6B',ac2:'#72C99A'},
+  navy:    {bg:'#08152A',ac:'#3D7FD4',ac2:'#7EB3E8'},
+  crimson: {bg:'#1A0808',ac:'#C62828',ac2:'#EF5350'},
+  ivory:   {bg:'#1C160A',ac:'#C9A84C',ac2:'#E8C97E'},
+  violet:  {bg:'#150A28',ac:'#8B2FC9',ac2:'#CE93D8'},
+  bordeaux:{bg:'#1A0812',ac:'#C2185B',ac2:'#F06292'},
+  sable:   {bg:'#1C1208',ac:'#CD853F',ac2:'#DBA96A'},
+  slate:   {bg:'#0D1B2A',ac:'#607D8B',ac2:'#B0BEC5'},
+  rosegold:{bg:'#1A0F0F',ac:'#C48B9F',ac2:'#E8A0B0'},
+  tropical:{bg:'#051F0D',ac:'#26A69A',ac2:'#80CBC4'},
+  midnight:{bg:'#05051A',ac:'#5C6BC0',ac2:'#9FA8DA'},
+  coffee:  {bg:'#1A1008',ac:'#8D6E63',ac2:'#BCAAA4'},
+  forest:  {bg:'#0A1A0A',ac:'#388E3C',ac2:'#81C784'},
+  ocean:   {bg:'#00101A',ac:'#0277BD',ac2:'#4FC3F7'},
+  sand:    {bg:'#1A1510',ac:'#D4A853',ac2:'#E8C97E'},
+  plum:    {bg:'#140A1A',ac:'#6A1B9A',ac2:'#CE93D8'},
+  coral:   {bg:'#1A0A08',ac:'#E64A19',ac2:'#FF8A65'},
+  arctic:  {bg:'#0A1018',ac:'#80CBC4',ac2:'#B2EBF2'},
+  bronze:  {bg:'#120E08',ac:'#A0744C',ac2:'#BCAAA4'},
+};
+const THEME_LABELS={noir:'Noir & Or',emerald:'Émeraude',navy:'Navy',crimson:'Cramoisi',ivory:'Ivoire',violet:'Violet',bordeaux:'Bordeaux',sable:'Sable',slate:'Ardoise',rosegold:'Rose Gold',tropical:'Tropical',midnight:'Minuit',coffee:'Café',forest:'Forêt',ocean:'Océan',sand:'Désert',plum:'Prune',coral:'Corail',arctic:'Arctique',bronze:'Bronze'};
+ 
 function selTheme(n,el){
   document.querySelectorAll('.topt').forEach(t=>t.classList.remove('sel'));
   el.classList.add('sel');S.theme=n;
-  const L={noir:'Noir & Or',emerald:'Émeraude',navy:'Navy',crimson:'Cramoisi',ivory:'Ivoire'};
-  document.getElementById('s-theme').textContent=L[n]||n;
+  document.getElementById('s-theme').textContent=THEME_LABELS[n]||n;
+  updatePreview();
+}
+ 
+function updatePreview(){
+  const fn=document.getElementById('f-fn').value.trim();
+  const ln=document.getElementById('f-ln').value.trim();
+  const jt=document.getElementById('f-jt').value.trim();
+  const ph=document.getElementById('f-ph').value.trim();
+  const em=document.getElementById('f-em').value.trim();
+ 
+  const tc=THEME_COLORS[S.theme]||THEME_COLORS.noir;
+ 
+  // Background & accent
+  document.getElementById('prevBg').style.background=tc.bg;
+  document.getElementById('prevAccent').style.background=`linear-gradient(90deg,${tc.ac},${tc.ac2})`;
+  document.getElementById('prevAv').style.background=`linear-gradient(135deg,${tc.ac},${tc.bg})`;
+ 
+  // Name & role
+  const fullName=(fn+' '+ln).trim();
+  document.getElementById('prevName').textContent=fullName||'Prénom Nom';
+  document.getElementById('prevRole').textContent=jt||'Votre poste';
+  document.getElementById('prevInit').textContent=((fn[0]||'')+(ln[0]||'')).toUpperCase()||'?';
+ 
+  // Phone
+  if(ph){document.getElementById('prevPhone').style.display='flex';document.getElementById('prevPhoneTxt').textContent=ph}
+  else{document.getElementById('prevPhone').style.display='none'}
+ 
+  // Email
+  if(em){document.getElementById('prevEmail').style.display='flex';document.getElementById('prevEmailTxt').textContent=em}
+  else{document.getElementById('prevEmail').style.display='none'}
+ 
+  // Avatar photo
+  if(S.photo){
+    const reader=new FileReader();
+    reader.onload=x=>{
+      const img=document.getElementById('prevAvImg');
+      img.src=x.target.result;img.style.display='block';
+      document.getElementById('prevInit').style.display='none';
+    };
+    reader.readAsDataURL(S.photo);
+  }
 }
  
 function mkSlug(fn,ln){
