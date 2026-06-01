@@ -177,6 +177,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   <div class="s-card">
     <div class="s-header"><div class="s-num">1</div><div class="s-title">Informations personnelles</div><div class="s-sub">Identité</div></div>
     <div class="s-body">
+      <!-- COVER PHOTO -->
+      <div style="margin-bottom:1.2rem">
+        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🖼️ Photo de couverture <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(s'affiche en grand sur le profil)</span></label>
+        <div id="coverZone" onclick="document.getElementById('coverIn').click()" style="width:100%;height:120px;border-radius:8px;border:2px dashed var(--cream3);overflow:hidden;cursor:pointer;position:relative;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
+          <input type="file" id="coverIn" accept="image/*" style="display:none" onchange="prevCover(event)">
+          <img id="coverPrev" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <div id="coverPlaceholder">
+            <div style="font-size:1.8rem;text-align:center">🖼️</div>
+            <div style="font-size:.8rem;font-weight:600;color:var(--ink);text-align:center">Glissez votre photo de couverture</div>
+            <div style="font-size:.7rem;color:var(--smoke2);text-align:center">JPG, PNG · Recommandé : 1200×600px</div>
+          </div>
+          <div id="coverOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;font-size:.75rem;color:#fff;font-weight:600;gap:6px">
+            📷 Changer la photo
+          </div>
+        </div>
+        <div id="coverOk" style="font-size:.7rem;color:var(--gold);margin-top:4px;display:none">✓ Photo de couverture sélectionnée</div>
+      </div>
+ 
+      <!-- PHOTO PROFIL -->
       <div class="av-row">
         <div class="av-circle" id="avCircle" onclick="document.getElementById('photoIn').click()">
           <span id="avInit">?</span>
@@ -186,7 +205,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         <div>
           <button class="av-btn" type="button" onclick="document.getElementById('photoIn').click()">📤 Photo de profil</button>
           <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="prevPhoto(event)">
-          <div class="av-hint">JPG, PNG · Max 5MB<br>Apparaît sur votre carte digitale</div>
+          <div class="av-hint">JPG, PNG · Max 5MB<br>Apparaît en rond sur votre carte</div>
           <div id="photoOk" style="font-size:.7rem;color:var(--gold);margin-top:4px;display:none">✓ Photo sélectionnée</div>
         </div>
       </div>
@@ -341,17 +360,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     </div>
     <div class="mini-profile">
       <div class="mini-phone">
-        <div class="mini-hero">
+        <div class="mini-hero" style="height:90px;align-items:flex-end">
           <div class="mini-hero-bg" id="prevBg" style="background:#0A0A0A"></div>
           <div class="mini-hero-pat"></div>
-          <div class="mini-av" id="prevAv" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
-            <span id="prevInit">?</span>
-            <img id="prevAvImg" style="display:none;width:100%;height:100%;object-fit:cover">
+          <img id="prevCoverImg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.5)">
+          <div style="position:relative;z-index:2;width:100%;padding:8px 10px 0">
+            <div style="font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;display:inline-block;padding:2px 8px;margin-bottom:4px">Carte Professionnelle</div>
+            <div class="mini-name" id="prevName" style="color:#fff;font-size:.8rem;text-align:left;margin-bottom:1px">Prénom Nom</div>
+            <div id="prevRole" style="font-size:.55rem;color:var(--gold);letter-spacing:.05em;font-weight:600;text-align:left;margin-bottom:8px">Votre poste</div>
           </div>
         </div>
-        <div class="mini-body">
-          <div class="mini-name" id="prevName">Prénom Nom</div>
-          <div class="mini-role" id="prevRole">Votre poste</div>
+        <div class="mini-body" style="padding:10px 12px 12px;text-align:left">
           <div class="mini-links">
             <div class="mini-link" id="prevPhone" style="display:none">📞 <span id="prevPhoneTxt"></span></div>
             <div class="mini-link" id="prevEmail" style="display:none">✉️ <span id="prevEmailTxt"></span></div>
@@ -394,6 +413,22 @@ function prevPhoto(e){
   r.onload=x=>{const i=document.getElementById('avImg');i.src=x.target.result;i.style.display='block';document.getElementById('avInit').style.display='none'};
   r.readAsDataURL(f);
   document.getElementById('photoOk').style.display='block';
+  updatePreview();
+}
+ 
+function prevCover(e){
+  const f=e.target.files[0];if(!f)return;
+  S.cover=f;
+  const r=new FileReader();
+  r.onload=x=>{
+    const img=document.getElementById('coverPrev');
+    img.src=x.target.result;img.style.display='block';
+    document.getElementById('coverPlaceholder').style.display='none';
+    const ov=document.getElementById('coverOverlay');ov.style.display='flex';
+    document.getElementById('coverZone').onmouseover=function(){ov.style.display='flex'};
+  };
+  r.readAsDataURL(f);
+  document.getElementById('coverOk').style.display='block';
   updatePreview();
 }
  
@@ -475,13 +510,25 @@ function updatePreview(){
   // Background & accent
   document.getElementById('prevBg').style.background=tc.bg;
   document.getElementById('prevAccent').style.background=`linear-gradient(90deg,${tc.ac},${tc.ac2})`;
-  document.getElementById('prevAv').style.background=`linear-gradient(135deg,${tc.ac},${tc.bg})`;
  
-  // Name & role
+  // Name & role (now in hero overlay)
   const fullName=(fn+' '+ln).trim();
   document.getElementById('prevName').textContent=fullName||'Prénom Nom';
+  document.getElementById('prevName').style.color='#fff';
   document.getElementById('prevRole').textContent=jt||'Votre poste';
-  document.getElementById('prevInit').textContent=((fn[0]||'')+(ln[0]||'')).toUpperCase()||'?';
+  document.getElementById('prevRole').style.color=tc.ac;
+ 
+  // Cover photo
+  if(S.cover){
+    const reader=new FileReader();
+    reader.onload=x=>{
+      const ci=document.getElementById('prevCoverImg');
+      ci.src=x.target.result;ci.style.display='block';
+    };
+    if(!document.getElementById('prevCoverImg').src || document.getElementById('prevCoverImg').src===''){
+      reader.readAsDataURL(S.cover);
+    }
+  }
  
   // Phone
   if(ph){document.getElementById('prevPhone').style.display='flex';document.getElementById('prevPhoneTxt').textContent=ph}
@@ -530,6 +577,7 @@ async function submit(){
  
   try{
     const photoUrl=await upFile(S.photo,'photos');
+    const coverUrl=await upFile(S.cover,'covers');
     const cvUrl=await upFile(S.cv,'cvs');
     const slug=mkSlug(fn,ln);
  
@@ -557,6 +605,7 @@ async function submit(){
       behance:beh||null,
       theme:S.theme,
       photo:photoUrl,
+      cover_url:coverUrl,
       location:document.getElementById('f-loc').value.trim()||null,
       cv_url:cvUrl,
       custom_links:cl.length>0?cl:null,
