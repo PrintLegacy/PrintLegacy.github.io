@@ -74,6 +74,31 @@ tr:hover td{background:var(--cream)}
 .empty-ico{font-size:2rem;margin-bottom:.5rem}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--cream2)}
+ 
+/* NFC MODAL */
+.nfc-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center}
+.nfc-ov.open{display:flex}
+.nfc-box{background:var(--w);border-radius:8px;padding:0;width:420px;max-width:90vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.nfc-hd{background:var(--ink);padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
+.nfc-hd-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff;font-weight:400}
+.nfc-hd-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.nfc-body{padding:24px}
+.nfc-client{font-size:11px;color:var(--smoke2);letter-spacing:.05em;margin-bottom:4px;text-transform:uppercase}
+.nfc-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:16px}
+.nfc-url-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:6px}
+.nfc-url-box{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:4px;padding:10px 14px;margin-bottom:16px}
+.nfc-url-text{font-size:11.5px;color:var(--ink);flex:1;word-break:break-all;font-weight:500}
+.nfc-copy-btn{background:var(--ink);color:var(--gold2);border:none;border-radius:4px;padding:6px 12px;font-size:10px;font-weight:600;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif}
+.nfc-copy-btn:hover{background:var(--gold);color:var(--ink)}
+.nfc-steps{background:var(--cream);border-radius:6px;padding:14px;margin-bottom:16px}
+.nfc-steps-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:10px}
+.nfc-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:11.5px;color:var(--smoke)}
+.nfc-step:last-child{margin-bottom:0}
+.nfc-step-num{width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--gold2);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.nfc-apps{display:flex;gap:8px;flex-wrap:wrap}
+.nfc-app{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:6px;text-decoration:none;font-size:11px;font-weight:500;color:var(--ink);transition:.15s}
+.nfc-app:hover{border-color:var(--gold);background:var(--gold4)}
+.nfc-copied{display:none;font-size:10px;color:var(--success);font-weight:600;margin-top:4px}
 </style>
 </head>
 <body>
@@ -230,10 +255,11 @@ async function loadData(){
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
       <td>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;align-items:center">
           ${c.cv_url?`<a href="${c.cv_url}" target="_blank" title="Voir CV" style="font-size:13px;text-decoration:none">📄</a>`:''}
           <span title="${c.status==='active'?'Mettre en attente':'Activer'}" onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:13px">${c.status==='active'?'⏸️':'✅'}</span>
-          <a href="https://printlegacy.github.io/profile?slug=${c.slug}" target="_blank" title="Voir profil" style="font-size:13px;text-decoration:none">👁️</a>
+          <a href="https://printlegacy-platform.vercel.app/?carte=${c.slug}" target="_blank" title="Voir profil" style="font-size:13px;text-decoration:none">👁️</a>
+          <span title="Encoder carte NFC" onclick="openNFC('${c.slug}','${(c.firstname||'')} ${(c.lastname||'')}')" style="cursor:pointer;font-size:13px">📶</span>
         </div>
       </td>
     </tr>
@@ -258,6 +284,28 @@ async function loadData(){
   `;
 }
  
+ 
+function openNFC(slug, name) {
+  const url = `https://printlegacy-platform.vercel.app/?carte=${slug}`;
+  document.getElementById('nfcClientName').textContent = name.trim();
+  document.getElementById('nfcUrl').textContent = url;
+  document.getElementById('nfcCopied').style.display = 'none';
+  document.getElementById('nfcOv').classList.add('open');
+}
+function closeNFC() {
+  document.getElementById('nfcOv').classList.remove('open');
+}
+function copyNFC() {
+  const url = document.getElementById('nfcUrl').textContent;
+  navigator.clipboard.writeText(url).catch(()=>{});
+  document.getElementById('nfcCopied').style.display = 'block';
+  document.querySelector('.nfc-copy-btn').textContent = '✓ Copié';
+  setTimeout(()=>{
+    document.getElementById('nfcCopied').style.display = 'none';
+    document.querySelector('.nfc-copy-btn').textContent = 'Copier';
+  }, 2000);
+}
+ 
 function logout(){
   window.location.href='https://printlegacy.github.io';
 }
@@ -266,5 +314,42 @@ loadData();
 // Auto refresh every 30s
 setInterval(loadData, 30000);
 </script>
+ 
+<!-- NFC MODAL -->
+<div class="nfc-ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
+  <div class="nfc-box">
+    <div class="nfc-hd">
+      <div class="nfc-hd-title">📶 Encoder la carte NFC</div>
+      <button class="nfc-hd-close" onclick="closeNFC()">✕</button>
+    </div>
+    <div class="nfc-body">
+      <div class="nfc-client">Client</div>
+      <div class="nfc-name" id="nfcClientName">—</div>
+ 
+      <div class="nfc-url-label">URL à encoder dans la carte NFC</div>
+      <div class="nfc-url-box">
+        <div class="nfc-url-text" id="nfcUrl">—</div>
+        <button class="nfc-copy-btn" onclick="copyNFC()">Copier</button>
+      </div>
+      <div class="nfc-copied" id="nfcCopied">✓ Copié dans le presse-papier !</div>
+ 
+      <div class="nfc-steps">
+        <div class="nfc-steps-title">Comment encoder la carte</div>
+        <div class="nfc-step"><div class="nfc-step-num">1</div><span>Ouvrez une app NFC sur votre téléphone (NFC Tools ou NXP TagWriter)</span></div>
+        <div class="nfc-step"><div class="nfc-step-num">2</div><span>Choisissez <strong>Écrire</strong> → <strong>Ajouter un enregistrement</strong> → <strong>URL</strong></span></div>
+        <div class="nfc-step"><div class="nfc-step-num">3</div><span>Collez l'URL ci-dessus et appuyez sur <strong>Écrire</strong></span></div>
+        <div class="nfc-step"><div class="nfc-step-num">4</div><span>Approchez la carte NFC de votre téléphone et confirmez</span></div>
+      </div>
+ 
+      <div class="nfc-url-label" style="margin-bottom:8px">Applications recommandées</div>
+      <div class="nfc-apps">
+        <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" class="nfc-app">🤖 NFC Tools (Android)</a>
+        <a href="https://apps.apple.com/app/nfc-tools/id1252962749" target="_blank" class="nfc-app">🍎 NFC Tools (iPhone)</a>
+        <a href="https://play.google.com/store/apps/details?id=com.nxp.taginfolite" target="_blank" class="nfc-app">🤖 NXP TagWriter</a>
+      </div>
+    </div>
+  </div>
+</div>
+ 
 </body>
 </html>
