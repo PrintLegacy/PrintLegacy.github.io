@@ -1,187 +1,355 @@
-python3 << 'EOF'
-with open('/mnt/user-data/uploads/dashboard.html', 'r') as f:
-    dash = f.read()
-
-# Add catalogue CSS to dashboard
-cat_css = '''
-/* ── CATALOGUE MODAL ── */
-.cat-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;align-items:center;justify-content:center}
-.cat-ov.open{display:flex}
-.cat-modal{background:var(--w);border-radius:8px;width:640px;max-width:95vw;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.cat-modal-hd{background:var(--ink);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.cat-modal-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff}
-.cat-modal-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.cat-modal-body{padding:20px;overflow-y:auto;flex:1}
-.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.75rem}
-.cat-item{border:1.5px solid var(--cream2);border-radius:6px;overflow:hidden;position:relative;background:var(--cream)}
-.cat-item-img{width:100%;height:90px;object-fit:cover;display:block}
-.cat-item-placeholder{width:100%;height:90px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;transition:.15s}
-.cat-item-placeholder:hover{background:var(--gold4)}
-.cat-item-inputs{padding:.5rem}
-.cat-item-inputs input{width:100%;padding:.4rem .6rem;border:1px solid var(--cream2);border-radius:3px;font-size:.72rem;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;margin-bottom:.3rem;transition:.15s}
-.cat-item-inputs input:focus{border-color:var(--gold)}
-.cat-item-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
-.cat-item:hover .cat-item-del{display:flex}
-.cat-add-btn{width:100%;padding:.7rem;border:1.5px dashed var(--cream2);border-radius:6px;background:transparent;font-size:.8rem;font-weight:600;color:var(--smoke2);cursor:pointer;font-family:'Jost',sans-serif;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.cat-add-btn:hover{border-color:var(--gold);color:var(--gold)}
-.cat-modal-foot{padding:14px 22px;border-top:1px solid var(--cream2);display:flex;gap:8px;background:var(--w);flex-shrink:0}
-.cat-save-btn{flex:1;background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:10px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:.15s}
-.cat-save-btn:hover{background:var(--gold);color:var(--ink)}
-.cat-cancel-btn{background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);padding:10px 18px;font-size:11px;cursor:pointer;font-family:'Jost',sans-serif;color:var(--smoke)}
-'''
-dash = dash.replace('</style>', cat_css + '\n</style>', 1)
-
-# Add catalogue button in actions column
-dash = dash.replace(
-    "<span title=\"Modifier\" onclick=\"openEdit(",
-    "<span title=\"Catalogue\" onclick=\"openCatalogue('${c.id}','${(c.firstname||'')} ${(c.lastname||'')}',${JSON.stringify(c.catalogue||[]).replace(/\"/g,'&quot;')})\" style=\"cursor:pointer;font-size:14px\">🖼️</span>\n          <span title=\"Modifier\" onclick=\"openEdit("
-)
-
-# Add catalogue modal HTML before </body>
-cat_modal = '''
-<!-- CATALOGUE MODAL -->
-<div class="cat-ov" id="catOv" onclick="if(event.target===this)closeCatalogue()">
-  <div class="cat-modal">
-    <div class="cat-modal-hd">
-      <div class="cat-modal-title">🖼️ Catalogue — <span id="catClientName">—</span></div>
-      <button class="cat-modal-close" onclick="closeCatalogue()">✕</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Legacy — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0A0A0A;--ink2:#1C1C1C;--gold:#B8953A;--gold2:#D4AF6A;--gold4:#F5EDD0;--cream:#F9F5EE;--cream2:#EDE5D0;--smoke:#6B6560;--smoke2:#9A948E;--w:#fff;--r:4px;--success:#2e7d32}
+html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);overflow:hidden}
+.app{display:flex;height:100vh}
+.sidebar{width:220px;min-width:220px;background:var(--ink);display:flex;flex-direction:column}
+.sb-logo{padding:24px 22px 20px;border-bottom:1px solid rgba(255,255,255,.05)}
+.sb-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;letter-spacing:.03em}
+.sb-brand em{color:var(--gold2);font-style:italic}
+.sb-tag{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);margin-top:4px}
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
+.sb-sec{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:14px 22px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 22px;font-size:12.5px;color:rgba(255,255,255,.4);cursor:pointer;transition:.15s;border-left:2px solid transparent}
+.sb-item:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.03)}
+.sb-item.active{color:var(--gold2);background:rgba(184,149,58,.09);border-left-color:var(--gold)}
+.sb-item span{font-size:15px}
+.sb-foot{padding:14px 20px;border-top:1px solid rgba(255,255,255,.05)}
+.sb-user{display:flex;align-items:center;gap:10px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--ink)}
+.sb-uname{font-size:12px;color:rgba(255,255,255,.7);font-weight:500}
+.sb-urole{font-size:9.5px;color:rgba(255,255,255,.22)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:58px;min-height:58px;background:var(--w);border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink)}
+.tb-title span{color:var(--smoke2);font-style:italic;font-size:13px;font-family:'Jost',sans-serif;margin-left:8px;font-weight:300}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);padding:7px 14px;font-size:12px;color:var(--smoke2);min-width:200px}
+.tb-btn{width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--smoke);font-size:15px}
+.tb-cta{display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--gold2);padding:8px 16px;border-radius:var(--r);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;font-family:'Jost',sans-serif;text-decoration:none}
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.sc{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cream2)}
+.sc.feat::before{background:linear-gradient(90deg,var(--gold),#EDD89A)}
+.sc-lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke2);margin-bottom:8px}
+.sc-num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--ink);line-height:1;margin-bottom:4px}
+.sc-sub{font-size:10px;color:var(--smoke2)}
+.sc-ico{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:13px}
+.card{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--cream2)}
+.card-t{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;color:var(--ink)}
+.card-a{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);cursor:pointer;font-weight:500;border:none;background:none;font-family:'Jost',sans-serif}
+table{width:100%;border-collapse:collapse}
+th{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--smoke2);padding:9px 20px;text-align:left;border-bottom:1px solid var(--cream2);background:var(--cream);font-weight:500}
+td{padding:12px 20px;font-size:12px;color:#2E2E2E;border-bottom:1px solid var(--cream2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--cream)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--gold4);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--ink);font-family:'Cormorant Garamond',serif;flex-shrink:0;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.cl{display:flex;align-items:center;gap:10px}
+.cn{font-size:12px;font-weight:500;color:var(--ink)}
+.cs{font-size:10px;color:var(--smoke2)}
+.badge{display:inline-block;padding:3px 9px;border-radius:2px;font-size:9.5px;font-weight:500}
+.b-p{background:var(--gold4);color:var(--gold)}
+.b-a{background:#E8F5E9;color:#2e7d32}
+.b-d{background:var(--cream);color:var(--smoke2)}
+.status{display:inline-flex;align-items:center;gap:5px;font-size:11px}
+.sd{width:5px;height:5px;border-radius:50%}
+.st-p .sd{background:var(--gold)}.st-p{color:var(--gold)}
+.st-a .sd{background:#4caf50}.st-a{color:#2e7d32}
+.st-d .sd{background:var(--smoke2)}.st-d{color:var(--smoke2)}
+.loading{text-align:center;padding:3rem;color:var(--smoke2);font-size:.9rem}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:sp .6s linear infinite;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:3rem;color:var(--smoke2)}
+.empty-ico{font-size:2rem;margin-bottom:.5rem}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--cream2)}
+ 
+/* NFC MODAL */
+.nfc-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center}
+.nfc-ov.open{display:flex}
+.nfc-box{background:var(--w);border-radius:8px;padding:0;width:420px;max-width:90vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.nfc-hd{background:var(--ink);padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
+.nfc-hd-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff;font-weight:400}
+.nfc-hd-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.nfc-body{padding:24px}
+.nfc-client{font-size:11px;color:var(--smoke2);letter-spacing:.05em;margin-bottom:4px;text-transform:uppercase}
+.nfc-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:16px}
+.nfc-url-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:6px}
+.nfc-url-box{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:4px;padding:10px 14px;margin-bottom:16px}
+.nfc-url-text{font-size:11.5px;color:var(--ink);flex:1;word-break:break-all;font-weight:500}
+.nfc-copy-btn{background:var(--ink);color:var(--gold2);border:none;border-radius:4px;padding:6px 12px;font-size:10px;font-weight:600;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif}
+.nfc-copy-btn:hover{background:var(--gold);color:var(--ink)}
+.nfc-steps{background:var(--cream);border-radius:6px;padding:14px;margin-bottom:16px}
+.nfc-steps-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:10px}
+.nfc-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:11.5px;color:var(--smoke)}
+.nfc-step:last-child{margin-bottom:0}
+.nfc-step-num{width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--gold2);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.nfc-apps{display:flex;gap:8px;flex-wrap:wrap}
+.nfc-app{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:6px;text-decoration:none;font-size:11px;font-weight:500;color:var(--ink);transition:.15s}
+.nfc-app:hover{border-color:var(--gold);background:var(--gold4)}
+.nfc-copied{display:none;font-size:10px;color:var(--success);font-weight:600;margin-top:4px}
+</style>
+</head>
+<body>
+ 
+<div class="app">
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-brand">Print <em>Legacy</em></div>
+      <div class="sb-tag">Studio & NFC · Dakar</div>
     </div>
-    <div class="cat-modal-body">
-      <div style="font-size:.78rem;color:var(--smoke2);margin-bottom:1rem;padding:.6rem .9rem;background:var(--cream);border-radius:4px;border-left:3px solid var(--gold)">
-        📸 Gérez les produits/services du client. Ils apparaissent sur sa carte digitale.
+    <div class="sb-nav">
+      <div class="sb-sec">Principal</div>
+      <div class="sb-item active"><span>📊</span> Tableau de bord</div>
+      <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io/order'"><span>➕</span> Nouvelle commande</div>
+      <div class="sb-sec">Clients</div>
+      <div class="sb-item active"><span>👥</span> Tous les clients</div>
+      <div class="sb-item"><span>⏳</span> En attente <span id="sb-pending" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
+      <div class="sb-item"><span>✅</span> Actifs</div>
+      <div class="sb-sec">Studio</div>
+      <div class="sb-item"><span>🎨</span> Créations</div>
+      <div class="sb-item"><span>🖨️</span> Impressions</div>
+      <div class="sb-sec">Compte</div>
+      <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io'"><span>🌐</span> Voir le site</div>
+      <div class="sb-item" onclick="logout()"><span>🔒</span> Déconnexion</div>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="sb-av">PL</div>
+        <div><div class="sb-uname">Print Legacy</div><div class="sb-urole">Administrateur</div></div>
       </div>
-      <div class="cat-grid" id="catItemsGrid"></div>
-      <button class="cat-add-btn" onclick="addCatItemDash()" id="catDashAddBtn">＋ Ajouter un produit / service</button>
     </div>
-    <div class="cat-modal-foot">
-      <button class="cat-cancel-btn" onclick="closeCatalogue()">Annuler</button>
-      <button class="cat-save-btn" onclick="saveCatalogue()">💾 Sauvegarder le catalogue</button>
+  </div>
+ 
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-title">Tableau de bord <span id="dateLabel"></span></div>
+      <div class="tb-right">
+        <div class="tb-search">🔍 Rechercher un client...</div>
+        <div class="tb-btn" onclick="loadData()" title="Actualiser">🔄</div>
+        <a href="https://printlegacy.github.io/order" class="tb-cta">+ Nouvelle commande</a>
+      </div>
+    </div>
+ 
+    <div class="content">
+ 
+      <!-- STATS -->
+      <div class="stats">
+        <div class="sc feat">
+          <div class="sc-ico">👥</div>
+          <div class="sc-lbl">Total clients</div>
+          <div class="sc-num" id="stat-total">—</div>
+          <div class="sc-sub">Dans Supabase</div>
+        </div>
+        <div class="sc">
+          <div class="sc-ico">⏳</div>
+          <div class="sc-lbl">En attente</div>
+          <div class="sc-num" id="stat-pending">—</div>
+          <div class="sc-sub">À traiter</div>
+        </div>
+        <div class="sc">
+          <div class="sc-ico">✅</div>
+          <div class="sc-lbl">Actifs</div>
+          <div class="sc-num" id="stat-active">—</div>
+          <div class="sc-sub">Cartes livrées</div>
+        </div>
+        <div class="sc">
+          <div class="sc-ico">💳</div>
+          <div class="sc-lbl">Cartes NFC</div>
+          <div class="sc-num" id="stat-nfc">—</div>
+          <div class="sc-sub">Pro NFC commandées</div>
+        </div>
+      </div>
+ 
+      <!-- TABLE -->
+      <div class="card">
+        <div class="card-h">
+          <div class="card-t">Tous les clients</div>
+          <button class="card-a" onclick="loadData()">Actualiser →</button>
+        </div>
+        <div id="tableWrap">
+          <div class="loading"><span class="spin"></span> Chargement depuis Supabase...</div>
+        </div>
+      </div>
+ 
     </div>
   </div>
 </div>
-'''
-dash = dash.replace('</body>', cat_modal + '\n</body>')
-
-# Add catalogue JS before </script>
-cat_js = '''
-// ── CATALOGUE DASHBOARD ──
-let catClientId = null;
-let catDashItems = [];
-let catDashCount = 0;
-
-function openCatalogue(id, name, items) {
-  catClientId = id;
-  catDashItems = [];
-  catDashCount = 0;
-  document.getElementById('catClientName').textContent = name.trim();
-  document.getElementById('catItemsGrid').innerHTML = '';
-  document.getElementById('catDashAddBtn').style.display = 'flex';
-
-  // Load existing items
-  let parsed = [];
-  try { parsed = typeof items === 'string' ? JSON.parse(items) : (items||[]); } catch(e) {}
-  parsed.forEach(item => addCatItemDash(item));
-
-  document.getElementById('catOv').classList.add('open');
+ 
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://szpjpytpciptplqjfwyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+);
+ 
+// Date
+const now = new Date();
+document.getElementById('dateLabel').textContent = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+ 
+function statusBadge(s){
+  if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
+  if(s==='active') return '<span class="status st-a"><span class="sd"></span>Actif</span>';
+  return '<span class="status st-d"><span class="sd"></span>'+s+'</span>';
 }
-
-function closeCatalogue() {
-  document.getElementById('catOv').classList.remove('open');
-  catClientId = null;
+ 
+function initials(fn,ln){
+  return ((fn||'')[0]+(ln||'')[0]).toUpperCase();
 }
-
-function addCatItemDash(data={}) {
-  if (catDashCount >= 9) { alert('Maximum 9 produits.'); return; }
-  catDashCount++;
-  const id = 'cdash_' + Date.now() + '_' + catDashCount;
-  catDashItems.push({id, name: data.name||'', price: data.price||'', desc: data.desc||'', url: data.url||'', file: null});
-
-  const div = document.createElement('div');
-  div.className = 'cat-item';
-  div.id = 'catDashItem_'+id;
-  div.innerHTML = `
-    <input type="file" id="catDashFile_${id}" accept="image/*" style="display:none" onchange="loadCatDashImg('${id}',this)">
-    ${data.url
-      ? `<img class="cat-item-img" id="catDashImg_${id}" src="${data.url}">`
-      : `<div class="cat-item-placeholder" onclick="document.getElementById('catDashFile_${id}').click()" id="catDashPh_${id}">📷</div>
-         <img class="cat-item-img" id="catDashImg_${id}" style="display:none">`
-    }
-    <button class="cat-item-del" onclick="removeCatDashItem('${id}')">×</button>
-    <div class="cat-item-inputs">
-      <input placeholder="Nom du produit" value="${data.name||''}" oninput="updCatDash('${id}','name',this.value)">
-      <input placeholder="Prix (ex: 5 000 FCFA)" value="${data.price||''}" oninput="updCatDash('${id}','price',this.value)">
-      <input placeholder="Description courte" value="${data.desc||''}" oninput="updCatDash('${id}','desc',this.value)">
-    </div>`;
-
-  document.getElementById('catItemsGrid').appendChild(div);
-  if (catDashCount >= 9) document.getElementById('catDashAddBtn').style.display = 'none';
-}
-
-function loadCatDashImg(id, input) {
-  const file = input.files[0]; if (!file) return;
-  const item = catDashItems.find(c=>c.id===id);
-  if (item) item.file = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById('catDashImg_'+id);
-    img.src = e.target.result; img.style.display = 'block';
-    const ph = document.getElementById('catDashPh_'+id);
-    if (ph) ph.style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function updCatDash(id, field, value) {
-  const item = catDashItems.find(c=>c.id===id);
-  if (item) item[field] = value;
-}
-
-function removeCatDashItem(id) {
-  catDashItems = catDashItems.filter(c=>c.id!==id);
-  document.getElementById('catDashItem_'+id).remove();
-  catDashCount--;
-  document.getElementById('catDashAddBtn').style.display = 'flex';
-}
-
-async function uploadCatDashImg(file) {
-  if (!file) return null;
-  const ext = file.name.split('.').pop();
-  const path = `catalogue/${Date.now()}.${ext}`;
-  const {error} = await sb.storage.from('printlegacy').upload(path, file);
-  if (error) { console.warn(error); return null; }
-  return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
-}
-
-async function saveCatalogue() {
-  if (!catClientId) return;
-  showToast('Sauvegarde...');
-
-  // Upload new images
-  for (const item of catDashItems) {
-    if (item.file) {
-      const url = await uploadCatDashImg(item.file);
-      if (url) item.url = url;
-    }
-  }
-
-  const catalogue = catDashItems
-    .filter(i => i.name || i.url)
-    .map(i => ({name: i.name, price: i.price, desc: i.desc, url: i.url}));
-
-  const {error} = await sb.from('clients').update({catalogue}).eq('id', catClientId);
-  if (error) { alert('Erreur: ' + error.message); return; }
-
-  closeCatalogue();
+ 
+async function toggleStatus(id, current){
+  const next = current==='active' ? 'pending' : 'active';
+  await sb.from('clients').update({status:next}).eq('id',id);
   loadData();
-  showToast('✓ Catalogue mis à jour !');
 }
-'''
-dash = dash.replace('</script>', cat_js + '\n</script>')
-
-with open('/mnt/user-data/outputs/dashboard.html', 'w') as f:
-    f.write(dash)
-print('Dashboard done:', len(dash))
-EOF
-Sortie
-
-Dashboard done: 26438
+ 
+async function loadData(){
+  document.getElementById('tableWrap').innerHTML = '<div class="loading"><span class="spin"></span> Chargement...</div>';
+ 
+  const {data, error} = await sb.from('clients').select('*').order('created_at',{ascending:false});
+ 
+  if(error){
+    document.getElementById('tableWrap').innerHTML = '<div class="empty"><div class="empty-ico">⚠️</div>Erreur: '+error.message+'</div>';
+    return;
+  }
+ 
+  if(!data||data.length===0){
+    document.getElementById('tableWrap').innerHTML = '<div class="empty"><div class="empty-ico">📭</div>Aucun client pour le moment.<br><a href="https://printlegacy.github.io/order" style="color:var(--gold)">Ajouter un client →</a></div>';
+    return;
+  }
+ 
+  // Stats
+  document.getElementById('stat-total').textContent = data.length;
+  document.getElementById('stat-pending').textContent = data.filter(c=>!c.status||c.status==='pending').length;
+  document.getElementById('stat-active').textContent = data.filter(c=>c.status==='active').length;
+  document.getElementById('stat-nfc').textContent = data.length; // all are NFC orders
+  document.getElementById('sb-pending').textContent = data.filter(c=>!c.status||c.status==='pending').length;
+ 
+  // Table
+  const rows = data.map(c => `
+    <tr>
+      <td>
+        <div class="cl">
+          <div class="av">${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'">`:''}${!c.photo?initials(c.firstname,c.lastname):''}</div>
+          <div>
+            <div class="cn">${c.firstname||''} ${c.lastname||''}</div>
+            <div class="cs">${c.company||c.jobtitle||''}</div>
+          </div>
+        </div>
+      </td>
+      <td>${c.jobtitle||'—'}</td>
+      <td>${c.phone||'—'}</td>
+      <td>${c.email||'—'}</td>
+      <td><span class="badge b-p">${c.theme||'noir'}</span></td>
+      <td>${statusBadge(c.status)}</td>
+      <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
+      <td>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${c.cv_url?`<a href="${c.cv_url}" target="_blank" title="Voir CV" style="font-size:13px;text-decoration:none">📄</a>`:''}
+          <span title="${c.status==='active'?'Mettre en attente':'Activer'}" onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:13px">${c.status==='active'?'⏸️':'✅'}</span>
+          <a href="https://printlegacy-platform.vercel.app/?carte=${c.slug}" target="_blank" title="Voir profil" style="font-size:13px;text-decoration:none">👁️</a>
+          <span title="Encoder carte NFC" onclick="openNFC('${c.slug}','${(c.firstname||'')} ${(c.lastname||'')}')" style="cursor:pointer;font-size:13px">📶</span>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+ 
+  document.getElementById('tableWrap').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Poste</th>
+          <th>Téléphone</th>
+          <th>Email</th>
+          <th>Thème</th>
+          <th>Statut</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+ 
+ 
+function openNFC(slug, name) {
+  const url = `https://printlegacy-platform.vercel.app/?carte=${slug}`;
+  document.getElementById('nfcClientName').textContent = name.trim();
+  document.getElementById('nfcUrl').textContent = url;
+  document.getElementById('nfcCopied').style.display = 'none';
+  document.getElementById('nfcOv').classList.add('open');
+}
+function closeNFC() {
+  document.getElementById('nfcOv').classList.remove('open');
+}
+function copyNFC() {
+  const url = document.getElementById('nfcUrl').textContent;
+  navigator.clipboard.writeText(url).catch(()=>{});
+  document.getElementById('nfcCopied').style.display = 'block';
+  document.querySelector('.nfc-copy-btn').textContent = '✓ Copié';
+  setTimeout(()=>{
+    document.getElementById('nfcCopied').style.display = 'none';
+    document.querySelector('.nfc-copy-btn').textContent = 'Copier';
+  }, 2000);
+}
+ 
+function logout(){
+  window.location.href='https://printlegacy.github.io';
+}
+ 
+loadData();
+// Auto refresh every 30s
+setInterval(loadData, 30000);
+</script>
+ 
+<!-- NFC MODAL -->
+<div class="nfc-ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
+  <div class="nfc-box">
+    <div class="nfc-hd">
+      <div class="nfc-hd-title">📶 Encoder la carte NFC</div>
+      <button class="nfc-hd-close" onclick="closeNFC()">✕</button>
+    </div>
+    <div class="nfc-body">
+      <div class="nfc-client">Client</div>
+      <div class="nfc-name" id="nfcClientName">—</div>
+ 
+      <div class="nfc-url-label">URL à encoder dans la carte NFC</div>
+      <div class="nfc-url-box">
+        <div class="nfc-url-text" id="nfcUrl">—</div>
+        <button class="nfc-copy-btn" onclick="copyNFC()">Copier</button>
+      </div>
+      <div class="nfc-copied" id="nfcCopied">✓ Copié dans le presse-papier !</div>
+ 
+      <div class="nfc-steps">
+        <div class="nfc-steps-title">Comment encoder la carte</div>
+        <div class="nfc-step"><div class="nfc-step-num">1</div><span>Ouvrez une app NFC sur votre téléphone (NFC Tools ou NXP TagWriter)</span></div>
+        <div class="nfc-step"><div class="nfc-step-num">2</div><span>Choisissez <strong>Écrire</strong> → <strong>Ajouter un enregistrement</strong> → <strong>URL</strong></span></div>
+        <div class="nfc-step"><div class="nfc-step-num">3</div><span>Collez l'URL ci-dessus et appuyez sur <strong>Écrire</strong></span></div>
+        <div class="nfc-step"><div class="nfc-step-num">4</div><span>Approchez la carte NFC de votre téléphone et confirmez</span></div>
+      </div>
+ 
+      <div class="nfc-url-label" style="margin-bottom:8px">Applications recommandées</div>
+      <div class="nfc-apps">
+        <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" class="nfc-app">🤖 NFC Tools (Android)</a>
+        <a href="https://apps.apple.com/app/nfc-tools/id1252962749" target="_blank" class="nfc-app">🍎 NFC Tools (iPhone)</a>
+        <a href="https://play.google.com/store/apps/details?id=com.nxp.taginfolite" target="_blank" class="nfc-app">🤖 NXP TagWriter</a>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+</body>
+</html>
