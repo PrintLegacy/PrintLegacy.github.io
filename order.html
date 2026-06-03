@@ -1,635 +1,134 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Print Legacy — Commander ma carte NFC</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --gold:#C9A84C;--gold2:#E8C97E;--gold-dark:#8B6914;--gold4:#F5EDD0;
-  --ink:#0D0D0D;--cream:#FAF6EF;--cream2:#F0E9DA;--cream3:#EDE5D0;
-  --smoke:#6B6560;--smoke2:#9A948E;--w:#fff;--r:3px;
-}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
-.nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(250,246,239,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--cream3)}
-.nav-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700}
-.nav-logo em{color:var(--gold);font-style:italic}
-.nav-back{font-size:.8rem;color:var(--smoke);text-decoration:none;transition:.15s}
-.nav-back:hover{color:var(--gold)}
-.hero{background:var(--ink);padding:4rem 3rem 3rem;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 25px,rgba(201,168,76,0.03) 25px,rgba(201,168,76,0.03) 26px)}
-.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);border-radius:100px;padding:.35rem 1rem;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;position:relative;z-index:1}
-.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
-.hero h1{font-family:'Playfair Display',serif;font-size:2.4rem;color:#fff;margin-bottom:.75rem;position:relative;z-index:1}
-.hero h1 em{color:var(--gold);font-style:italic}
-.hero p{font-size:.95rem;color:rgba(255,255,255,.45);max-width:500px;margin:0 auto;line-height:1.8;position:relative;z-index:1}
-.layout{display:grid;grid-template-columns:1fr 310px;gap:2rem;max-width:1050px;margin:0 auto;padding:2.5rem 2rem}
-.s-card{background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem}
-.s-header{display:flex;align-items:center;gap:12px;padding:1.2rem 1.5rem;border-bottom:1px solid var(--cream3);background:var(--cream)}
-.s-num{width:26px;height:26px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0}
-.s-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--ink)}
-.s-sub{font-size:11px;color:var(--smoke2);margin-left:auto}
-.s-body{padding:1.5rem}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-.row1{grid-column:1/-1;margin-bottom:1rem}
-.field{margin-bottom:1rem}
-.field label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:5px}
-.req{color:var(--gold);margin-left:2px}
-.field input,.field textarea,.field select{width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
-.field input:focus,.field textarea:focus{border-color:var(--gold);background:#FFFDF7}
-.field textarea{resize:vertical;min-height:80px;line-height:1.6}
-.av-row{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem}
-.av-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);overflow:hidden;border:3px solid var(--cream3);position:relative;cursor:pointer;flex-shrink:0}
-.av-circle img{width:100%;height:100%;object-fit:cover;display:none}
-.av-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;font-size:1.2rem}
-.av-circle:hover .av-overlay{opacity:1}
-.av-btn{display:inline-flex;align-items:center;gap:6px;background:var(--cream);border:1px solid var(--cream3);border-radius:var(--r);padding:.65rem 1.2rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink);margin-bottom:5px;transition:.15s}
-.av-btn:hover{border-color:var(--gold);color:var(--gold)}
-.av-hint{font-size:.7rem;color:var(--smoke2)}
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-.upzone{border:2px dashed var(--cream3);border-radius:var(--r);padding:1.2rem;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
-.upzone:hover{border-color:var(--gold);background:var(--gold4)}
-.upzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.uprev{display:none;align-items:center;gap:10px;padding:.6rem 1rem;background:var(--cream);border-radius:var(--r);border:1px solid var(--cream3);margin-top:.6rem}
-.uprev.show{display:flex}
-.uprev-name{font-size:.8rem;font-weight:500;flex:1}
-.uprev-del{background:none;border:none;color:var(--smoke2);cursor:pointer;font-size:14px}
-.og{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.5rem}
-.ocard{border:2px solid var(--cream3);border-radius:var(--r);padding:1.2rem;cursor:pointer;transition:.15s;text-align:center;position:relative}
-.ocard:hover{background:var(--cream)}
-.ocard.sel{border-color:var(--gold);background:var(--gold4)}
-.ocard.feat{border-color:var(--ink)}
-.obadge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--gold);font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:100px}
-.oname{font-size:.8rem;font-weight:600;margin-bottom:.2rem}
-.oprice{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);line-height:1}
-.operiod{font-size:.65rem;color:var(--smoke2);margin-bottom:.6rem}
-.ofeat{list-style:none;text-align:left;display:flex;flex-direction:column;gap:.3rem}
-.ofeat li{font-size:.7rem;color:var(--smoke);display:flex;align-items:center;gap:5px}
-.ofeat li::before{content:'✓';color:var(--gold);font-weight:700}
-.qrow{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
-.qopt{padding:.5rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.8rem;font-weight:500;cursor:pointer;transition:.15s;background:var(--w);color:var(--smoke)}
-.qopt:hover{border-color:var(--gold);color:var(--gold)}
-.qopt.sel{background:var(--ink);color:var(--gold);border-color:var(--ink)}
-.tg{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem}
-.topt{border-radius:var(--r);overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s;position:relative}
-.topt.sel{border-color:var(--gold)}
-.ttop{height:32px}
-.tbot{height:18px;display:flex;align-items:center;justify-content:center}
-.tname{font-size:.55rem;font-weight:600;text-transform:uppercase}
-.tchk{position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:var(--gold);display:none;align-items:center;justify-content:center;font-size:8px}
-.topt.sel .tchk{display:flex}
-/* SIDEBAR */
-.sidebar{position:sticky;top:80px;align-self:start}
-.sum-card{background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);overflow:hidden;margin-bottom:1rem}
-.sum-hd{background:var(--ink);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
-.sum-title{font-family:'Playfair Display',serif;font-size:.95rem;color:#fff}
-.sum-badge{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
-.sum-body{padding:1.2rem 1.5rem}
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--cream3);font-size:.8rem}
-.sum-row:last-child{border-bottom:none}
-.sum-lbl{color:var(--smoke2)}
-.sum-val{font-weight:600;color:var(--ink)}
-.sum-foot{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;background:var(--cream);border-top:2px solid var(--cream3)}
-.sum-total-lbl{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--smoke)}
-.sum-total-val{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold)}
-.sbtn{width:100%;padding:1rem;background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:.75rem}
-.sbtn:hover{background:var(--gold);color:var(--ink)}
-.sbtn:disabled{background:var(--cream3);color:var(--smoke2);cursor:not-allowed;pointer-events:none}
-.pb{height:3px;background:var(--cream3);margin-bottom:1.5rem;border-radius:2px}
-.pf{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:.5s;border-radius:2px;width:0}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(212,175,106,.3);border-top-color:var(--gold2);border-radius:50%;animation:sp .6s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.suc-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
-.suc-ov.open{display:flex}
-.suc-box{background:var(--w);border-radius:8px;padding:3rem 2.5rem;width:380px;max-width:90vw;text-align:center;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.tip{display:flex;align-items:flex-start;gap:8px;padding:.75rem;background:var(--cream);border-radius:var(--r);border:1px solid var(--cream3);font-size:.7rem;color:var(--smoke2);line-height:1.5}
-@media(max-width:768px){.layout{grid-template-columns:1fr;padding:1rem}.sidebar{position:static}.row2,.sg{grid-template-columns:1fr}.og{grid-template-columns:1fr}.nav{padding:.75rem 1.5rem}}
- 
-/* PREVIEW CARD */
-.prev-card{
-  background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);
-  overflow:hidden;margin-bottom:1rem;
-}
-.prev-card-hd{
-  background:var(--ink);padding:.75rem 1rem;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.prev-card-title{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-.prev-card-live{display:flex;align-items:center;gap:5px;font-size:.6rem;color:var(--gold);font-weight:600}
-.prev-card-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
- 
-/* MINI PROFILE CARD */
-.mini-profile{padding:.75rem}
-.mini-phone{
-  width:100%;border-radius:10px;overflow:hidden;
-  border:1px solid var(--cream3);background:#fff;
-  box-shadow:0 4px 20px rgba(0,0,0,.08);
-}
-.mini-hero{
-  height:70px;
-  display:flex;align-items:flex-end;justify-content:center;
-  padding-bottom:0;position:relative;overflow:hidden;
-}
-.mini-hero-bg{position:absolute;inset:0}
-.mini-hero-pat{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(255,255,255,.03) 8px,rgba(255,255,255,.03) 9px)}
-.mini-av{
-  width:44px;height:44px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;font-weight:600;color:#fff;
-  border:2px solid #fff;position:relative;z-index:2;
-  margin-bottom:-22px;overflow:hidden;
-  box-shadow:0 4px 12px rgba(0,0,0,.2);
-  font-family:'Playfair Display',serif;
-}
-.mini-av img{width:100%;height:100%;object-fit:cover}
-.mini-body{padding:28px 12px 12px;text-align:center}
-.mini-name{font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:2px}
-.mini-role{font-size:.6rem;color:var(--smoke2);margin-bottom:8px;letter-spacing:.05em}
-.mini-links{display:flex;flex-direction:column;gap:4px}
-.mini-link{display:flex;align-items:center;gap:6px;background:var(--cream);border-radius:5px;padding:4px 7px;font-size:.6rem;color:var(--smoke)}
-.mini-accent{height:2px;width:100%}
-</style>
-</head>
-<body>
- 
-<nav class="nav">
-  <div class="nav-logo">Print <em>Legacy</em></div>
-  <a href="https://printlegacy.github.io/" class="nav-back">← Retour au site</a>
-</nav>
- 
-<div class="hero">
-  <div class="hero-badge">Commande en ligne · Dakar 🇸🇳</div>
-  <h1>Créez votre carte<br><em>NFC professionnelle</em></h1>
-  <p>Remplissez le formulaire. Notre équipe crée votre profil et livre votre carte sous 48h.</p>
-</div>
- 
-<div class="layout">
-<div>
-  <div class="pb"><div class="pf" id="pf"></div></div>
- 
-  <!-- 1. IDENTITÉ -->
+python3 << 'EOF'
+with open('/mnt/user-data/uploads/order.html', 'r') as f:
+    order = f.read()
+
+# Add catalogue CSS
+cat_css = '''
+/* ── CATALOGUE CLIENT ── */
+.cat-upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.75rem}
+.cat-upload-item{border:1.5px solid var(--cream3);border-radius:6px;overflow:hidden;position:relative;background:var(--cream)}
+.cat-upload-img{width:100%;height:90px;object-fit:cover;display:block}
+.cat-upload-placeholder{width:100%;height:90px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;transition:.15s}
+.cat-upload-placeholder:hover{background:var(--gold4);border-color:var(--gold)}
+.cat-upload-inputs{padding:.5rem}
+.cat-upload-inputs input{width:100%;padding:.4rem .6rem;border:1px solid var(--cream3);border-radius:3px;font-size:.72rem;font-family:"DM Sans",sans-serif;color:var(--ink);background:var(--w);outline:none;margin-bottom:.3rem}
+.cat-upload-inputs input:focus{border-color:var(--gold)}
+.cat-upload-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+.cat-upload-item:hover .cat-upload-del{display:flex}
+.cat-add-btn{width:100%;padding:.7rem;border:1.5px dashed var(--cream3);border-radius:6px;background:transparent;font-size:.8rem;font-weight:600;color:var(--smoke2);cursor:pointer;font-family:"DM Sans",sans-serif;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.cat-add-btn:hover{border-color:var(--gold);color:var(--gold)}
+@media(max-width:768px){.cat-upload-grid{grid-template-columns:1fr 1fr}}
+'''
+order = order.replace('</style>', cat_css + '\n</style>', 1)
+
+# Add catalogue section before section 2 (Liens)
+cat_html = '''
+  <!-- CATALOGUE CLIENT -->
   <div class="s-card">
-    <div class="s-header"><div class="s-num">1</div><div class="s-title">Informations personnelles</div><div class="s-sub">Identité</div></div>
+    <div class="s-header">
+      <div class="s-num" style="background:var(--gold);color:var(--ink)">★</div>
+      <div class="s-title">Catalogue — Vos produits & services</div>
+      <div class="s-sub">Optionnel · Affiché sur votre profil</div>
+    </div>
     <div class="s-body">
-      <!-- COVER PHOTO -->
-      <div style="margin-bottom:1.2rem">
-        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🖼️ Photo de couverture <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(s'affiche en grand sur le profil)</span></label>
-        <div id="coverZone" onclick="document.getElementById('coverIn').click()" style="width:100%;height:120px;border-radius:8px;border:2px dashed var(--cream3);overflow:hidden;cursor:pointer;position:relative;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
-          <input type="file" id="coverIn" accept="image/*" style="display:none" onchange="prevCover(event)">
-          <img id="coverPrev" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-          <div id="coverPlaceholder">
-            <div style="font-size:1.8rem;text-align:center">🖼️</div>
-            <div style="font-size:.8rem;font-weight:600;color:var(--ink);text-align:center">Glissez votre photo de couverture</div>
-            <div style="font-size:.7rem;color:var(--smoke2);text-align:center">JPG, PNG · Recommandé : 1200×600px</div>
-          </div>
-          <div id="coverOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;font-size:.75rem;color:#fff;font-weight:600;gap:6px">
-            📷 Changer la photo
-          </div>
-        </div>
-        <div id="coverOk" style="font-size:.7rem;color:var(--gold);margin-top:4px;display:none">✓ Photo de couverture sélectionnée</div>
+      <div style="font-size:.8rem;color:var(--smoke2);margin-bottom:1.2rem;padding:.75rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">
+        📸 Ajoutez jusqu'à 9 photos de vos produits ou services avec leur nom et prix. Ils apparaîtront sur votre carte digitale.
       </div>
- 
-      <!-- PHOTO PROFIL -->
-      <div class="av-row">
-        <div class="av-circle" id="avCircle" onclick="document.getElementById('photoIn').click()">
-          <span id="avInit">?</span>
-          <img id="avImg">
-          <div class="av-overlay">📷</div>
-        </div>
-        <div>
-          <button class="av-btn" type="button" onclick="document.getElementById('photoIn').click()">📤 Photo de profil</button>
-          <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="prevPhoto(event)">
-          <div class="av-hint">JPG, PNG · Max 5MB<br>Apparaît en rond sur votre carte</div>
-          <div id="photoOk" style="font-size:.7rem;color:var(--gold);margin-top:4px;display:none">✓ Photo sélectionnée</div>
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Prénom <span class="req">*</span></label><input type="text" id="f-fn" placeholder="Mamadou" oninput="upd()"></div>
-        <div class="field"><label>Nom <span class="req">*</span></label><input type="text" id="f-ln" placeholder="Diallo" oninput="upd()"></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Titre / Poste <span class="req">*</span></label><input type="text" id="f-jt" placeholder="CEO, Consultant..." oninput="upd()"></div>
-        <div class="field"><label>Entreprise</label><input type="text" id="f-co" placeholder="Votre entreprise" oninput="upd()"></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Téléphone <span class="req">*</span></label><input type="tel" id="f-ph" placeholder="+221 78 400 00 66" oninput="upd()"></div>
-        <div class="field"><label>Email</label><input type="email" id="f-em" placeholder="votre@email.com"></div>
-      </div>
-      <div class="field"><label>Localisation</label><input type="text" id="f-loc" placeholder="Plateau, Dakar, Sénégal"></div>
-      <div class="field"><label>Bio professionnelle</label><textarea id="f-bio" placeholder="Décrivez votre activité, votre expertise..." rows="3"></textarea></div>
+      <div class="cat-upload-grid" id="catGrid"></div>
+      <button class="cat-add-btn" onclick="addCatItem()" id="catAddBtn">＋ Ajouter un produit / service</button>
     </div>
   </div>
- 
-  <!-- 2. LIENS -->
-  <div class="s-card">
-    <div class="s-header"><div class="s-num">2</div><div class="s-title">Liens & Réseaux sociaux</div><div class="s-sub">Remplissez ceux que vous utilisez</div></div>
-    <div class="s-body">
-      <div style="font-size:.8rem;color:var(--smoke2);margin-bottom:1.2rem;padding:.75rem;background:var(--cream);border-radius:var(--r);border-left:3px solid var(--gold)">💡 Laissez vide ce que vous ne souhaitez pas afficher.</div>
-      <div class="row2">
-        <div class="field"><label>💬 WhatsApp</label><input type="tel" id="f-wa" placeholder="+221 78 400 00 66"></div>
-        <div class="field"><label>🌐 Site web</label><input type="url" id="f-ws" placeholder="https://monsite.sn"></div>
-      </div>
-      <div class="sg">
-        <div class="field"><label>📸 Instagram</label><input type="text" id="f-ig" placeholder="@votrecompte"></div>
-        <div class="field"><label>💼 LinkedIn</label><input type="text" id="f-li" placeholder="linkedin.com/in/..."></div>
-        <div class="field"><label>📘 Facebook</label><input type="text" id="f-fb" placeholder="facebook.com/..."></div>
-        <div class="field"><label>🎵 TikTok</label><input type="text" id="f-tt" placeholder="@votrecompte"></div>
-        <div class="field"><label>▶️ YouTube</label><input type="text" id="f-yt" placeholder="youtube.com/..."></div>
-        <div class="field"><label>🎨 Behance</label><input type="text" id="f-beh" placeholder="behance.net/..."></div>
-      </div>
-    </div>
-  </div>
- 
-  <!-- 3. FICHIERS -->
-  <div class="s-card">
-    <div class="s-header"><div class="s-num">3</div><div class="s-title">CV & Documents</div><div class="s-sub">Optionnel</div></div>
-    <div class="s-body">
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">📄 CV / Portfolio PDF</label>
-      <div class="upzone" onclick="document.getElementById('cvIn').click()">
-        <input type="file" id="cvIn" accept=".pdf,.doc,.docx" onchange="handleUp(event,'cv')">
-        <div style="font-size:1.5rem;margin-bottom:.3rem">📄</div>
-        <div style="font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:2px">Glissez votre CV ici</div>
-        <div style="font-size:.75rem;color:var(--smoke2)">PDF, DOC · Max 10MB</div>
-      </div>
-      <div class="uprev" id="cv-rev"><span>📄</span><span class="uprev-name" id="cv-nm"></span><button class="uprev-del" onclick="delUp('cv')">✕</button></div>
-      <div style="margin-top:1rem">
-        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">✏️ Notes pour le design</label>
-        <textarea id="f-notes" placeholder="Couleurs souhaitées, style, inspirations..." rows="3" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none;resize:vertical;transition:.15s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--cream3)'"></textarea>
-      </div>
-    </div>
-  </div>
- 
-  <!-- 4. OFFRE -->
-  <div class="s-card">
-    <div class="s-header"><div class="s-num">4</div><div class="s-title">Offre & Style</div><div class="s-sub">Choisissez votre formule</div></div>
-    <div class="s-body">
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Formule <span class="req">*</span></label>
-      <div class="og" style="grid-template-columns:1fr 1fr">
-        <div class="ocard feat sel" onclick="selOffre('Pro NFC','16000',this)">
-          <div class="obadge">Populaire</div>
-          <div class="oname">Pro NFC</div>
-          <div class="oprice">16 000</div>
-          <div class="operiod">FCFA · paiement unique</div>
-          <ul class="ofeat">
-            <li>1 carte NFC physique</li>
-            <li>Profil digital complet</li>
-            <li>Liens illimités</li>
-            <li>Galerie photos</li>
-            <li>CV téléchargeable</li>
-            <li>QR Code personnalisé</li>
-            <li>Statistiques de vues</li>
-          </ul>
-        </div>
-        <div class="ocard" onclick="selOffre('Entreprise','devis',this)">
-          <div class="oname">Entreprise</div>
-          <div class="oprice" style="font-size:1rem">Sur devis</div>
-          <div class="operiod">Pour toute une équipe</div>
-          <ul class="ofeat">
-            <li>Cartes NFC en masse</li>
-            <li>Branding unifié</li>
-            <li>Gestion centralisée</li>
-            <li>Analytics avancés</li>
-            <li>Support dédié</li>
-            <li>Livraison prioritaire</li>
-          </ul>
-        </div>
-      </div>
- 
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Nombre de cartes</label>
-      <div class="qrow">
-        <div class="qopt sel" onclick="selQty('1',this)">1</div>
-        <div class="qopt" onclick="selQty('5',this)">5</div>
-        <div class="qopt" onclick="selQty('10',this)">10</div>
-        <div class="qopt" onclick="selQty('20',this)">20</div>
-        <div class="qopt" onclick="selQty('50',this)">50</div>
-        <div class="qopt" onclick="selQty('100+',this)">100+</div>
-      </div>
- 
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Thème couleur <span style="color:var(--smoke2);font-size:.65rem;text-transform:none;letter-spacing:0;font-weight:400">(20 choix)</span></label>
-      <div class="tg" style="grid-template-columns:repeat(5,1fr)">
-        <div class="topt sel" onclick="selTheme('noir',this)"><div class="ttop" style="background:#0A0A0A"></div><div class="tbot" style="background:#D4AF6A"><span class="tname" style="color:#0A0A0A">Noir Or</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('emerald',this)"><div class="ttop" style="background:#0D3B2E"></div><div class="tbot" style="background:#4CAF50"><span class="tname" style="color:#fff">Émeraude</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('navy',this)"><div class="ttop" style="background:#0A1628"></div><div class="tbot" style="background:#4A90D9"><span class="tname" style="color:#fff">Navy</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('crimson',this)"><div class="ttop" style="background:#1A0808"></div><div class="tbot" style="background:#C62828"><span class="tname" style="color:#fff">Cramoisi</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('ivory',this)"><div class="ttop" style="background:#1C160A"></div><div class="tbot" style="background:#C9A84C"><span class="tname" style="color:#fff">Ivoire</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('violet',this)"><div class="ttop" style="background:#1A0A2E"></div><div class="tbot" style="background:#9C27B0"><span class="tname" style="color:#fff">Violet</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('bordeaux',this)"><div class="ttop" style="background:#1A0812"></div><div class="tbot" style="background:#C2185B"><span class="tname" style="color:#fff">Bordeaux</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('sable',this)"><div class="ttop" style="background:#1C1208"></div><div class="tbot" style="background:#CD853F"><span class="tname" style="color:#fff">Sable</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('slate',this)"><div class="ttop" style="background:#0D1B2A"></div><div class="tbot" style="background:#607D8B"><span class="tname" style="color:#fff">Ardoise</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('rosegold',this)"><div class="ttop" style="background:#1A0F0F"></div><div class="tbot" style="background:#E8A0B0"><span class="tname" style="color:#4a2030">Rose Gold</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('tropical',this)"><div class="ttop" style="background:#051F0D"></div><div class="tbot" style="background:#26A69A"><span class="tname" style="color:#fff">Tropical</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('midnight',this)"><div class="ttop" style="background:#05051A"></div><div class="tbot" style="background:#5C6BC0"><span class="tname" style="color:#fff">Minuit</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('coffee',this)"><div class="ttop" style="background:#1A1008"></div><div class="tbot" style="background:#8D6E63"><span class="tname" style="color:#fff">Café</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('forest',this)"><div class="ttop" style="background:#0A1A0A"></div><div class="tbot" style="background:#388E3C"><span class="tname" style="color:#fff">Forêt</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('ocean',this)"><div class="ttop" style="background:#00101A"></div><div class="tbot" style="background:#0277BD"><span class="tname" style="color:#fff">Océan</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('sand',this)"><div class="ttop" style="background:#1A1510"></div><div class="tbot" style="background:#D4A853"><span class="tname" style="color:#fff">Désert</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('plum',this)"><div class="ttop" style="background:#140A1A"></div><div class="tbot" style="background:#6A1B9A"><span class="tname" style="color:#fff">Prune</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('coral',this)"><div class="ttop" style="background:#1A0A08"></div><div class="tbot" style="background:#E64A19"><span class="tname" style="color:#fff">Corail</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('arctic',this)"><div class="ttop" style="background:#0A1018"></div><div class="tbot" style="background:#80CBC4"><span class="tname" style="color:#004D40">Arctique</span></div><div class="tchk">✓</div></div>
-        <div class="topt" onclick="selTheme('bronze',this)"><div class="ttop" style="background:#120E08"></div><div class="tbot" style="background:#A0744C"><span class="tname" style="color:#fff">Bronze</span></div><div class="tchk">✓</div></div>
-      </div>
-    </div>
-  </div>
-</div>
- 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="sum-card">
-    <div class="sum-hd"><div class="sum-title">Récapitulatif</div><div class="sum-badge">Commande</div></div>
-    <div class="sum-body">
-      <div class="sum-row"><span class="sum-lbl">Client</span><span class="sum-val" id="s-name">—</span></div>
-      <div class="sum-row"><span class="sum-lbl">Poste</span><span class="sum-val" id="s-jt">—</span></div>
-      <div class="sum-row"><span class="sum-lbl">Formule</span><span class="sum-val" id="s-offre">—</span></div>
-      <div class="sum-row"><span class="sum-lbl">Quantité</span><span class="sum-val" id="s-qty">1 carte</span></div>
-      <div class="sum-row"><span class="sum-lbl">Thème</span><span class="sum-val" id="s-theme">Noir & Or</span></div>
-      <div class="sum-row"><span class="sum-lbl">Délai</span><span class="sum-val">48h ⚡</span></div>
-    </div>
-    <div class="sum-foot"><span class="sum-total-lbl">Total</span><span class="sum-total-val" id="s-total">—</span></div>
-  </div>
-  <!-- PREVIEW CARD -->
-  <div class="prev-card">
-    <div class="prev-card-hd">
-      <div class="prev-card-title">Aperçu du profil</div>
-      <div class="prev-card-live"><div class="prev-card-dot"></div> En direct</div>
-    </div>
-    <div class="mini-profile">
-      <div class="mini-phone">
-        <div class="mini-hero" style="height:90px;align-items:flex-end">
-          <div class="mini-hero-bg" id="prevBg" style="background:#0A0A0A"></div>
-          <div class="mini-hero-pat"></div>
-          <img id="prevCoverImg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.5)">
-          <div style="position:relative;z-index:2;width:100%;padding:8px 10px 0">
-            <div style="font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;display:inline-block;padding:2px 8px;margin-bottom:4px">Carte Professionnelle</div>
-            <div class="mini-name" id="prevName" style="color:#fff;font-size:.8rem;text-align:left;margin-bottom:1px">Prénom Nom</div>
-            <div id="prevRole" style="font-size:.55rem;color:var(--gold);letter-spacing:.05em;font-weight:600;text-align:left;margin-bottom:8px">Votre poste</div>
-          </div>
-        </div>
-        <div class="mini-body" style="padding:10px 12px 12px;text-align:left">
-          <div class="mini-links">
-            <div class="mini-link" id="prevPhone" style="display:none">📞 <span id="prevPhoneTxt"></span></div>
-            <div class="mini-link" id="prevEmail" style="display:none">✉️ <span id="prevEmailTxt"></span></div>
-          </div>
-        </div>
-        <div class="mini-accent" id="prevAccent" style="background:linear-gradient(90deg,#C9A84C,#E8C97E)"></div>
-      </div>
-    </div>
-  </div>
- 
-  <button class="sbtn" onclick="submit()" id="submitBtn">✦ Envoyer ma commande</button>
-  <div class="tip">🔒 Données sécurisées via Supabase. Aucun paiement en ligne. Contacté sous 24h.</div>
-</div>
-</div>
- 
-<!-- SUCCESS -->
-<div class="suc-ov" id="sucOv">
-  <div class="suc-box">
-    <div style="font-size:3rem;margin-bottom:1rem">✦</div>
-    <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.75rem">Commande enregistrée !</h2>
-    <p style="font-size:.9rem;color:var(--smoke);line-height:1.7;margin-bottom:1.5rem">Merci ! Notre équipe vous contacte sous <strong>24h</strong> pour confirmer et démarrer votre carte NFC.</p>
-    <div style="background:var(--cream);border-radius:var(--r);padding:.75rem 1.25rem;font-size:.8rem;color:var(--smoke2);margin-bottom:1.5rem;border:1px solid var(--cream3)">Référence : <strong id="sucRef" style="color:var(--gold);font-size:1rem"></strong></div>
-    <button onclick="window.location.href='https://printlegacy.github.io'" style="background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:.85rem 2rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif">Retour au site</button>
-  </div>
-</div>
- 
-<script>
-const { createClient } = supabase;
-const sb = createClient(
-  'https://szpjpytpciptplqjfwyd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
-);
- 
-const S = {offre:'',prix:'',qty:'1',theme:'noir',photo:null,cv:null};
- 
-function prevPhoto(e){
-  const f=e.target.files[0];if(!f)return;
-  S.photo=f;
-  const r=new FileReader();
-  r.onload=x=>{const i=document.getElementById('avImg');i.src=x.target.result;i.style.display='block';document.getElementById('avInit').style.display='none'};
-  r.readAsDataURL(f);
-  document.getElementById('photoOk').style.display='block';
-  updatePreview();
+
+'''
+order = order.replace('  <!-- 2. LIENS -->', cat_html + '  <!-- 2. LIENS -->')
+
+# Add catalogue JS
+cat_js = '''
+// ── CATALOGUE CLIENT ──
+let catItems = [];
+let catCount = 0;
+
+function addCatItem(data={}) {
+  if (catCount >= 9) { alert('Maximum 9 produits.'); return; }
+  catCount++;
+  const id = 'cat_' + Date.now();
+  catItems.push({id, name: data.name||'', price: data.price||'', desc: data.desc||'', file: null, url: data.url||''});
+
+  const div = document.createElement('div');
+  div.className = 'cat-upload-item';
+  div.id = 'catItem_' + id;
+  div.innerHTML = `
+    <input type="file" id="catFile_${id}" accept="image/*" style="display:none" onchange="loadCatImg('${id}',this)">
+    <div class="cat-upload-placeholder" onclick="document.getElementById('catFile_${id}').click()" id="catPlaceholder_${id}">📷</div>
+    <img class="cat-upload-img" id="catImg_${id}" style="display:none" src="${data.url||''}">
+    <button class="cat-upload-del" onclick="removeCatItem('${id}')">×</button>
+    <div class="cat-upload-inputs">
+      <input placeholder="Nom du produit / service" value="${data.name||''}" oninput="updateCatItem('${id}','name',this.value)">
+      <input placeholder="Prix (ex: 5 000 FCFA)" value="${data.price||''}" oninput="updateCatItem('${id}','price',this.value)">
+      <input placeholder="Description courte" value="${data.desc||''}" oninput="updateCatItem('${id}','desc',this.value)">
+    </div>`;
+
+  document.getElementById('catGrid').appendChild(div);
+  if (data.url) {
+    document.getElementById('catImg_'+id).style.display = 'block';
+    document.getElementById('catPlaceholder_'+id).style.display = 'none';
+  }
+  if (catCount >= 9) document.getElementById('catAddBtn').style.display = 'none';
 }
- 
-function prevCover(e){
-  const f=e.target.files[0];if(!f)return;
-  S.cover=f;
-  const r=new FileReader();
-  r.onload=x=>{
-    const img=document.getElementById('coverPrev');
-    img.src=x.target.result;img.style.display='block';
-    document.getElementById('coverPlaceholder').style.display='none';
-    const ov=document.getElementById('coverOverlay');ov.style.display='flex';
-    document.getElementById('coverZone').onmouseover=function(){ov.style.display='flex'};
+
+function loadCatImg(id, input) {
+  const file = input.files[0]; if (!file) return;
+  const item = catItems.find(c=>c.id===id);
+  if (item) item.file = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('catImg_'+id).src = e.target.result;
+    document.getElementById('catImg_'+id).style.display = 'block';
+    document.getElementById('catPlaceholder_'+id).style.display = 'none';
   };
-  r.readAsDataURL(f);
-  document.getElementById('coverOk').style.display='block';
-  updatePreview();
+  reader.readAsDataURL(file);
 }
- 
-function upd(){
-  const fn=document.getElementById('f-fn').value.trim();
-  const ln=document.getElementById('f-ln').value.trim();
-  const jt=document.getElementById('f-jt').value.trim();
-  const ph=document.getElementById('f-ph').value.trim();
-  document.getElementById('avInit').textContent=((fn[0]||'')+(ln[0]||'')).toUpperCase()||'?';
-  document.getElementById('s-name').textContent=(fn+' '+ln).trim()||'—';
-  document.getElementById('s-jt').textContent=jt||'—';
-  let p=0;
-  if(fn)p+=25;if(ln)p+=15;if(ph)p+=25;if(S.offre)p+=35;
-  document.getElementById('pf').style.width=p+'%';
-  updatePreview();
+
+function updateCatItem(id, field, value) {
+  const item = catItems.find(c=>c.id===id);
+  if (item) item[field] = value;
 }
- 
-function handleUp(e,t){
-  const f=e.target.files[0];if(!f)return;
-  S[t]=f;
-  document.getElementById(t+'-nm').textContent=f.name;
-  document.getElementById(t+'-rev').classList.add('show');
+
+function removeCatItem(id) {
+  catItems = catItems.filter(c=>c.id!==id);
+  document.getElementById('catItem_'+id).remove();
+  catCount--;
+  document.getElementById('catAddBtn').style.display = 'flex';
 }
-function delUp(t){S[t]=null;document.getElementById(t+'-rev').classList.remove('show');document.getElementById(t+'In').value='';}
- 
-function selOffre(n,p,el){
-  document.querySelectorAll('.ocard').forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');S.offre=n;S.prix=p;
-  document.getElementById('s-offre').textContent=n;
-  document.getElementById('s-total').textContent=p==='0'?'Gratuit':p==='devis'?'Sur devis':parseInt(p).toLocaleString()+' FCFA';
-  upd();
-}
-function selQty(v,el){
-  document.querySelectorAll('.qopt').forEach(o=>o.classList.remove('sel'));
-  el.classList.add('sel');S.qty=v;
-  document.getElementById('s-qty').textContent=v+' carte'+(v!=='1'?'s':'');
-}
-// Theme colors map
-const THEME_COLORS={
-  noir:    {bg:'#0A0A0A',ac:'#C9A84C',ac2:'#E8C97E'},
-  emerald: {bg:'#0B3526',ac:'#3DAA6B',ac2:'#72C99A'},
-  navy:    {bg:'#08152A',ac:'#3D7FD4',ac2:'#7EB3E8'},
-  crimson: {bg:'#1A0808',ac:'#C62828',ac2:'#EF5350'},
-  ivory:   {bg:'#1C160A',ac:'#C9A84C',ac2:'#E8C97E'},
-  violet:  {bg:'#150A28',ac:'#8B2FC9',ac2:'#CE93D8'},
-  bordeaux:{bg:'#1A0812',ac:'#C2185B',ac2:'#F06292'},
-  sable:   {bg:'#1C1208',ac:'#CD853F',ac2:'#DBA96A'},
-  slate:   {bg:'#0D1B2A',ac:'#607D8B',ac2:'#B0BEC5'},
-  rosegold:{bg:'#1A0F0F',ac:'#C48B9F',ac2:'#E8A0B0'},
-  tropical:{bg:'#051F0D',ac:'#26A69A',ac2:'#80CBC4'},
-  midnight:{bg:'#05051A',ac:'#5C6BC0',ac2:'#9FA8DA'},
-  coffee:  {bg:'#1A1008',ac:'#8D6E63',ac2:'#BCAAA4'},
-  forest:  {bg:'#0A1A0A',ac:'#388E3C',ac2:'#81C784'},
-  ocean:   {bg:'#00101A',ac:'#0277BD',ac2:'#4FC3F7'},
-  sand:    {bg:'#1A1510',ac:'#D4A853',ac2:'#E8C97E'},
-  plum:    {bg:'#140A1A',ac:'#6A1B9A',ac2:'#CE93D8'},
-  coral:   {bg:'#1A0A08',ac:'#E64A19',ac2:'#FF8A65'},
-  arctic:  {bg:'#0A1018',ac:'#80CBC4',ac2:'#B2EBF2'},
-  bronze:  {bg:'#120E08',ac:'#A0744C',ac2:'#BCAAA4'},
-};
-const THEME_LABELS={noir:'Noir & Or',emerald:'Émeraude',navy:'Navy',crimson:'Cramoisi',ivory:'Ivoire',violet:'Violet',bordeaux:'Bordeaux',sable:'Sable',slate:'Ardoise',rosegold:'Rose Gold',tropical:'Tropical',midnight:'Minuit',coffee:'Café',forest:'Forêt',ocean:'Océan',sand:'Désert',plum:'Prune',coral:'Corail',arctic:'Arctique',bronze:'Bronze'};
- 
-function selTheme(n,el){
-  document.querySelectorAll('.topt').forEach(t=>t.classList.remove('sel'));
-  el.classList.add('sel');S.theme=n;
-  document.getElementById('s-theme').textContent=THEME_LABELS[n]||n;
-  updatePreview();
-}
- 
-function updatePreview(){
-  const fn=document.getElementById('f-fn').value.trim();
-  const ln=document.getElementById('f-ln').value.trim();
-  const jt=document.getElementById('f-jt').value.trim();
-  const ph=document.getElementById('f-ph').value.trim();
-  const em=document.getElementById('f-em').value.trim();
- 
-  const tc=THEME_COLORS[S.theme]||THEME_COLORS.noir;
- 
-  // Background & accent
-  document.getElementById('prevBg').style.background=tc.bg;
-  document.getElementById('prevAccent').style.background=`linear-gradient(90deg,${tc.ac},${tc.ac2})`;
- 
-  // Name & role (now in hero overlay)
-  const fullName=(fn+' '+ln).trim();
-  document.getElementById('prevName').textContent=fullName||'Prénom Nom';
-  document.getElementById('prevName').style.color='#fff';
-  document.getElementById('prevRole').textContent=jt||'Votre poste';
-  document.getElementById('prevRole').style.color=tc.ac;
- 
-  // Cover photo
-  if(S.cover){
-    const reader=new FileReader();
-    reader.onload=x=>{
-      const ci=document.getElementById('prevCoverImg');
-      ci.src=x.target.result;ci.style.display='block';
-    };
-    if(!document.getElementById('prevCoverImg').src || document.getElementById('prevCoverImg').src===''){
-      reader.readAsDataURL(S.cover);
+
+async function uploadCatImages() {
+  for (const item of catItems) {
+    if (item.file) {
+      const url = await upFile(item.file, 'catalogue');
+      item.url = url;
     }
   }
- 
-  // Phone
-  if(ph){document.getElementById('prevPhone').style.display='flex';document.getElementById('prevPhoneTxt').textContent=ph}
-  else{document.getElementById('prevPhone').style.display='none'}
- 
-  // Email
-  if(em){document.getElementById('prevEmail').style.display='flex';document.getElementById('prevEmailTxt').textContent=em}
-  else{document.getElementById('prevEmail').style.display='none'}
- 
-  // Avatar photo
-  if(S.photo){
-    const reader=new FileReader();
-    reader.onload=x=>{
-      const img=document.getElementById('prevAvImg');
-      img.src=x.target.result;img.style.display='block';
-      document.getElementById('prevInit').style.display='none';
-    };
-    reader.readAsDataURL(S.photo);
-  }
+  return catItems.filter(i=>i.name||i.url).map(i=>({
+    name: i.name, price: i.price, desc: i.desc, url: i.url
+  }));
 }
- 
-function mkSlug(fn,ln){
-  return (fn+'-'+ln).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString().slice(-4);
-}
- 
-async function upFile(file,folder){
-  if(!file)return null;
-  const ext=file.name.split('.').pop();
-  const path=`${folder}/${Date.now()}.${ext}`;
-  const {error}=await sb.storage.from('printlegacy').upload(path,file);
-  if(error){console.warn(error);return null;}
-  return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
-}
- 
-async function submit(){
-  const fn=document.getElementById('f-fn').value.trim();
-  const ln=document.getElementById('f-ln').value.trim();
-  const ph=document.getElementById('f-ph').value.trim();
-  if(!fn||!ln){alert('Veuillez entrer votre prénom et nom.');return;}
-  if(!ph){alert('Veuillez entrer votre téléphone.');return;}
-  if(!S.offre){alert('Veuillez choisir une formule.');return;}
- 
-  const btn=document.getElementById('submitBtn');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spin"></span> Enregistrement...';
- 
-  try{
-    const photoUrl=await upFile(S.photo,'photos');
-    const coverUrl=await upFile(S.cover,'covers');
-    const cvUrl=await upFile(S.cv,'cvs');
-    const slug=mkSlug(fn,ln);
- 
-    const cl=[];
-    const fb=document.getElementById('f-fb').value.trim();
-    const yt=document.getElementById('f-yt').value.trim();
-    const beh=document.getElementById('f-beh').value.trim();
-    if(fb)cl.push({type:'facebook',url:fb});
-    if(yt)cl.push({type:'youtube',url:yt});
-    if(beh)cl.push({type:'behance',url:beh});
- 
-    const row={
-      firstname:fn, lastname:ln, slug,
-      jobtitle:document.getElementById('f-jt').value.trim()||null,
-      company:document.getElementById('f-co').value.trim()||null,
-      bio:document.getElementById('f-bio').value.trim()||null,
-      phone:ph,
-      whatsapp:document.getElementById('f-wa').value.trim()||null,
-      email:document.getElementById('f-em').value.trim()||null,
-      website:document.getElementById('f-ws').value.trim()||null,
-      instagram:document.getElementById('f-ig').value.trim()||null,
-      linkedin:document.getElementById('f-li').value.trim()||null,
-      tiktok:document.getElementById('f-tt').value.trim()||null,
-      youtube:yt||null,
-      behance:beh||null,
-      theme:S.theme,
-      photo:photoUrl,
-      cover_url:coverUrl,
-      location:document.getElementById('f-loc').value.trim()||null,
-      cv_url:cvUrl,
-      custom_links:cl.length>0?cl:null,
-      status:'pending'
-    };
- 
-    const {error}=await sb.from('clients').insert([row]);
-    if(error)throw error;
- 
-    const ref='#PL-'+slug.slice(-6).toUpperCase();
-    document.getElementById('sucRef').textContent=ref;
-    document.getElementById('sucOv').classList.add('open');
- 
-    // Notif WhatsApp
-    const msg=encodeURIComponent(`🌟 Nouvelle commande Print Legacy\n\n👤 ${fn} ${ln}\n💼 ${document.getElementById('f-jt').value.trim()}\n📞 ${ph}\n📦 ${S.offre}\n🔢 ${S.qty} carte(s)\n🎨 ${S.theme}\n🆔 ${ref}`);
-    setTimeout(()=>window.open(`https://wa.me/221784000066?text=${msg}`,'_blank'),800);
- 
-  }catch(err){
-    console.error(err);
-    alert('Erreur: '+err.message+'\n\nContactez le +221 78 400 00 66');
-    btn.disabled=false;
-    btn.innerHTML='✦ Envoyer ma commande';
-  }
-}
-</script>
-</body>
-</html>
+'''
+order = order.replace('</script>', cat_js + '\n</script>')
+
+# Patch submit to upload catalogue
+order = order.replace(
+    'const photoUrl=await upFile(S.photo,\'photos\');',
+    'const photoUrl=await upFile(S.photo,\'photos\');\n    const catalogueData=await uploadCatImages();'
+)
+order = order.replace(
+    "status:'pending',",
+    "status:'pending',\n      catalogue:catalogueData.length>0?catalogueData:null,"
+)
+
+with open('/mnt/user-data/outputs/order.html', 'w') as f:
+    f.write(order)
+print('Order done:', len(order))
+EOF
+Sortie
+
+Order done: 48289
