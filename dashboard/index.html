@@ -61,7 +61,6 @@ tr:hover td{background:var(--cream)}
 .badge{display:inline-block;padding:3px 9px;border-radius:2px;font-size:9.5px;font-weight:500}
 .b-p{background:var(--gold4);color:var(--gold)}
 .b-a{background:#E8F5E9;color:#2e7d32}
-.b-d{background:var(--cream);color:var(--smoke2)}
 .status{display:inline-flex;align-items:center;gap:5px;font-size:11px}
 .sd{width:5px;height:5px;border-radius:50%}
 .st-p .sd{background:var(--gold)}.st-p{color:var(--gold)}
@@ -75,22 +74,24 @@ tr:hover td{background:var(--cream)}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--cream2)}
  
+/* ── MODALS ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center}
+.ov.open{display:flex}
+.modal-hd{background:var(--ink);padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
+.modal-hd-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff;font-weight:400}
+.modal-hd-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+ 
 /* NFC MODAL */
-.nfc-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center}
-.nfc-ov.open{display:flex}
-.nfc-box{background:var(--w);border-radius:8px;padding:0;width:420px;max-width:90vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.nfc-hd{background:var(--ink);padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
-.nfc-hd-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff;font-weight:400}
-.nfc-hd-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.nfc-body{padding:24px}
-.nfc-client{font-size:11px;color:var(--smoke2);letter-spacing:.05em;margin-bottom:4px;text-transform:uppercase}
+.nfc-box{background:var(--w);border-radius:8px;width:420px;max-width:90vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.nfc-body{padding:22px}
+.nfc-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:6px}
 .nfc-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:16px}
-.nfc-url-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:6px}
-.nfc-url-box{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:4px;padding:10px 14px;margin-bottom:16px}
+.nfc-url-box{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:4px;padding:10px 14px;margin-bottom:6px}
 .nfc-url-text{font-size:11.5px;color:var(--ink);flex:1;word-break:break-all;font-weight:500}
 .nfc-copy-btn{background:var(--ink);color:var(--gold2);border:none;border-radius:4px;padding:6px 12px;font-size:10px;font-weight:600;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif}
 .nfc-copy-btn:hover{background:var(--gold);color:var(--ink)}
-.nfc-steps{background:var(--cream);border-radius:6px;padding:14px;margin-bottom:16px}
+.nfc-copied{display:none;font-size:10px;color:var(--success);font-weight:600;margin-bottom:14px}
+.nfc-steps{background:var(--cream);border-radius:6px;padding:14px;margin-bottom:14px}
 .nfc-steps-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:10px}
 .nfc-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:11.5px;color:var(--smoke)}
 .nfc-step:last-child{margin-bottom:0}
@@ -98,7 +99,60 @@ tr:hover td{background:var(--cream)}
 .nfc-apps{display:flex;gap:8px;flex-wrap:wrap}
 .nfc-app{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:6px;text-decoration:none;font-size:11px;font-weight:500;color:var(--ink);transition:.15s}
 .nfc-app:hover{border-color:var(--gold);background:var(--gold4)}
-.nfc-copied{display:none;font-size:10px;color:var(--success);font-weight:600;margin-top:4px}
+ 
+/* EDIT MODAL */
+.edit-box{background:var(--w);border-radius:8px;width:580px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.edit-body{flex:1;overflow-y:auto;padding:22px}
+.edit-body::-webkit-scrollbar{width:3px}
+.edit-body::-webkit-scrollbar-thumb{background:var(--cream2)}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.edit-field{display:flex;flex-direction:column;gap:5px}
+.edit-field.full{grid-column:1/-1}
+.edit-label{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2)}
+.edit-input{padding:8px 12px;border:1px solid var(--cream2);border-radius:var(--r);font-size:12.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
+.edit-input:focus{border-color:var(--gold);background:#FFFDF7}
+.edit-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--smoke2);padding:10px 0 8px;border-bottom:1px solid var(--cream2);margin-bottom:12px;grid-column:1/-1}
+.edit-theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;grid-column:1/-1}
+.edit-theme{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
+.edit-theme.sel{border-color:var(--gold)}
+.edit-theme-top{height:28px}
+.edit-theme-bot{height:16px;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:600;text-transform:uppercase}
+.edit-status{display:flex;gap:8px;grid-column:1/-1}
+.edit-status-opt{flex:1;padding:8px;border:1px solid var(--cream2);border-radius:var(--r);text-align:center;cursor:pointer;font-size:11px;font-weight:500;transition:.15s}
+.edit-status-opt:hover{border-color:var(--gold)}
+.edit-status-opt.sel{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
+.edit-foot{padding:14px 22px;border-top:1px solid var(--cream2);display:flex;gap:8px;background:var(--w)}
+.edit-save{flex:1;background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:10px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:.15s}
+.edit-save:hover{background:var(--gold);color:var(--ink)}
+.edit-cancel{background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);padding:10px 18px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;color:var(--smoke)}
+.edit-cancel:hover{border-color:var(--smoke)}
+.edit-delete{background:#FFEBEE;border:1px solid #FFCDD2;border-radius:var(--r);padding:10px 18px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;color:#C62828}
+.edit-delete:hover{background:#FFCDD2}
+.save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
+.save-toast.show{display:block}
+ 
+/* ── CATALOGUE MODAL ── */
+.cat-box{background:var(--w);border-radius:8px;width:680px;max-width:96vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.cat-modal-body{flex:1;overflow-y:auto;padding:22px}
+.cat-modal-body::-webkit-scrollbar{width:3px}
+.cat-modal-body::-webkit-scrollbar-thumb{background:var(--cream2)}
+.cat-empty{text-align:center;padding:3rem 1rem;color:var(--smoke2)}
+.cat-empty-ico{font-size:2.5rem;margin-bottom:.75rem}
+.cat-grid-modal{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cat-card{background:var(--cream);border:1px solid var(--cream2);border-radius:6px;overflow:hidden;transition:.15s}
+.cat-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(184,149,58,.12)}
+.cat-card-img{width:100%;height:110px;object-fit:cover;background:var(--cream2);display:block}
+.cat-card-img-placeholder{width:100%;height:110px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--smoke2)}
+.cat-card-body{padding:10px 12px 12px}
+.cat-card-name{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.3}
+.cat-card-desc{font-size:10.5px;color:var(--smoke2);line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cat-card-price{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--gold)}
+.cat-card-noprice{font-size:10px;color:var(--smoke2);font-style:italic}
+.cat-stat{display:inline-flex;align-items:center;gap:6px;background:var(--gold4);border:1px solid rgba(184,149,58,.25);border-radius:100px;padding:4px 12px;font-size:10px;font-weight:600;color:var(--gold);margin-bottom:16px}
+ 
+/* Catalogue badge in table */
+.cat-pill{display:inline-flex;align-items:center;gap:4px;background:var(--gold4);color:var(--gold);font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:100px;cursor:pointer;border:1px solid rgba(184,149,58,.2);transition:.15s}
+.cat-pill:hover{background:var(--gold);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -143,60 +197,178 @@ tr:hover td{background:var(--cream)}
     </div>
  
     <div class="content">
- 
-      <!-- STATS -->
       <div class="stats">
-        <div class="sc feat">
-          <div class="sc-ico">👥</div>
-          <div class="sc-lbl">Total clients</div>
-          <div class="sc-num" id="stat-total">—</div>
-          <div class="sc-sub">Dans Supabase</div>
-        </div>
-        <div class="sc">
-          <div class="sc-ico">⏳</div>
-          <div class="sc-lbl">En attente</div>
-          <div class="sc-num" id="stat-pending">—</div>
-          <div class="sc-sub">À traiter</div>
-        </div>
-        <div class="sc">
-          <div class="sc-ico">✅</div>
-          <div class="sc-lbl">Actifs</div>
-          <div class="sc-num" id="stat-active">—</div>
-          <div class="sc-sub">Cartes livrées</div>
-        </div>
-        <div class="sc">
-          <div class="sc-ico">💳</div>
-          <div class="sc-lbl">Cartes NFC</div>
-          <div class="sc-num" id="stat-nfc">—</div>
-          <div class="sc-sub">Pro NFC commandées</div>
-        </div>
+        <div class="sc feat"><div class="sc-ico">👥</div><div class="sc-lbl">Total clients</div><div class="sc-num" id="stat-total">—</div><div class="sc-sub">Dans Supabase</div></div>
+        <div class="sc"><div class="sc-ico">⏳</div><div class="sc-lbl">En attente</div><div class="sc-num" id="stat-pending">—</div><div class="sc-sub">À traiter</div></div>
+        <div class="sc"><div class="sc-ico">✅</div><div class="sc-lbl">Actifs</div><div class="sc-num" id="stat-active">—</div><div class="sc-sub">Cartes livrées</div></div>
+        <div class="sc"><div class="sc-ico">🛍️</div><div class="sc-lbl">Avec catalogue</div><div class="sc-num" id="stat-cat">—</div><div class="sc-sub">Articles déposés</div></div>
       </div>
- 
-      <!-- TABLE -->
       <div class="card">
         <div class="card-h">
           <div class="card-t">Tous les clients</div>
           <button class="card-a" onclick="loadData()">Actualiser →</button>
         </div>
-        <div id="tableWrap">
-          <div class="loading"><span class="spin"></span> Chargement depuis Supabase...</div>
-        </div>
+        <div id="tableWrap"><div class="loading"><span class="spin"></span> Chargement depuis Supabase...</div></div>
       </div>
- 
     </div>
   </div>
 </div>
  
+<!-- NFC MODAL -->
+<div class="ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
+  <div class="nfc-box">
+    <div class="modal-hd">
+      <div class="modal-hd-title">📶 Encoder la carte NFC</div>
+      <button class="modal-hd-close" onclick="closeNFC()">✕</button>
+    </div>
+    <div class="nfc-body">
+      <div class="nfc-lbl">Client</div>
+      <div class="nfc-name" id="nfcClientName">—</div>
+      <div class="nfc-lbl">URL à encoder dans la carte NFC</div>
+      <div class="nfc-url-box">
+        <div class="nfc-url-text" id="nfcUrl">—</div>
+        <button class="nfc-copy-btn" onclick="copyNFC()">Copier</button>
+      </div>
+      <div class="nfc-copied" id="nfcCopied">✓ Copié dans le presse-papier !</div>
+      <div class="nfc-steps">
+        <div class="nfc-steps-title">Comment encoder la carte</div>
+        <div class="nfc-step"><div class="nfc-step-num">1</div><span>Ouvrez <strong>NFC Tools</strong> sur votre téléphone</span></div>
+        <div class="nfc-step"><div class="nfc-step-num">2</div><span>Choisissez <strong>Écrire</strong> → <strong>Ajouter un enregistrement</strong> → <strong>URL</strong></span></div>
+        <div class="nfc-step"><div class="nfc-step-num">3</div><span>Collez l'URL ci-dessus et appuyez sur <strong>Écrire</strong></span></div>
+        <div class="nfc-step"><div class="nfc-step-num">4</div><span>Approchez la carte NFC et confirmez l'écriture</span></div>
+      </div>
+      <div class="nfc-lbl" style="margin-bottom:8px">Applications recommandées</div>
+      <div class="nfc-apps">
+        <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" class="nfc-app">🤖 NFC Tools Android</a>
+        <a href="https://apps.apple.com/app/nfc-tools/id1252962749" target="_blank" class="nfc-app">🍎 NFC Tools iPhone</a>
+        <a href="https://play.google.com/store/apps/details?id=com.nxp.taginfolite" target="_blank" class="nfc-app">🤖 NXP TagWriter</a>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- EDIT MODAL -->
+<div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
+  <div class="edit-box">
+    <div class="modal-hd">
+      <div class="modal-hd-title">✏️ Modifier le profil</div>
+      <button class="modal-hd-close" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="edit-body">
+      <input type="hidden" id="edit-id">
+      <div class="edit-grid">
+        <div class="edit-section">Identité</div>
+        <div class="edit-field"><div class="edit-label">Prénom</div><input class="edit-input" id="edit-firstname" placeholder="Prénom"></div>
+        <div class="edit-field"><div class="edit-label">Nom</div><input class="edit-input" id="edit-lastname" placeholder="Nom"></div>
+        <div class="edit-field"><div class="edit-label">Poste / Titre</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO, Directeur..."></div>
+        <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Nom entreprise"></div>
+        <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" placeholder="Bio professionnelle..." style="resize:vertical"></textarea></div>
+        <div class="edit-field"><div class="edit-label">Localisation</div><input class="edit-input" id="edit-location" placeholder="Plateau, Dakar"></div>
+ 
+        <div class="edit-section">Contact</div>
+        <div class="edit-field"><div class="edit-label">Téléphone</div><input class="edit-input" id="edit-phone" placeholder="+221 78..."></div>
+        <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
+        <div class="edit-field"><div class="edit-label">Email</div><input class="edit-input" id="edit-email" placeholder="email@..."></div>
+        <div class="edit-field"><div class="edit-label">Site web</div><input class="edit-input" id="edit-website" placeholder="https://..."></div>
+ 
+        <div class="edit-section">Réseaux sociaux</div>
+        <div class="edit-field"><div class="edit-label">Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
+        <div class="edit-field"><div class="edit-label">LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
+        <div class="edit-field"><div class="edit-label">TikTok</div><input class="edit-input" id="edit-tiktok" placeholder="@compte"></div>
+        <div class="edit-field"><div class="edit-label">YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
+        <div class="edit-field"><div class="edit-label">Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
+        <div class="edit-field"><div class="edit-label">Behance</div><input class="edit-input" id="edit-behance" placeholder="behance.net/..."></div>
+ 
+        <div class="edit-section">Apparence</div>
+        <div class="edit-theme-grid" id="editThemeGrid"></div>
+ 
+        <div class="edit-section">Statut</div>
+        <div class="edit-status">
+          <div class="edit-status-opt" id="st-pending" onclick="selStatus('pending')">⏳ En attente</div>
+          <div class="edit-status-opt" id="st-active" onclick="selStatus('active')">✅ Actif</div>
+          <div class="edit-status-opt" id="st-delivered" onclick="selStatus('delivered')">📦 Livré</div>
+        </div>
+      </div>
+    </div>
+    <div class="edit-foot">
+      <button class="edit-delete" onclick="deleteClient()">🗑 Supprimer</button>
+      <button class="edit-cancel" onclick="closeEdit()">Annuler</button>
+      <button class="edit-save" onclick="saveEdit()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- CATALOGUE MODAL -->
+<div class="ov" id="catOv" onclick="if(event.target===this)closeCat()">
+  <div class="cat-box">
+    <div class="modal-hd">
+      <div class="modal-hd-title">🛍️ Catalogue — <span id="catClientName" style="color:var(--gold2)"></span></div>
+      <button class="modal-hd-close" onclick="closeCat()">✕</button>
+    </div>
+    <div class="cat-modal-body" id="catModalBody">
+      <div class="cat-empty"><div class="cat-empty-ico">🛍️</div><p>Aucun article dans le catalogue.</p></div>
+    </div>
+  </div>
+</div>
+ 
+<div class="save-toast" id="saveToast"></div>
+ 
 <script>
-const { createClient } = supabase;
-const sb = createClient(
+const {createClient}=supabase;
+const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
  
-// Date
-const now = new Date();
-document.getElementById('dateLabel').textContent = now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+ 
+const THEMES=[
+  {id:'noir',name:'Noir & Or',h1:'#0A0A0A',ac:'#D4AF6A',tc:'#0A0A0A'},
+  {id:'emerald',name:'Émeraude',h1:'#0D3B2E',ac:'#4CAF50',tc:'#fff'},
+  {id:'navy',name:'Navy',h1:'#0A1628',ac:'#4A90D9',tc:'#fff'},
+  {id:'crimson',name:'Cramoisi',h1:'#1A0808',ac:'#C62828',tc:'#fff'},
+  {id:'ivory',name:'Ivoire',h1:'#1C160A',ac:'#C9A84C',tc:'#fff'},
+  {id:'violet',name:'Violet',h1:'#1A0A2E',ac:'#9C27B0',tc:'#fff'},
+  {id:'bordeaux',name:'Bordeaux',h1:'#1A0812',ac:'#C2185B',tc:'#fff'},
+  {id:'sable',name:'Sable',h1:'#1C1208',ac:'#CD853F',tc:'#fff'},
+  {id:'slate',name:'Ardoise',h1:'#0D1B2A',ac:'#607D8B',tc:'#fff'},
+  {id:'rosegold',name:'Rose Gold',h1:'#1A0F0F',ac:'#E8A0B0',tc:'#4a2030'},
+  {id:'tropical',name:'Tropical',h1:'#051F0D',ac:'#26A69A',tc:'#fff'},
+  {id:'midnight',name:'Minuit',h1:'#05051A',ac:'#5C6BC0',tc:'#fff'},
+  {id:'coffee',name:'Café',h1:'#1A1008',ac:'#8D6E63',tc:'#fff'},
+  {id:'forest',name:'Forêt',h1:'#0A1A0A',ac:'#388E3C',tc:'#fff'},
+  {id:'ocean',name:'Océan',h1:'#00101A',ac:'#0277BD',tc:'#fff'},
+  {id:'sand',name:'Désert',h1:'#1A1510',ac:'#D4A853',tc:'#fff'},
+  {id:'plum',name:'Prune',h1:'#140A1A',ac:'#6A1B9A',tc:'#fff'},
+  {id:'coral',name:'Corail',h1:'#1A0A08',ac:'#E64A19',tc:'#fff'},
+  {id:'arctic',name:'Arctique',h1:'#0A1018',ac:'#80CBC4',tc:'#004D40'},
+  {id:'bronze',name:'Bronze',h1:'#120E08',ac:'#A0744C',tc:'#fff'},
+];
+ 
+const tg=document.getElementById('editThemeGrid');
+THEMES.forEach(t=>{
+  tg.innerHTML+=`<div class="edit-theme" id="et-${t.id}" onclick="selTheme('${t.id}')">
+    <div class="edit-theme-top" style="background:${t.h1}"></div>
+    <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
+  </div>`;
+});
+ 
+let currentTheme='noir';
+let currentStatus='pending';
+let currentId=null;
+ 
+function selTheme(id){
+  document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
+  const el=document.getElementById('et-'+id);
+  if(el)el.classList.add('sel');
+  currentTheme=id;
+}
+ 
+function selStatus(s){
+  document.querySelectorAll('.edit-status-opt').forEach(o=>o.classList.remove('sel'));
+  document.getElementById('st-'+s).classList.add('sel');
+  currentStatus=s;
+}
  
 function statusBadge(s){
   if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
@@ -204,152 +376,164 @@ function statusBadge(s){
   return '<span class="status st-d"><span class="sd"></span>'+s+'</span>';
 }
  
-function initials(fn,ln){
-  return ((fn||'')[0]+(ln||'')[0]).toUpperCase();
+function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
+ 
+function catPill(cat, slug, name) {
+  if(!cat || !cat.length) return '<span style="font-size:10px;color:var(--smoke2)">—</span>';
+  const n = cat.length;
+  return `<span class="cat-pill" onclick="openCat(${JSON.stringify(cat).replace(/"/g,'&quot;')},'${escJs(name)}')" title="Voir le catalogue">🛍️ ${n} article${n>1?'s':''}</span>`;
 }
  
-async function toggleStatus(id, current){
-  const next = current==='active' ? 'pending' : 'active';
+function escJs(s){ return (s||'').replace(/'/g,"\\'"); }
+ 
+async function toggleStatus(id,current){
+  const next=current==='active'?'pending':'active';
   await sb.from('clients').update({status:next}).eq('id',id);
   loadData();
 }
  
 async function loadData(){
-  document.getElementById('tableWrap').innerHTML = '<div class="loading"><span class="spin"></span> Chargement...</div>';
+  document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
+  if(error){document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>Erreur: '+error.message+'</div>';return}
+  if(!data||data.length===0){document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">📭</div>Aucun client.<br><a href="https://printlegacy.github.io/order" style="color:var(--gold)">Ajouter →</a></div>';return}
  
-  const {data, error} = await sb.from('clients').select('*').order('created_at',{ascending:false});
+  document.getElementById('stat-total').textContent=data.length;
+  document.getElementById('stat-pending').textContent=data.filter(c=>!c.status||c.status==='pending').length;
+  document.getElementById('stat-active').textContent=data.filter(c=>c.status==='active').length;
+  const catClients = data.filter(c=>c.catalogue&&c.catalogue.length>0);
+  const totalCatItems = catClients.reduce((sum,c)=>sum+(c.catalogue||[]).length,0);
+  document.getElementById('stat-cat').textContent=totalCatItems;
+  document.getElementById('sb-pending').textContent=data.filter(c=>!c.status||c.status==='pending').length;
  
-  if(error){
-    document.getElementById('tableWrap').innerHTML = '<div class="empty"><div class="empty-ico">⚠️</div>Erreur: '+error.message+'</div>';
-    return;
-  }
- 
-  if(!data||data.length===0){
-    document.getElementById('tableWrap').innerHTML = '<div class="empty"><div class="empty-ico">📭</div>Aucun client pour le moment.<br><a href="https://printlegacy.github.io/order" style="color:var(--gold)">Ajouter un client →</a></div>';
-    return;
-  }
- 
-  // Stats
-  document.getElementById('stat-total').textContent = data.length;
-  document.getElementById('stat-pending').textContent = data.filter(c=>!c.status||c.status==='pending').length;
-  document.getElementById('stat-active').textContent = data.filter(c=>c.status==='active').length;
-  document.getElementById('stat-nfc').textContent = data.length; // all are NFC orders
-  document.getElementById('sb-pending').textContent = data.filter(c=>!c.status||c.status==='pending').length;
- 
-  // Table
-  const rows = data.map(c => `
+  const rows=data.map(c=>{
+    const fullName = `${c.firstname||''} ${c.lastname||''}`.trim();
+    return `
     <tr>
-      <td>
-        <div class="cl">
-          <div class="av">${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'">`:''}${!c.photo?initials(c.firstname,c.lastname):''}</div>
-          <div>
-            <div class="cn">${c.firstname||''} ${c.lastname||''}</div>
-            <div class="cs">${c.company||c.jobtitle||''}</div>
-          </div>
-        </div>
-      </td>
+      <td><div class="cl">
+        <div class="av">${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'">`:''}${!c.photo?initials(c.firstname,c.lastname):''}</div>
+        <div><div class="cn">${fullName}</div><div class="cs">${c.company||c.jobtitle||''}</div></div>
+      </div></td>
       <td>${c.jobtitle||'—'}</td>
       <td>${c.phone||'—'}</td>
-      <td>${c.email||'—'}</td>
+      <td>${catPill(c.catalogue, c.slug, fullName)}</td>
       <td><span class="badge b-p">${c.theme||'noir'}</span></td>
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
       <td>
         <div style="display:flex;gap:6px;align-items:center">
-          ${c.cv_url?`<a href="${c.cv_url}" target="_blank" title="Voir CV" style="font-size:13px;text-decoration:none">📄</a>`:''}
-          <span title="${c.status==='active'?'Mettre en attente':'Activer'}" onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:13px">${c.status==='active'?'⏸️':'✅'}</span>
-          <a href="https://printlegacy-platform.vercel.app/?carte=${c.slug}" target="_blank" title="Voir profil" style="font-size:13px;text-decoration:none">👁️</a>
-          <span title="Encoder carte NFC" onclick="openNFC('${c.slug}','${(c.firstname||'')} ${(c.lastname||'')}')" style="cursor:pointer;font-size:13px">📶</span>
+          ${c.cv_url?`<a href="${c.cv_url}" target="_blank" title="CV" style="font-size:14px;text-decoration:none">📄</a>`:''}
+          <span title="Voir profil" onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${c.slug}','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
+          <span title="Encoder NFC" onclick="openNFC('${c.slug}','${escJs(fullName)}')" style="cursor:pointer;font-size:14px">📶</span>
+          <span title="Modifier" onclick="openEdit(${JSON.stringify(c).replace(/"/g,'&quot;')})" style="cursor:pointer;font-size:14px">✏️</span>
+          <span title="${c.status==='active'?'Désactiver':'Activer'}" onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
  
-  document.getElementById('tableWrap').innerHTML = `
+  document.getElementById('tableWrap').innerHTML=`
     <table>
-      <thead>
-        <tr>
-          <th>Client</th>
-          <th>Poste</th>
-          <th>Téléphone</th>
-          <th>Email</th>
-          <th>Thème</th>
-          <th>Statut</th>
-          <th>Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Client</th><th>Poste</th><th>Téléphone</th><th>Catalogue</th>
+        <th>Thème</th><th>Statut</th><th>Date</th><th>Actions</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
-    </table>
-  `;
+    </table>`;
 }
  
- 
-function openNFC(slug, name) {
-  const url = `https://printlegacy-platform.vercel.app/?carte=${slug}`;
-  document.getElementById('nfcClientName').textContent = name.trim();
-  document.getElementById('nfcUrl').textContent = url;
-  document.getElementById('nfcCopied').style.display = 'none';
+// ── NFC ──
+function openNFC(slug,name){
+  document.getElementById('nfcClientName').textContent=name.trim();
+  document.getElementById('nfcUrl').textContent=`https://printlegacy-platform.vercel.app/?carte=${slug}`;
+  document.getElementById('nfcCopied').style.display='none';
   document.getElementById('nfcOv').classList.add('open');
 }
-function closeNFC() {
-  document.getElementById('nfcOv').classList.remove('open');
-}
-function copyNFC() {
-  const url = document.getElementById('nfcUrl').textContent;
-  navigator.clipboard.writeText(url).catch(()=>{});
-  document.getElementById('nfcCopied').style.display = 'block';
-  document.querySelector('.nfc-copy-btn').textContent = '✓ Copié';
-  setTimeout(()=>{
-    document.getElementById('nfcCopied').style.display = 'none';
-    document.querySelector('.nfc-copy-btn').textContent = 'Copier';
-  }, 2000);
+function closeNFC(){document.getElementById('nfcOv').classList.remove('open')}
+function copyNFC(){
+  navigator.clipboard.writeText(document.getElementById('nfcUrl').textContent).catch(()=>{});
+  document.getElementById('nfcCopied').style.display='block';
+  document.querySelector('.nfc-copy-btn').textContent='✓ Copié';
+  setTimeout(()=>{document.getElementById('nfcCopied').style.display='none';document.querySelector('.nfc-copy-btn').textContent='Copier'},2000);
 }
  
-function logout(){
-  window.location.href='https://printlegacy.github.io';
+// ── CATALOGUE MODAL ──
+function openCat(catalogue, clientName) {
+  document.getElementById('catClientName').textContent = clientName;
+  const body = document.getElementById('catModalBody');
+ 
+  if(!catalogue || catalogue.length === 0){
+    body.innerHTML = '<div class="cat-empty"><div class="cat-empty-ico">🛍️</div><p>Ce client n\'a pas encore de catalogue.</p></div>';
+  } else {
+    const n = catalogue.length;
+    const cards = catalogue.map(item => `
+      <div class="cat-card">
+        ${item.image_url
+          ? `<img class="cat-card-img" src="${item.image_url}" alt="${item.title||''}" onerror="this.style.display='none'">`
+          : `<div class="cat-card-img-placeholder">🖼️</div>`
+        }
+        <div class="cat-card-body">
+          <div class="cat-card-name">${item.title || 'Sans titre'}</div>
+          ${item.desc ? `<div class="cat-card-desc">${item.desc}</div>` : ''}
+          ${item.price != null && item.price !== ''
+            ? `<div class="cat-card-price">${parseInt(item.price).toLocaleString('fr-FR')} FCFA</div>`
+            : `<div class="cat-card-noprice">Prix non renseigné</div>`
+          }
+        </div>
+      </div>
+    `).join('');
+ 
+    body.innerHTML = `
+      <div class="cat-stat">🛍️ ${n} article${n>1?'s':''} au catalogue</div>
+      <div class="cat-grid-modal">${cards}</div>
+    `;
+  }
+  document.getElementById('catOv').classList.add('open');
 }
+function closeCat(){document.getElementById('catOv').classList.remove('open')}
+ 
+// ── EDIT ──
+function openEdit(c){
+  currentId=c.id;
+  const fields=['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance'];
+  fields.forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||''});
+  selTheme(c.theme||'noir');
+  selStatus(c.status||'pending');
+  document.getElementById('editOv').classList.add('open');
+}
+function closeEdit(){document.getElementById('editOv').classList.remove('open')}
+ 
+async function saveEdit(){
+  if(!currentId)return;
+  const fields=['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance'];
+  const updates={theme:currentTheme,status:currentStatus};
+  fields.forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null});
+  const {error}=await sb.from('clients').update(updates).eq('id',currentId);
+  if(error){alert('Erreur: '+error.message);return}
+  closeEdit();
+  loadData();
+  showToast('✓ Profil mis à jour !');
+}
+ 
+async function deleteClient(){
+  if(!currentId)return;
+  if(!confirm('Supprimer ce client définitivement ?'))return;
+  await sb.from('clients').delete().eq('id',currentId);
+  closeEdit();
+  loadData();
+  showToast('Client supprimé');
+}
+ 
+function showToast(msg){
+  const t=document.getElementById('saveToast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+ 
+function logout(){window.location.href='https://printlegacy.github.io'}
  
 loadData();
-// Auto refresh every 30s
-setInterval(loadData, 30000);
+setInterval(loadData,30000);
 </script>
- 
-<!-- NFC MODAL -->
-<div class="nfc-ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
-  <div class="nfc-box">
-    <div class="nfc-hd">
-      <div class="nfc-hd-title">📶 Encoder la carte NFC</div>
-      <button class="nfc-hd-close" onclick="closeNFC()">✕</button>
-    </div>
-    <div class="nfc-body">
-      <div class="nfc-client">Client</div>
-      <div class="nfc-name" id="nfcClientName">—</div>
- 
-      <div class="nfc-url-label">URL à encoder dans la carte NFC</div>
-      <div class="nfc-url-box">
-        <div class="nfc-url-text" id="nfcUrl">—</div>
-        <button class="nfc-copy-btn" onclick="copyNFC()">Copier</button>
-      </div>
-      <div class="nfc-copied" id="nfcCopied">✓ Copié dans le presse-papier !</div>
- 
-      <div class="nfc-steps">
-        <div class="nfc-steps-title">Comment encoder la carte</div>
-        <div class="nfc-step"><div class="nfc-step-num">1</div><span>Ouvrez une app NFC sur votre téléphone (NFC Tools ou NXP TagWriter)</span></div>
-        <div class="nfc-step"><div class="nfc-step-num">2</div><span>Choisissez <strong>Écrire</strong> → <strong>Ajouter un enregistrement</strong> → <strong>URL</strong></span></div>
-        <div class="nfc-step"><div class="nfc-step-num">3</div><span>Collez l'URL ci-dessus et appuyez sur <strong>Écrire</strong></span></div>
-        <div class="nfc-step"><div class="nfc-step-num">4</div><span>Approchez la carte NFC de votre téléphone et confirmez</span></div>
-      </div>
- 
-      <div class="nfc-url-label" style="margin-bottom:8px">Applications recommandées</div>
-      <div class="nfc-apps">
-        <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" class="nfc-app">🤖 NFC Tools (Android)</a>
-        <a href="https://apps.apple.com/app/nfc-tools/id1252962749" target="_blank" class="nfc-app">🍎 NFC Tools (iPhone)</a>
-        <a href="https://play.google.com/store/apps/details?id=com.nxp.taginfolite" target="_blank" class="nfc-app">🤖 NXP TagWriter</a>
-      </div>
-    </div>
-  </div>
-</div>
- 
 </body>
 </html>
