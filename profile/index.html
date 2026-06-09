@@ -2,15 +2,128 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redirection — Print Legacy</title>
-<script>
-// Redirect to Vercel preserving all query parameters
-const params = window.location.search;
-window.location.replace("https://printlegacy-platform.vercel.app/" + params);
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Profil — Print Legacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--gold:#C9A84C;--gold2:#E8C97A;--gold-bg:rgba(201,168,76,0.1);--ink:#0D0D0D;--white:#FFFFFF;--cream:#F5F0E8;--cream2:#EDE5D5;--muted:#8A8070;--border:rgba(0,0,0,0.07)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:#EDEAE3;font-family:"DM Sans",sans-serif}
+body{display:flex;justify-content:center;padding-bottom:90px}
+.card{width:100%;max-width:420px;background:var(--white);min-height:100vh;position:relative}
+.hero{position:relative;width:100%;height:420px;overflow:hidden;background:#1A1510;flex-shrink:0}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-placeholder{width:100%;height:100%;background:linear-gradient(160deg,#0D0D0D,#2A1E0E);display:flex;align-items:center;justify-content:center}
+.hero-initials-big{font-family:"Playfair Display",serif;font-size:6rem;font-weight:700;color:rgba(201,168,76,0.2)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0.05) 25%,rgba(0,0,0,0.6) 65%,rgba(0,0,0,0.88) 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:0 1.4rem 1.7rem}
+.hero-badge{display:inline-flex;align-items:center;border:1px solid rgba(201,168,76,0.45);border-radius:100px;padding:.28rem .9rem;font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:.85rem}
+.hero-name{font-family:"Playfair Display",serif;font-size:2rem;font-weight:700;color:var(--white);line-height:1.15;margin-bottom:.15rem}
+.hero-role{font-size:.82rem;color:rgba(255,255,255,.55);font-weight:400}
+.hero-role em{color:var(--gold);font-style:normal;font-weight:600}
+.company-card{margin:1rem 1.2rem;background:var(--cream);border-radius:14px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--cream2)}
+.co-left{display:flex;align-items:center;gap:.75rem}
+.co-logo{width:44px;height:44px;border-radius:10px;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.co-logo img{width:30px;height:30px;object-fit:contain}
+.co-name{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+.co-badge{display:inline-block;background:var(--gold-bg);border:1px solid rgba(201,168,76,.2);border-radius:3px;padding:.15rem .55rem;font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.co-arr{width:26px;height:26px;border-radius:50%;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted)}
+.sec{padding:0 1.2rem 1.1rem}
+.sec-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--cream2)}
+.sec-ico{width:32px;height:32px;border-radius:8px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.sec-lbl{font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.divider{display:flex;align-items:center;justify-content:center;padding:.3rem 1.2rem 1.1rem}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--cream2)}
+.divider span{width:5px;height:5px;border-radius:50%;background:var(--gold);margin:0 .5rem}
+.about-txt{font-size:.8rem;color:var(--muted);line-height:1.8}
+.contact-list{display:flex;flex-direction:column;gap:.45rem}
+.clink{display:flex;align-items:center;gap:.8rem;padding:.8rem .9rem;border-radius:12px;background:var(--cream);text-decoration:none;border:1px solid transparent;transition:all .18s}
+.clink:hover{border-color:var(--gold);background:var(--white)}
+.clink-ico{width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.clink-body{flex:1;min-width:0}
+.clink-lbl{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block}
+.clink-val{font-size:.84rem;font-weight:500;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clink-arr{font-size:.72rem;color:var(--muted);flex-shrink:0}
+.soc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.soc-btn{display:flex;flex-direction:column;align-items:center;padding:.85rem .3rem .7rem;border-radius:12px;background:var(--cream);border:1px solid var(--cream2);text-decoration:none;gap:5px;transition:all .18s}
+.soc-btn:hover{border-color:var(--gold);background:var(--white);transform:translateY(-2px)}
+.soc-ico{font-size:1.2rem}
+.soc-name{font-size:.58rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-align:center}
+.save-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--ink);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
+.sb-left{display:flex;align-items:center;gap:.7rem}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--gold);overflow:hidden;flex-shrink:0}
+.sb-av img{width:100%;height:100%;object-fit:cover}
+.sb-txt{display:flex;flex-direction:column}
+.sb-sublbl{font-size:.57rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.sb-title{font-size:.84rem;font-weight:600;color:var(--white)}
+.sb-btn{width:38px;height:38px;border-radius:10px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--ink);transition:all .2s;flex-shrink:0}
+.sb-btn:hover{background:var(--gold2);transform:scale(1.06)}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;color:var(--muted);background:var(--white)}
+.spin{width:30px;height:30px;border:2.5px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:.8rem;text-align:center;padding:2rem;background:var(--white)}
+.err h2{font-family:"Playfair Display",serif;font-size:1.4rem;color:var(--ink)}
+.err p{color:var(--muted);font-size:.875rem;line-height:1.7}
+.err a{color:var(--gold);font-weight:600;text-decoration:none}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--white);padding:.65rem 1.4rem;border-radius:100px;font-size:.78rem;font-weight:600;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.spacer{height:1rem}
+</style>
 </head>
 <body>
-<p style="font-family:sans-serif;text-align:center;margin-top:3rem">Chargement du profil...</p>
+<div id="app" class="card">
+  <div class="loading"><div class="spin"></div><p>Chargement...</p></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const {createClient}=supabase;
+const sb=createClient('https://szpjpytpciptplqjfwyd.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4');
+function getSlug(){
+  const p=new URLSearchParams(location.search);
+  const parts=location.pathname.split('/').filter(Boolean);
+  return p.get('carte')||p.get('slug')||(parts.length>=2&&parts[0]==='profile'?parts[1]:null);
+}
+function ini(fn,ln){return((fn||'')[0]+(ln||'')[0]).toUpperCase()||'?'}
+function buildContacts(c){const l=[];if(c.phone)l.push({href:'tel:'+c.phone,ico:'📞',lbl:'Téléphone',val:c.phone});const wa=c.whatsapp||c.phone;if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:'💬',lbl:'WhatsApp',val:'Message direct',t:1});if(c.email)l.push({href:'mailto:'+c.email,ico:'✉️',lbl:'E-mail',val:c.email});if(c.website)l.push({href:c.website,ico:'🌐',lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});if(c.location){const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);l.push({href,ico:'📍',lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});}if(c.cv_url)l.push({href:c.cv_url,ico:'📄',lbl:'CV / Portfolio',val:'Télécharger',t:1});return l}
+function buildSocials(c){const s=[];if(c.instagram)s.push({href:'https://'+c.instagram,ico:'📸',name:'Instagram'});if(c.tiktok)s.push({href:'https://'+c.tiktok,ico:'🎵',name:'TikTok'});if(c.linkedin)s.push({href:'https://'+c.linkedin,ico:'💼',name:'LinkedIn'});if(c.behance)s.push({href:'https://'+c.behance,ico:'🎨',name:'Behance'});if(c.youtube)s.push({href:'https://'+c.youtube,ico:'▶️',name:'YouTube'});try{(typeof c.custom_links==='string'?JSON.parse(c.custom_links):c.custom_links||[]).forEach(l=>s.push({href:l.url,ico:l.icon||'🔗',name:l.label}));}catch(e){}return s}
+function saveVCard(c){const lines=['BEGIN:VCARD','VERSION:3.0','FN:'+(c.firstname||'')+' '+(c.lastname||''),'N:'+(c.lastname||'')+';'+(c.firstname||'')+';;;'];if(c.jobtitle)lines.push('TITLE:'+c.jobtitle);if(c.company)lines.push('ORG:'+c.company);if(c.phone)lines.push('TEL;TYPE=CELL:'+c.phone);if(c.email)lines.push('EMAIL:'+c.email);if(c.website)lines.push('URL:'+c.website);if(c.location&&!c.location.startsWith('http'))lines.push('ADR:;;'+c.location+';;;;');lines.push('END:VCARD');const blob=new Blob([lines.join('\n')],{type:'text/vcard'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(c.firstname||'contact')+'_'+(c.lastname||'')+'.vcf';a.click();URL.revokeObjectURL(url);toast('✓ Contact enregistré !')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function render(c){
+  const name=(c.firstname||'')+' '+(c.lastname||'');
+  document.title=name+' — Print Legacy';
+  const contacts=buildContacts(c);
+  const socials=buildSocials(c);
+  const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
+  const heroImg=c.cover_photo||c.photo;
+  const heroHTML=heroImg?`<img class="hero-img" src="${heroImg}" alt="${name}">`:`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
+  const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
+  const compHTML=c.company?`<div class="company-card"><div class="co-left"><div class="co-logo"><img src="https://printlegacy.github.io/assets/logo.png" alt="PL" onerror="this.style.display='none'"></div><div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div></div><div class="co-arr">›</div></div>`:'';
+  const aboutHTML=c.bio?`<div class="sec"><div class="sec-header"><div class="sec-ico">👤</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`:'';
+  const contactHTML=contacts.length?`<div class="sec"><div class="sec-header"><div class="sec-ico">📋</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`:'';
+  const socialHTML=socials.length?`<div class="sec"><div class="sec-header"><div class="sec-ico">🌐</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`:'';
+  document.getElementById('app').innerHTML=`
+    <div class="card">
+      <div class="hero">${heroHTML}<div class="hero-overlay"></div><div class="hero-content"><div class="hero-badge">Carte professionnelle</div><div class="hero-name">${name}</div><div class="hero-role">${roleHTML}</div></div></div>
+      ${compHTML}<div class="spacer"></div>
+      ${aboutHTML}${contactHTML}${socialHTML}
+      <div style="text-align:center;padding:1rem 1.2rem 1.5rem"><a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a></div>
+    </div>
+    <div class="save-bar">
+      <div class="sb-left">
+        <div class="sb-av">${av}</div>
+        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
+      </div>
+      <button class="sb-btn" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
+    </div>`}
+async function init(){
+  const slug=getSlug();
+  if(!slug){document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">✦</div><h2>Print Legacy</h2><p>Plateforme de cartes digitales NFC.</p><a href="https://printlegacy.github.io">← Voir le site</a></div>`;return;}
+  const {data,error}=await sb.from('clients').select('*').eq('slug',slug).eq('status','active').single();
+  if(error||!data){document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">😕</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;return}
+  render(data)}
+init();
+</script>
 </body>
 </html>
