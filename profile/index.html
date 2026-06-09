@@ -51,6 +51,34 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 .soc-btn:hover{border-color:var(--gold);background:var(--white);transform:translateY(-2px)}
 .soc-ico{font-size:1.2rem}
 .soc-name{font-size:.58rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-align:center}
+ 
+/* ── CATALOGUE ── */
+.cat-scroll{display:flex;gap:.85rem;overflow-x:auto;padding:.2rem .05rem .8rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-card{flex:0 0 148px;scroll-snap-align:start;border-radius:14px;overflow:hidden;background:var(--cream);border:1px solid var(--cream2);display:flex;flex-direction:column;transition:transform .18s,border-color .18s}
+.cat-card:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.4)}
+.cat-img-wrap{width:100%;height:120px;background:var(--cream2);overflow:hidden;flex-shrink:0;position:relative}
+.cat-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.cat-card:hover .cat-img-wrap img{transform:scale(1.04)}
+.cat-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(0,0,0,.12)}
+.cat-body{padding:.6rem .75rem .75rem;flex:1;display:flex;flex-direction:column;gap:.25rem}
+.cat-name{font-size:.78rem;font-weight:700;color:var(--ink);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cat-desc{font-size:.68rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.cat-price{font-family:"Playfair Display",serif;font-size:.9rem;font-weight:700;color:var(--gold);margin-top:.2rem}
+.cat-empty{text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem}
+ 
+/* ── LIGHTBOX ── */
+.lb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1.2rem}
+.lb-ov.open{display:flex}
+.lb-box{background:var(--white);border-radius:18px;width:100%;max-width:360px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.lb-img{width:100%;max-height:260px;object-fit:cover;display:block;background:var(--cream2)}
+.lb-img-placeholder{width:100%;height:180px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:3rem}
+.lb-body{padding:1.1rem 1.2rem 1.3rem}
+.lb-name{font-family:"Playfair Display",serif;font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:.35rem}
+.lb-desc{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:.65rem}
+.lb-price{font-family:"Playfair Display",serif;font-size:1.3rem;font-weight:700;color:var(--gold)}
+.lb-close{position:absolute;top:1rem;right:1rem;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+ 
 .save-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--ink);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
 .sb-left{display:flex;align-items:center;gap:.7rem}
 .sb-av{width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--gold);overflow:hidden;flex-shrink:0}
@@ -76,54 +104,203 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 <div id="app" class="card">
   <div class="loading"><div class="spin"></div><p>Chargement...</p></div>
 </div>
+ 
+<!-- LIGHTBOX produit -->
+<div class="lb-ov" id="lbOv" onclick="if(event.target===this)closeLb()">
+  <div style="position:relative;width:100%;max-width:360px">
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <div class="lb-box">
+      <div id="lbImgWrap"></div>
+      <div class="lb-body">
+        <div class="lb-name" id="lbName"></div>
+        <div class="lb-desc" id="lbDesc"></div>
+        <div class="lb-price" id="lbPrice"></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
 <div class="toast" id="toast"></div>
+ 
 <script>
 const {createClient}=supabase;
-const sb=createClient('https://szpjpytpciptplqjfwyd.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4');
+const sb=createClient(
+  'https://szpjpytpciptplqjfwyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+);
+ 
 function getSlug(){
   const p=new URLSearchParams(location.search);
   const parts=location.pathname.split('/').filter(Boolean);
   return p.get('carte')||p.get('slug')||(parts.length>=2&&parts[0]==='profile'?parts[1]:null);
 }
+ 
 function ini(fn,ln){return((fn||'')[0]+(ln||'')[0]).toUpperCase()||'?'}
-function buildContacts(c){const l=[];if(c.phone)l.push({href:'tel:'+c.phone,ico:'📞',lbl:'Téléphone',val:c.phone});const wa=c.whatsapp||c.phone;if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:'💬',lbl:'WhatsApp',val:'Message direct',t:1});if(c.email)l.push({href:'mailto:'+c.email,ico:'✉️',lbl:'E-mail',val:c.email});if(c.website)l.push({href:c.website,ico:'🌐',lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});if(c.location){const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);l.push({href,ico:'📍',lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});}if(c.cv_url)l.push({href:c.cv_url,ico:'📄',lbl:'CV / Portfolio',val:'Télécharger',t:1});return l}
-function buildSocials(c){const s=[];if(c.instagram)s.push({href:'https://'+c.instagram,ico:'📸',name:'Instagram'});if(c.tiktok)s.push({href:'https://'+c.tiktok,ico:'🎵',name:'TikTok'});if(c.linkedin)s.push({href:'https://'+c.linkedin,ico:'💼',name:'LinkedIn'});if(c.behance)s.push({href:'https://'+c.behance,ico:'🎨',name:'Behance'});if(c.youtube)s.push({href:'https://'+c.youtube,ico:'▶️',name:'YouTube'});try{(typeof c.custom_links==='string'?JSON.parse(c.custom_links):c.custom_links||[]).forEach(l=>s.push({href:l.url,ico:l.icon||'🔗',name:l.label}));}catch(e){}return s}
-function saveVCard(c){const lines=['BEGIN:VCARD','VERSION:3.0','FN:'+(c.firstname||'')+' '+(c.lastname||''),'N:'+(c.lastname||'')+';'+(c.firstname||'')+';;;'];if(c.jobtitle)lines.push('TITLE:'+c.jobtitle);if(c.company)lines.push('ORG:'+c.company);if(c.phone)lines.push('TEL;TYPE=CELL:'+c.phone);if(c.email)lines.push('EMAIL:'+c.email);if(c.website)lines.push('URL:'+c.website);if(c.location&&!c.location.startsWith('http'))lines.push('ADR:;;'+c.location+';;;;');lines.push('END:VCARD');const blob=new Blob([lines.join('\n')],{type:'text/vcard'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(c.firstname||'contact')+'_'+(c.lastname||'')+'.vcf';a.click();URL.revokeObjectURL(url);toast('✓ Contact enregistré !')}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+ 
+function buildContacts(c){
+  const l=[];
+  if(c.phone)l.push({href:'tel:'+c.phone,ico:'📞',lbl:'Téléphone',val:c.phone});
+  const wa=c.whatsapp||c.phone;
+  if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:'💬',lbl:'WhatsApp',val:'Message direct',t:1});
+  if(c.email)l.push({href:'mailto:'+c.email,ico:'✉️',lbl:'E-mail',val:c.email});
+  if(c.website)l.push({href:c.website,ico:'🌐',lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});
+  if(c.location){const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);l.push({href,ico:'📍',lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});}
+  if(c.cv_url)l.push({href:c.cv_url,ico:'📄',lbl:'CV / Portfolio',val:'Télécharger',t:1});
+  return l;
+}
+ 
+function buildSocials(c){
+  const s=[];
+  if(c.instagram)s.push({href:'https://'+c.instagram,ico:'📸',name:'Instagram'});
+  if(c.tiktok)s.push({href:'https://'+c.tiktok,ico:'🎵',name:'TikTok'});
+  if(c.linkedin)s.push({href:'https://'+c.linkedin,ico:'💼',name:'LinkedIn'});
+  if(c.behance)s.push({href:'https://'+c.behance,ico:'🎨',name:'Behance'});
+  if(c.youtube)s.push({href:'https://'+c.youtube,ico:'▶️',name:'YouTube'});
+  if(c.facebook)s.push({href:'https://'+c.facebook,ico:'📘',name:'Facebook'});
+  try{(typeof c.custom_links==='string'?JSON.parse(c.custom_links):c.custom_links||[]).forEach(l=>s.push({href:l.url,ico:l.icon||'🔗',name:l.label}));}catch(e){}
+  return s;
+}
+ 
+// ── CATALOGUE ──
+function buildCatalogue(c){
+  let items=[];
+  // Support JSONB array dans clients.catalogue
+  try{
+    if(Array.isArray(c.catalogue)) items=c.catalogue;
+    else if(typeof c.catalogue==='string') items=JSON.parse(c.catalogue);
+  }catch(e){}
+ 
+  if(!items||items.length===0) return '';
+ 
+  const cards=items.map((item,i)=>{
+    const imgHTML=item.image_url
+      ?`<img src="${item.image_url}" alt="${item.title||''}" onerror="this.parentElement.innerHTML='<div class=cat-img-placeholder>🛒</div>'">`
+      :`<div class="cat-img-placeholder">🛒</div>`;
+    const priceHTML=item.price?`<div class="cat-price">${Number(item.price).toLocaleString('fr-FR')} FCFA</div>`:'';
+    return `<div class="cat-card" onclick='openLb(${JSON.stringify(item)})'>
+      <div class="cat-img-wrap">${imgHTML}</div>
+      <div class="cat-body">
+        <div class="cat-name">${item.title||item.name||'—'}</div>
+        ${item.desc||item.description?`<div class="cat-desc">${item.desc||item.description}</div>`:''}
+        ${priceHTML}
+      </div>
+    </div>`;
+  }).join('');
+ 
+  return `<div class="sec">
+    <div class="sec-header"><div class="sec-ico">🛍️</div><span class="sec-lbl">Catalogue produits</span></div>
+    <div class="cat-scroll">${cards}</div>
+  </div><div class="divider"><span></span></div>`;
+}
+ 
+// ── LIGHTBOX ──
+function openLb(item){
+  const imgHTML=item.image_url
+    ?`<img class="lb-img" src="${item.image_url}" alt="${item.title||''}">`
+    :`<div class="lb-img-placeholder">🛒</div>`;
+  document.getElementById('lbImgWrap').innerHTML=imgHTML;
+  document.getElementById('lbName').textContent=item.title||item.name||'';
+  document.getElementById('lbDesc').textContent=item.desc||item.description||'';
+  document.getElementById('lbPrice').textContent=item.price?Number(item.price).toLocaleString('fr-FR')+' FCFA':'';
+  document.getElementById('lbOv').classList.add('open');
+}
+function closeLb(){document.getElementById('lbOv').classList.remove('open')}
+ 
+function saveVCard(c){
+  const lines=['BEGIN:VCARD','VERSION:3.0','FN:'+(c.firstname||'')+' '+(c.lastname||''),'N:'+(c.lastname||'')+';'+(c.firstname||'')+';;;'];
+  if(c.jobtitle)lines.push('TITLE:'+c.jobtitle);
+  if(c.company)lines.push('ORG:'+c.company);
+  if(c.phone)lines.push('TEL;TYPE=CELL:'+c.phone);
+  if(c.email)lines.push('EMAIL:'+c.email);
+  if(c.website)lines.push('URL:'+c.website);
+  if(c.location&&!c.location.startsWith('http'))lines.push('ADR:;;'+c.location+';;;;');
+  lines.push('END:VCARD');
+  const blob=new Blob([lines.join('\n')],{type:'text/vcard'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=(c.firstname||'contact')+'_'+(c.lastname||'')+'.vcf';
+  a.click();URL.revokeObjectURL(url);
+  showToast('✓ Contact enregistré !');
+}
+ 
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+ 
 function render(c){
   const name=(c.firstname||'')+' '+(c.lastname||'');
   document.title=name+' — Print Legacy';
+ 
   const contacts=buildContacts(c);
   const socials=buildSocials(c);
+  const catalogueHTML=buildCatalogue(c);
+ 
   const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
-  const heroImg=c.cover_photo||c.photo;
-  const heroHTML=heroImg?`<img class="hero-img" src="${heroImg}" alt="${name}">`:`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
-  const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
-  const compHTML=c.company?`<div class="company-card"><div class="co-left"><div class="co-logo"><img src="https://printlegacy.github.io/assets/logo.png" alt="PL" onerror="this.style.display='none'"></div><div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div></div><div class="co-arr">›</div></div>`:'';
-  const aboutHTML=c.bio?`<div class="sec"><div class="sec-header"><div class="sec-ico">👤</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`:'';
-  const contactHTML=contacts.length?`<div class="sec"><div class="sec-header"><div class="sec-ico">📋</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`:'';
-  const socialHTML=socials.length?`<div class="sec"><div class="sec-header"><div class="sec-ico">🌐</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`:'';
+  const heroImg=c.cover_url||c.cover_photo||c.photo;
+  const heroHTML=heroImg
+    ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
+    :`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
+  const roleHTML=c.jobtitle
+    ?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`
+    :(c.company||'');
+  const compHTML=c.company
+    ?`<div class="company-card"><div class="co-left"><div class="co-logo"><img src="https://printlegacy.github.io/assets/logo.png" alt="PL" onerror="this.style.display='none'"></div><div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div></div><div class="co-arr">›</div></div>`
+    :'';
+  const aboutHTML=c.bio
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">👤</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
+    :'';
+  const contactHTML=contacts.length
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">📋</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    :'';
+  const socialHTML=socials.length
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">🌐</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    :'';
+ 
   document.getElementById('app').innerHTML=`
     <div class="card">
-      <div class="hero">${heroHTML}<div class="hero-overlay"></div><div class="hero-content"><div class="hero-badge">Carte professionnelle</div><div class="hero-name">${name}</div><div class="hero-role">${roleHTML}</div></div></div>
-      ${compHTML}<div class="spacer"></div>
-      ${aboutHTML}${contactHTML}${socialHTML}
-      <div style="text-align:center;padding:1rem 1.2rem 1.5rem"><a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a></div>
+      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">Carte professionnelle</div>
+          <div class="hero-name">${name}</div>
+          <div class="hero-role">${roleHTML}</div>
+        </div>
+      </div>
+      ${compHTML}
+      <div class="spacer"></div>
+      ${aboutHTML}${contactHTML}${catalogueHTML}${socialHTML}
+      <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
+        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
+      </div>
     </div>
     <div class="save-bar">
       <div class="sb-left">
         <div class="sb-av">${av}</div>
-        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
+        <div class="sb-txt">
+          <span class="sb-sublbl">Ajouter à mes contacts</span>
+          <span class="sb-title">Enregistrer le contact</span>
+        </div>
       </div>
       <button class="sb-btn" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
-    </div>`}
+    </div>`;
+}
+ 
 async function init(){
   const slug=getSlug();
-  if(!slug){document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">✦</div><h2>Print Legacy</h2><p>Plateforme de cartes digitales NFC.</p><a href="https://printlegacy.github.io">← Voir le site</a></div>`;return;}
+  if(!slug){
+    document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">✦</div><h2>Print Legacy</h2><p>Plateforme de cartes digitales NFC.</p><a href="https://printlegacy.github.io">← Voir le site</a></div>`;
+    return;
+  }
   const {data,error}=await sb.from('clients').select('*').eq('slug',slug).eq('status','active').single();
-  if(error||!data){document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">😕</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;return}
-  render(data)}
+  if(error||!data){
+    document.getElementById('app').innerHTML=`<div class="err"><div style="font-size:2.5rem">😕</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;
+    return;
+  }
+  render(data);
+}
+ 
 init();
 </script>
 </body>
-</html>
+</html
