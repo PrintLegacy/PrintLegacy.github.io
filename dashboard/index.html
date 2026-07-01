@@ -127,14 +127,19 @@ tr:hover td{background:var(--cream)}
 .cover-zone .cz-hint{font-size:11px;color:var(--smoke2);text-align:center;pointer-events:none}
 .cover-zone .cz-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600}
 .cover-zone:hover .cz-overlay{display:flex}
+
+/* CATALOGUE */
 .cat-editor-wrap{grid-column:1/-1}
-.cat-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);margin-bottom:7px}
-.cat-thumb{width:42px;height:42px;border-radius:4px;background:var(--cream2);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative}
-.cat-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cat-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);margin-bottom:7px;position:relative}
+.cat-thumb{width:52px;height:52px;border-radius:6px;background:var(--cream2);border:2px dashed var(--cream2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative;transition:.15s}
+.cat-thumb:hover{border-color:var(--gold);background:var(--gold4)}
+.cat-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:4px}
+.cat-thumb-label{position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;font-size:7px;border-radius:2px;padding:1px 3px;pointer-events:none}
 .cat-fields{flex:1;display:grid;grid-template-columns:1fr 1fr 80px;gap:5px}
 .cat-inp{padding:5px 8px;border:1px solid var(--cream2);border-radius:var(--r);font-size:11.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;width:100%;transition:.15s}
 .cat-inp:focus{border-color:var(--gold)}
 .cat-del{width:24px;height:24px;border-radius:50%;background:#FFEBEE;border:1px solid #FFCDD2;color:#C62828;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-uploading{position:absolute;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;border-radius:var(--r);font-size:10px;color:var(--smoke)}
 .cat-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:2px dashed var(--cream2);border-radius:var(--r);background:none;font-size:11px;font-weight:600;color:var(--smoke);cursor:pointer;font-family:'Jost',sans-serif;transition:.2s}
 .cat-add-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
 .save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
@@ -239,7 +244,6 @@ tr:hover td{background:var(--cream)}
       <button class="modal-hd-close" onclick="closeEdit()">✕</button>
     </div>
     <div class="edit-body">
-      <input type="hidden" id="edit-id">
       <div class="edit-grid">
         <div class="edit-section">Identité</div>
         <div class="edit-field full">
@@ -247,13 +251,10 @@ tr:hover td{background:var(--cream)}
           <div class="cover-zone" id="editCoverZone" onclick="document.getElementById('editCoverInput').click()">
             <input type="file" id="editCoverInput" accept="image/*" style="display:none" onchange="onEditCoverChange(event)">
             <img id="editCoverImg">
-            <div class="cz-hint" id="editCoverHint">
-              <div style="font-size:1.4rem">🖼️</div>
-              <div>Cliquer pour changer la photo de couverture</div>
-            </div>
+            <div class="cz-hint" id="editCoverHint"><div style="font-size:1.4rem">🖼️</div><div>Cliquer pour changer la photo de couverture</div></div>
             <div class="cz-overlay">📷 Changer</div>
           </div>
-          <div id="editCoverMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);display:flex;align-items:center;gap:8px">
+          <div id="editCoverMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
             <span id="editCoverMetaName"></span>
             <button onclick="clearEditCover(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
           </div>
@@ -279,7 +280,7 @@ tr:hover td{background:var(--cream)}
         <div class="edit-section">Catalogue produits / services</div>
         <div class="cat-editor-wrap">
           <div id="catRowsList"></div>
-          <button class="cat-add-btn" onclick="addCatRow()">＋ Ajouter un produit / service</button>
+          <button class="cat-add-btn" id="catAddBtn">＋ Ajouter un produit / service</button>
         </div>
         <div class="edit-section">Apparence</div>
         <div class="edit-theme-grid" id="editThemeGrid"></div>
@@ -341,25 +342,26 @@ THEMES.forEach(t=>{
   </div>`;
 });
 
+// ── ÉTAT GLOBAL ──
 let currentTheme='noir', currentStatus='pending', currentId=null;
 let catRows=[], catCounter=0;
-const catNewFiles={};
+// Map id -> { file, previewUrl, uploading, uploadedUrl }
+const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 
-function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// ── "Ajouter produit" — listener unique sur le bouton ──
+document.getElementById('catAddBtn').addEventListener('click', ()=>addCatRow());
 
 function selTheme(id){
   document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
   document.getElementById('et-'+id)?.classList.add('sel');
   currentTheme=id;
 }
-
 function selStatus(s){
   document.querySelectorAll('.edit-status-opt').forEach(o=>o.classList.remove('sel'));
   document.getElementById('st-'+s).classList.add('sel');
   currentStatus=s;
 }
-
 function statusBadge(s){
   if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
   if(s==='active') return '<span class="status st-a"><span class="sd"></span>Actif</span>';
@@ -367,6 +369,7 @@ function statusBadge(s){
 }
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
 
+// ── COUVERTURE ──
 function onEditCoverChange(e){
   const f=e.target.files[0]; if(!f)return;
   newCoverFile=f; coverDeleted=false;
@@ -379,13 +382,11 @@ function onEditCoverChange(e){
   };
   r.readAsDataURL(f);
 }
-
 function showCoverMeta(name){
   const el=document.getElementById('editCoverMeta');
   el.style.display='flex';
   document.getElementById('editCoverMetaName').textContent=name;
 }
-
 function clearEditCover(e){
   e.stopPropagation();
   coverDeleted=true; newCoverFile=null;
@@ -396,68 +397,130 @@ function clearEditCover(e){
   document.getElementById('editCoverInput').value='';
 }
 
+// ── CATALOGUE — gestion sans innerHTML complet ──
 function addCatRow(existing){
   const id=++catCounter;
-  catRows.push({id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null,previewUrl:existing?.image_url||null});
-  renderCatRows();
+  const row={
+    id,
+    title: existing?.title||'',
+    desc:  existing?.desc||'',
+    price: existing?.price||'',
+    image_url: existing?.image_url||null,
+  };
+  catRows.push(row);
+  catFiles[id]={file:null, previewUrl: existing?.image_url||null, uploading:false, uploadedUrl: existing?.image_url||null};
+  appendCatRow(row);
 }
 
-function removeCatRow(id){
-  catRows=catRows.filter(r=>r.id!==id);
-  delete catNewFiles[id];
-  renderCatRows();
-}
-
-function renderCatRows(){
-  document.getElementById('catRowsList').innerHTML=catRows.map(row=>`
-    <div class="cat-row">
-      <div class="cat-thumb" onclick="document.getElementById('catf-${row.id}').click()" title="Changer la photo">
-        <input type="file" accept="image/*" id="catf-${row.id}" style="display:none" onchange="catFileChange(event,${row.id})">
-        ${row.previewUrl?`<img src="${esc(row.previewUrl)}">`:'🖼️'}
-      </div>
-      <div class="cat-fields">
-        <input class="cat-inp" type="text" placeholder="Nom du produit / service" value="${esc(row.title)}" oninput="updCat(${row.id},'title',this.value)">
-        <input class="cat-inp" type="text" placeholder="Description courte" value="${esc(row.desc)}" oninput="updCat(${row.id},'desc',this.value)">
-        <input class="cat-inp" type="number" placeholder="Prix FCFA" value="${row.price||''}" oninput="updCat(${row.id},'price',this.value)" style="text-align:right">
-      </div>
-      <button class="cat-del" onclick="removeCatRow(${row.id})">✕</button>
+function appendCatRow(row){
+  const wrap=document.getElementById('catRowsList');
+  const div=document.createElement('div');
+  div.className='cat-row';
+  div.id='catrow-'+row.id;
+  div.innerHTML=`
+    <div class="cat-thumb" id="catthumb-${row.id}" title="Cliquer pour ajouter une photo">
+      ${row.image_url?`<img id="catimg-${row.id}" src="${row.image_url}">`:`<span id="catimg-${row.id}">🖼️</span>`}
+      <span class="cat-thumb-label">photo</span>
     </div>
-  `).join('');
+    <div class="cat-fields">
+      <input class="cat-inp" type="text" placeholder="Nom du produit" value="${esc(row.title)}" id="catname-${row.id}">
+      <input class="cat-inp" type="text" placeholder="Description" value="${esc(row.desc)}" id="catdesc-${row.id}">
+      <input class="cat-inp" type="number" placeholder="Prix FCFA" value="${row.price||''}" id="catprice-${row.id}" style="text-align:right">
+    </div>
+    <button class="cat-del" id="catdel-${row.id}">✕</button>`;
+  wrap.appendChild(div);
+
+  // Listeners directs — pas de onclick inline
+  div.querySelector('#catthumb-'+row.id).addEventListener('click', ()=>triggerCatFile(row.id));
+  div.querySelector('#catdel-'+row.id).addEventListener('click', ()=>removeCatRow(row.id));
+  div.querySelector('#catname-'+row.id).addEventListener('input', e=>{ const r=catRows.find(x=>x.id===row.id); if(r)r.title=e.target.value; });
+  div.querySelector('#catdesc-'+row.id).addEventListener('input', e=>{ const r=catRows.find(x=>x.id===row.id); if(r)r.desc=e.target.value; });
+  div.querySelector('#catprice-'+row.id).addEventListener('input', e=>{ const r=catRows.find(x=>x.id===row.id); if(r)r.price=e.target.value; });
+}
+
+function triggerCatFile(id){
+  // Créer un input file invisible, déclencher
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  inp.onchange=e=>catFileChange(e,id);
+  inp.click();
 }
 
 function catFileChange(e,id){
   const f=e.target.files[0]; if(!f)return;
-  catNewFiles[id]=f;
-  const row=catRows.find(r=>r.id===id); if(!row)return;
+  catFiles[id].file=f;
+
+  // Aperçu immédiat
   const reader=new FileReader();
-  reader.onload=x=>{row.previewUrl=x.target.result; renderCatRows();};
+  reader.onload=x=>{
+    catFiles[id].previewUrl=x.target.result;
+    updateCatThumb(id, x.target.result, false);
+  };
   reader.readAsDataURL(f);
 }
 
-function updCat(id,field,val){
-  const row=catRows.find(r=>r.id===id);
-  if(row)row[field]=val;
+function updateCatThumb(id, src, uploading){
+  const thumb=document.getElementById('catthumb-'+id);
+  if(!thumb)return;
+  const imgEl=document.getElementById('catimg-'+id);
+  if(src){
+    if(imgEl && imgEl.tagName==='IMG'){
+      imgEl.src=src;
+    } else {
+      // Remplacer le span par une img
+      const img=document.createElement('img');
+      img.id='catimg-'+id;
+      img.src=src;
+      if(imgEl)imgEl.replaceWith(img);
+    }
+  }
+  // Indicateur upload
+  let ind=thumb.querySelector('.cat-up-ind');
+  if(uploading){
+    if(!ind){ind=document.createElement('div');ind.className='cat-uploading cat-up-ind';ind.textContent='⏳';thumb.appendChild(ind);}
+  } else {
+    if(ind)ind.remove();
+  }
 }
 
-// FIX : openEdit charge les données fraîches depuis Supabase
+function removeCatRow(id){
+  catRows=catRows.filter(r=>r.id!==id);
+  delete catFiles[id];
+  const el=document.getElementById('catrow-'+id);
+  if(el)el.remove();
+}
+
+// ── UPLOAD ──
+async function upFile(file,folder){
+  if(!file)return null;
+  const ext=file.name.split('.').pop();
+  const path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const {data,error}=await sb.storage.from('printlegacy').upload(path,file,{upsert:true});
+  if(error){
+    console.error('Upload error:',error);
+    showToast('Erreur upload: '+error.message);
+    return null;
+  }
+  return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
+}
+
+// ── OPEN EDIT — charge les données fraîches ──
 async function openEdit(clientId){
   currentId=clientId;
+  // Reset catalogue
   catRows=[]; catCounter=0;
-  Object.keys(catNewFiles).forEach(k=>delete catNewFiles[k]);
+  Object.keys(catFiles).forEach(k=>delete catFiles[k]);
+  document.getElementById('catRowsList').innerHTML='';
   newCoverFile=null; coverDeleted=false;
 
   document.getElementById('editOv').classList.add('open');
-  document.getElementById('editSaveBtn').disabled=true;
-  document.getElementById('editSaveBtn').textContent='⏳ Chargement...';
+  const btn=document.getElementById('editSaveBtn');
+  btn.disabled=true; btn.textContent='⏳ Chargement...';
 
-  // Charger les données fraîches depuis Supabase
-  const {data:c, error}=await sb.from('clients').select('*').eq('id',clientId).single();
-  if(error||!c){
-    alert('Erreur de chargement du client');
-    closeEdit();
-    return;
-  }
+  const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
+  if(error||!c){showToast('Erreur de chargement');closeEdit();return;}
 
+  // Remplir champs
   ['firstname','lastname','jobtitle','company','bio','location',
    'phone','whatsapp','email','website',
    'instagram','linkedin','tiktok','youtube','facebook','behance'
@@ -466,6 +529,7 @@ async function openEdit(clientId){
     if(el)el.value=c[f]||'';
   });
 
+  // Couverture
   const img=document.getElementById('editCoverImg');
   img.style.display='none'; img.src='';
   document.getElementById('editCoverHint').style.display='block';
@@ -476,29 +540,19 @@ async function openEdit(clientId){
     showCoverMeta(c.cover_url.split('/').pop().slice(0,40));
   }
 
-  if(Array.isArray(c.catalogue)){
-    c.catalogue.forEach(item=>addCatRow(item));
-  } else {
-    renderCatRows();
-  }
+  // Catalogue
+  let items=[];
+  try{ items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'?JSON.parse(c.catalogue):[]); }catch(e){}
+  items.forEach(item=>addCatRow(item));
 
   selTheme(c.theme||'noir');
   selStatus(c.status||'pending');
-  document.getElementById('editSaveBtn').disabled=false;
-  document.getElementById('editSaveBtn').textContent='💾 Sauvegarder';
+  btn.disabled=false; btn.textContent='💾 Sauvegarder';
 }
 
 function closeEdit(){document.getElementById('editOv').classList.remove('open')}
 
-async function upFile(file,folder){
-  if(!file)return null;
-  const ext=file.name.split('.').pop();
-  const path=`${folder}/${Date.now()}.${ext}`;
-  const {error}=await sb.storage.from('printlegacy').upload(path,file);
-  if(error){console.warn('upload error',error);return null;}
-  return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
-}
-
+// ── SAVE EDIT ──
 async function saveEdit(){
   if(!currentId)return;
   const btn=document.getElementById('editSaveBtn');
@@ -506,7 +560,6 @@ async function saveEdit(){
 
   try{
     const updates={theme:currentTheme, status:currentStatus};
-
     ['firstname','lastname','jobtitle','company','bio','location',
      'phone','whatsapp','email','website',
      'instagram','linkedin','tiktok','youtube','facebook','behance'
@@ -515,6 +568,7 @@ async function saveEdit(){
       if(el)updates[f]=el.value.trim()||null;
     });
 
+    // Cover upload
     if(newCoverFile){
       const url=await upFile(newCoverFile,'covers');
       if(url)updates.cover_url=url;
@@ -522,15 +576,27 @@ async function saveEdit(){
       updates.cover_url=null;
     }
 
+    // Catalogue — upload images une par une
     const catalogue=[];
     for(const row of catRows){
-      let imgUrl=row.image_url||null;
-      if(catNewFiles[row.id]){
-        const uploaded=await upFile(catNewFiles[row.id],'catalogue');
-        if(uploaded)imgUrl=uploaded;
+      let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
+
+      if(catFiles[row.id]?.file){
+        // Montrer indicateur upload
+        updateCatThumb(row.id, null, true);
+        const uploaded=await upFile(catFiles[row.id].file,'catalogue');
+        updateCatThumb(row.id, null, false);
+        if(uploaded){ imgUrl=uploaded; catFiles[row.id].uploadedUrl=uploaded; }
       }
-      if(row.title||row.desc||row.price){
-        catalogue.push({title:row.title||'',desc:row.desc||'',price:row.price?parseInt(row.price):null,image_url:imgUrl});
+
+      // Lire les valeurs actuelles depuis le DOM (plus fiable)
+      const title=(document.getElementById('catname-'+row.id)?.value||row.title||'').trim();
+      const desc=(document.getElementById('catdesc-'+row.id)?.value||row.desc||'').trim();
+      const priceRaw=document.getElementById('catprice-'+row.id)?.value||row.price||'';
+      const price=priceRaw?parseInt(priceRaw):null;
+
+      if(title||desc||price){
+        catalogue.push({title,desc,price,image_url:imgUrl});
       }
     }
     updates.catalogue=catalogue.length>0?catalogue:null;
@@ -540,10 +606,11 @@ async function saveEdit(){
 
     closeEdit();
     showToast('✓ Profil mis à jour !');
-    // FIX : délai pour laisser Supabase propager la mise à jour
-    setTimeout(()=>loadData(), 800);
+    loadData();
+
   }catch(err){
-    alert('Erreur: '+err.message);
+    console.error(err);
+    showToast('Erreur: '+err.message);
   }finally{
     btn.disabled=false; btn.textContent='💾 Sauvegarder';
   }
@@ -553,11 +620,11 @@ async function deleteClient(){
   if(!currentId)return;
   if(!confirm('Supprimer ce client définitivement ?'))return;
   await sb.from('clients').delete().eq('id',currentId);
-  closeEdit();
+  closeEdit(); loadData();
   showToast('Client supprimé');
-  setTimeout(()=>loadData(), 800);
 }
 
+// ── LOAD DATA ──
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
@@ -608,7 +675,7 @@ async function loadData(){
 async function toggleStatus(id,current){
   const next=current==='active'?'pending':'active';
   await sb.from('clients').update({status:next}).eq('id',id);
-  setTimeout(()=>loadData(), 800);
+  loadData();
 }
 
 function openNFC(slug,name){
@@ -625,10 +692,12 @@ function copyNFC(){
   setTimeout(()=>{document.getElementById('nfcCopied').style.display='none';document.querySelector('.nfc-copy-btn').textContent='Copier'},2000);
 }
 
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 function showToast(msg){
   const t=document.getElementById('saveToast');
   t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+  setTimeout(()=>t.classList.remove('show'),2800);
 }
 
 function logout(){window.location.href='https://printlegacy.github.io'}
