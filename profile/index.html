@@ -55,29 +55,31 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 /* ── CATALOGUE ── */
 .cat-scroll{display:flex;gap:.85rem;overflow-x:auto;padding:.2rem .05rem .8rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .cat-scroll::-webkit-scrollbar{display:none}
-.cat-card{flex:0 0 148px;scroll-snap-align:start;border-radius:14px;overflow:hidden;background:var(--cream);border:1px solid var(--cream2);display:flex;flex-direction:column;transition:transform .18s,border-color .18s}
+.cat-card{flex:0 0 148px;scroll-snap-align:start;border-radius:14px;overflow:hidden;background:var(--cream);border:1px solid var(--cream2);display:flex;flex-direction:column;cursor:pointer;transition:transform .18s,border-color .18s}
+.cat-card:active{transform:scale(.97)}
 .cat-card:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.4)}
-.cat-img-wrap{width:100%;height:120px;background:var(--cream2);overflow:hidden;flex-shrink:0;position:relative}
+.cat-img-wrap{width:100%;height:130px;background:var(--cream2);overflow:hidden;flex-shrink:0}
 .cat-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
-.cat-card:hover .cat-img-wrap img{transform:scale(1.04)}
-.cat-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(0,0,0,.12)}
-.cat-body{padding:.6rem .75rem .75rem;flex:1;display:flex;flex-direction:column;gap:.25rem}
-.cat-name{font-size:.78rem;font-weight:700;color:var(--ink);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cat-card:hover .cat-img-wrap img{transform:scale(1.05)}
+.cat-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:rgba(0,0,0,.1)}
+.cat-body{padding:.65rem .8rem .8rem;flex:1;display:flex;flex-direction:column;gap:.2rem}
+.cat-name{font-size:.8rem;font-weight:700;color:var(--ink);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cat-desc{font-size:.68rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
-.cat-price{font-family:"Playfair Display",serif;font-size:.9rem;font-weight:700;color:var(--gold);margin-top:.2rem}
-.cat-empty{text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem}
+.cat-price{font-family:"Playfair Display",serif;font-size:.95rem;font-weight:700;color:var(--gold);margin-top:.25rem}
  
 /* ── LIGHTBOX ── */
-.lb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;padding:1.2rem}
+.lb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:flex-end;justify-content:center;padding:0}
 .lb-ov.open{display:flex}
-.lb-box{background:var(--white);border-radius:18px;width:100%;max-width:360px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4)}
-.lb-img{width:100%;max-height:260px;object-fit:cover;display:block;background:var(--cream2)}
-.lb-img-placeholder{width:100%;height:180px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:3rem}
-.lb-body{padding:1.1rem 1.2rem 1.3rem}
-.lb-name{font-family:"Playfair Display",serif;font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:.35rem}
-.lb-desc{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:.65rem}
-.lb-price{font-family:"Playfair Display",serif;font-size:1.3rem;font-weight:700;color:var(--gold)}
-.lb-close{position:absolute;top:1rem;right:1rem;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.lb-sheet{background:var(--white);border-radius:22px 22px 0 0;width:100%;max-width:420px;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.3);animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.lb-img{width:100%;max-height:320px;object-fit:contain;display:block;background:var(--cream2)}
+.lb-img-placeholder{width:100%;height:160px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.lb-body{padding:1.2rem 1.3rem 2rem}
+.lb-name{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.lb-desc{font-size:.82rem;color:var(--muted);line-height:1.75;margin-bottom:.8rem}
+.lb-price{font-family:"Playfair Display",serif;font-size:1.4rem;font-weight:700;color:var(--gold)}
+.lb-close{position:absolute;top:.9rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px)}
+.lb-handle{width:36px;height:4px;background:var(--cream2);border-radius:2px;margin:10px auto 0;cursor:pointer}
  
 .save-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--ink);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
 .sb-left{display:flex;align-items:center;gap:.7rem}
@@ -101,15 +103,17 @@ body{display:flex;justify-content:center;padding-bottom:90px}
 </style>
 </head>
 <body>
+ 
 <div id="app" class="card">
   <div class="loading"><div class="spin"></div><p>Chargement...</p></div>
 </div>
  
-<!-- LIGHTBOX produit -->
+<!-- LIGHTBOX produit (bottom sheet) -->
 <div class="lb-ov" id="lbOv" onclick="if(event.target===this)closeLb()">
-  <div style="position:relative;width:100%;max-width:360px">
+  <div style="position:relative;width:100%;max-width:420px">
     <button class="lb-close" onclick="closeLb()">✕</button>
-    <div class="lb-box">
+    <div class="lb-sheet">
+      <div class="lb-handle" onclick="closeLb()"></div>
       <div id="lbImgWrap"></div>
       <div class="lb-body">
         <div class="lb-name" id="lbName"></div>
@@ -144,7 +148,10 @@ function buildContacts(c){
   if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:'💬',lbl:'WhatsApp',val:'Message direct',t:1});
   if(c.email)l.push({href:'mailto:'+c.email,ico:'✉️',lbl:'E-mail',val:c.email});
   if(c.website)l.push({href:c.website,ico:'🌐',lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});
-  if(c.location){const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);l.push({href,ico:'📍',lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});}
+  if(c.location){
+    const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);
+    l.push({href,ico:'📍',lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});
+  }
   if(c.cv_url)l.push({href:c.cv_url,ico:'📄',lbl:'CV / Portfolio',val:'Télécharger',t:1});
   return l;
 }
@@ -157,57 +164,82 @@ function buildSocials(c){
   if(c.behance)s.push({href:'https://'+c.behance,ico:'🎨',name:'Behance'});
   if(c.youtube)s.push({href:'https://'+c.youtube,ico:'▶️',name:'YouTube'});
   if(c.facebook)s.push({href:'https://'+c.facebook,ico:'📘',name:'Facebook'});
-  try{(typeof c.custom_links==='string'?JSON.parse(c.custom_links):c.custom_links||[]).forEach(l=>s.push({href:l.url,ico:l.icon||'🔗',name:l.label}));}catch(e){}
+  try{
+    (typeof c.custom_links==='string'?JSON.parse(c.custom_links):c.custom_links||[])
+      .forEach(l=>s.push({href:l.url,ico:l.icon||'🔗',name:l.label}));
+  }catch(e){}
   return s;
 }
  
 // ── CATALOGUE ──
 function buildCatalogue(c){
   let items=[];
-  // Support JSONB array dans clients.catalogue
   try{
     if(Array.isArray(c.catalogue)) items=c.catalogue;
-    else if(typeof c.catalogue==='string') items=JSON.parse(c.catalogue);
+    else if(typeof c.catalogue==='string'&&c.catalogue) items=JSON.parse(c.catalogue);
   }catch(e){}
+  if(!items||!items.length) return '';
  
-  if(!items||items.length===0) return '';
- 
-  const cards=items.map((item,i)=>{
-    const imgHTML=item.image_url
-      ?`<img src="${item.image_url}" alt="${item.title||''}" onerror="this.parentElement.innerHTML='<div class=cat-img-placeholder>🛒</div>'">`
+  const cards=items.map(item=>{
+    const name=item.title||item.name||'';
+    const desc=item.desc||item.description||'';
+    const price=item.price;
+    const img=item.image_url;
+    const imgHTML=img
+      ?`<img src="${img}" alt="${name}" onerror="this.parentElement.innerHTML='<div class=cat-img-placeholder>🛒</div>'">`
       :`<div class="cat-img-placeholder">🛒</div>`;
-    const priceHTML=item.price?`<div class="cat-price">${Number(item.price).toLocaleString('fr-FR')} FCFA</div>`:'';
-    return `<div class="cat-card" onclick='openLb(${JSON.stringify(item)})'>
+    const priceHTML=price?`<div class="cat-price">${Number(price).toLocaleString('fr-FR')} FCFA</div>`:'';
+    const descHTML=desc?`<div class="cat-desc">${desc}</div>`:'';
+    // Encode item data safely for onclick
+    const encoded=encodeURIComponent(JSON.stringify(item));
+    return `<div class="cat-card" onclick="openLb(decodeURIComponent('${encoded}'))">
       <div class="cat-img-wrap">${imgHTML}</div>
       <div class="cat-body">
-        <div class="cat-name">${item.title||item.name||'—'}</div>
-        ${item.desc||item.description?`<div class="cat-desc">${item.desc||item.description}</div>`:''}
+        <div class="cat-name">${name}</div>
+        ${descHTML}
         ${priceHTML}
       </div>
     </div>`;
   }).join('');
  
   return `<div class="sec">
-    <div class="sec-header"><div class="sec-ico">🛍️</div><span class="sec-lbl">Catalogue produits</span></div>
+    <div class="sec-header">
+      <div class="sec-ico">🛍️</div>
+      <span class="sec-lbl">Catalogue produits</span>
+    </div>
     <div class="cat-scroll">${cards}</div>
-  </div><div class="divider"><span></span></div>`;
+  </div>
+  <div class="divider"><span></span></div>`;
 }
  
 // ── LIGHTBOX ──
-function openLb(item){
-  const imgHTML=item.image_url
-    ?`<img class="lb-img" src="${item.image_url}" alt="${item.title||''}">`
+function openLb(encodedOrObj){
+  let item;
+  try{
+    item = typeof encodedOrObj==='string' ? JSON.parse(encodedOrObj) : encodedOrObj;
+  }catch(e){return;}
+  const img=item.image_url;
+  const imgHTML=img
+    ?`<img class="lb-img" src="${img}" alt="${item.title||''}" onerror="this.parentElement.innerHTML='<div class=lb-img-placeholder>🛒</div>'">`
     :`<div class="lb-img-placeholder">🛒</div>`;
   document.getElementById('lbImgWrap').innerHTML=imgHTML;
   document.getElementById('lbName').textContent=item.title||item.name||'';
   document.getElementById('lbDesc').textContent=item.desc||item.description||'';
-  document.getElementById('lbPrice').textContent=item.price?Number(item.price).toLocaleString('fr-FR')+' FCFA':'';
+  const price=item.price;
+  document.getElementById('lbPrice').textContent=price?Number(price).toLocaleString('fr-FR')+' FCFA':'';
   document.getElementById('lbOv').classList.add('open');
+  document.body.style.overflow='hidden';
 }
-function closeLb(){document.getElementById('lbOv').classList.remove('open')}
+function closeLb(){
+  document.getElementById('lbOv').classList.remove('open');
+  document.body.style.overflow='';
+}
  
+// ── VCARD ──
 function saveVCard(c){
-  const lines=['BEGIN:VCARD','VERSION:3.0','FN:'+(c.firstname||'')+' '+(c.lastname||''),'N:'+(c.lastname||'')+';'+(c.firstname||'')+';;;'];
+  const lines=['BEGIN:VCARD','VERSION:3.0',
+    'FN:'+(c.firstname||'')+' '+(c.lastname||''),
+    'N:'+(c.lastname||'')+';'+(c.firstname||'')+';;;'];
   if(c.jobtitle)lines.push('TITLE:'+c.jobtitle);
   if(c.company)lines.push('ORG:'+c.company);
   if(c.phone)lines.push('TEL;TYPE=CELL:'+c.phone);
@@ -218,8 +250,10 @@ function saveVCard(c){
   const blob=new Blob([lines.join('\n')],{type:'text/vcard'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download=(c.firstname||'contact')+'_'+(c.lastname||'')+'.vcf';
-  a.click();URL.revokeObjectURL(url);
+  a.href=url;
+  a.download=(c.firstname||'contact')+'_'+(c.lastname||'')+'.vcf';
+  a.click();
+  URL.revokeObjectURL(url);
   showToast('✓ Contact enregistré !');
 }
  
@@ -238,6 +272,7 @@ function render(c){
   const catalogueHTML=buildCatalogue(c);
  
   const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
+  // Support cover_url ET cover_photo (les deux noms de champ utilisés)
   const heroImg=c.cover_url||c.cover_photo||c.photo;
   const heroHTML=heroImg
     ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
@@ -260,7 +295,9 @@ function render(c){
  
   document.getElementById('app').innerHTML=`
     <div class="card">
-      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
+      <div class="hero">
+        ${heroHTML}
+        <div class="hero-overlay"></div>
         <div class="hero-content">
           <div class="hero-badge">Carte professionnelle</div>
           <div class="hero-name">${name}</div>
@@ -269,9 +306,14 @@ function render(c){
       </div>
       ${compHTML}
       <div class="spacer"></div>
-      ${aboutHTML}${contactHTML}${catalogueHTML}${socialHTML}
+      ${aboutHTML}
+      ${contactHTML}
+      ${catalogueHTML}
+      ${socialHTML}
       <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
-        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
+        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">
+          Propulsé par <strong style="color:var(--ink)">Print Legacy</strong>
+        </a>
       </div>
     </div>
     <div class="save-bar">
@@ -303,4 +345,4 @@ async function init(){
 init();
 </script>
 </body>
-</html
+</html>
