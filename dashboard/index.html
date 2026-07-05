@@ -142,7 +142,7 @@ tr:hover td{background:var(--cream)}
 .cat-add-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
 .save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
 .save-toast.show{display:block}
-
+ 
 /* ── CRÉATIONS ── */
 .creation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:20px}
 .creation-card{border:1px solid var(--cream2);border-radius:8px;overflow:hidden;background:var(--w);position:relative;transition:.15s}
@@ -160,7 +160,7 @@ tr:hover td{background:var(--cream)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .upload-prog{height:3px;background:var(--cream2);border-radius:2px;margin:0 20px 20px;display:none}
 .upload-prog-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;width:0;transition:width .3s}
-
+ 
 /* ── IMPRESSIONS ── */
 .imp-table th,.imp-table td{padding:10px 16px}
 .imp-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:100px}
@@ -175,6 +175,9 @@ tr:hover td{background:var(--cream)}
 .imp-input:focus{border-color:var(--gold)}
 .imp-btn{background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:10px 20px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:.15s}
 .imp-btn:hover{background:var(--gold);color:var(--ink)}
+.imp-btn-fact{background:var(--gold);color:var(--ink)}
+.imp-btn-fact:hover{background:var(--ink);color:var(--gold2)}
+.imp-fact-badge{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:var(--smoke2)}
 </style>
 </head>
 <body>
@@ -206,7 +209,7 @@ tr:hover td{background:var(--cream)}
       </div>
     </div>
   </div>
-
+ 
   <div class="main">
     <div class="topbar">
       <div class="tb-title" id="pageTitle">Tableau de bord <span id="dateLabel"></span></div>
@@ -216,9 +219,9 @@ tr:hover td{background:var(--cream)}
         <a href="https://printlegacy.github.io/order" class="tb-cta">+ Nouvelle commande</a>
       </div>
     </div>
-
+ 
     <div class="content">
-
+ 
       <!-- PAGE: DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="stats">
@@ -235,7 +238,7 @@ tr:hover td{background:var(--cream)}
           <div id="tableWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
-
+ 
       <!-- PAGE: CRÉATIONS -->
       <div class="page" id="page-creations">
         <div class="card">
@@ -260,16 +263,18 @@ tr:hover td{background:var(--cream)}
           <div class="creation-grid" id="creationGrid"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
-
+ 
       <!-- PAGE: IMPRESSIONS -->
       <div class="page" id="page-impressions">
         <div class="card" style="margin-bottom:16px">
           <div class="card-h"><div class="card-t">➕ Nouvelle impression</div></div>
           <div class="imp-form">
             <div class="imp-field"><div class="imp-label">Client *</div><input class="imp-input" id="imp-client" placeholder="Nom du client"></div>
-            <div class="imp-field"><div class="imp-label">Quantité</div><input class="imp-input" id="imp-qty" type="number" placeholder="1" min="1" value="1"></div>
+            <div class="imp-field"><div class="imp-label">Quantité</div><input class="imp-input" id="imp-qty" type="number" placeholder="1" min="1" value="1" oninput="updateImpTotalPreview()"></div>
+            <div class="imp-field"><div class="imp-label">Prix unitaire (FCFA)</div><input class="imp-input" id="imp-prix" type="number" placeholder="0" min="0" oninput="updateImpTotalPreview()"></div>
             <div class="imp-field"><div class="imp-label">Description</div><input class="imp-input" id="imp-desc" placeholder="Type de carte, format..."></div>
             <div class="imp-field"><div class="imp-label">Date de livraison</div><input class="imp-input" id="imp-date" type="date"></div>
+            <div class="imp-field"><div class="imp-label">Total estimé</div><input class="imp-input" id="imp-total-preview" value="0 FCFA" disabled style="font-weight:600;color:var(--gold);background:var(--cream)"></div>
             <div class="imp-field full"><div class="imp-label">Notes</div><input class="imp-input" id="imp-notes" placeholder="Remarques supplémentaires..."></div>
             <div class="imp-field full" style="display:flex;justify-content:flex-end">
               <button class="imp-btn" onclick="addImpression()">💾 Enregistrer</button>
@@ -281,11 +286,11 @@ tr:hover td{background:var(--cream)}
           <div id="impWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
-
+ 
     </div>
   </div>
 </div>
-
+ 
 <!-- NFC MODAL -->
 <div class="ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
   <div class="nfc-box">
@@ -308,7 +313,7 @@ tr:hover td{background:var(--cream)}
     </div>
   </div>
 </div>
-
+ 
 <!-- EDIT MODAL -->
 <div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
   <div class="edit-box">
@@ -366,18 +371,18 @@ tr:hover td{background:var(--cream)}
     </div>
   </div>
 </div>
-
+ 
 <div class="save-toast" id="saveToast"></div>
-
+ 
 <script>
 const {createClient}=supabase;
 const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
-
+ 
 document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-
+ 
 // ── ÉTAT GLOBAL ──
 let currentTheme='noir', currentStatus='pending', currentId=null;
 let allData=[], currentView='all', searchQuery='';
@@ -385,7 +390,7 @@ let catRows=[], catCounter=0;
 const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let currentPage='dashboard';
-
+ 
 // ── THEMES ──
 const THEMES=[
   {id:'noir',name:'Noir & Or',h1:'#0A0A0A',ac:'#D4AF6A',tc:'#0A0A0A'},
@@ -416,9 +421,9 @@ THEMES.forEach(t=>{
     <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
   </div>`;
 });
-
+ 
 document.getElementById('catAddBtn').addEventListener('click',()=>addCatRow());
-
+ 
 // ── NAVIGATION ──
 function setPage(page){
   currentPage=page;
@@ -431,7 +436,7 @@ function setPage(page){
   if(page==='creations') loadCreations();
   if(page==='impressions') loadImpressions();
 }
-
+ 
 function setView(view){
   currentView=view;
   if(currentPage!=='dashboard') setPage('dashboard');
@@ -441,13 +446,13 @@ function setView(view){
   document.getElementById('card-title').textContent=labels[view]||'Clients';
   renderTable();
 }
-
+ 
 function refreshPage(){
   if(currentPage==='dashboard') loadData();
   else if(currentPage==='creations') loadCreations();
   else if(currentPage==='impressions') loadImpressions();
 }
-
+ 
 // ── HELPERS ──
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
@@ -456,7 +461,8 @@ function statusBadge(s){
   if(s==='active') return '<span class="status st-a"><span class="sd"></span>Actif</span>';
   return '<span class="status st-d"><span class="sd"></span>'+s+'</span>';
 }
-
+function fmtMoney(n){return (n||0).toLocaleString('fr-FR')+' FCFA';}
+ 
 // ── CLIENTS TABLE ──
 function renderTable(){
   let data=allData;
@@ -497,7 +503,7 @@ function renderTable(){
     <th>Thème</th><th>Statut</th><th>Date</th><th>Actions</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
 }
-
+ 
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
@@ -511,13 +517,13 @@ async function loadData(){
   allData=data;
   renderTable();
 }
-
+ 
 async function toggleStatus(id,current){
   const next=current==='active'?'pending':'active';
   await sb.from('clients').update({status:next}).eq('id',id);
   loadData();
 }
-
+ 
 // ── CRÉATIONS ──
 async function loadCreations(){
   document.getElementById('creationGrid').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
@@ -540,7 +546,7 @@ async function loadCreations(){
     </div>
   `).join('');
 }
-
+ 
 async function uploadCreations(e){
   const files=Array.from(e.target.files);
   if(!files.length) return;
@@ -565,15 +571,21 @@ async function uploadCreations(e){
   loadCreations();
   showToast('✓ '+files.length+' fichier(s) uploadé(s) !');
 }
-
+ 
 async function deleteCreation(id){
   if(!confirm('Supprimer cette création ?'))return;
   await sb.from('creations').delete().eq('id',id);
   loadCreations();
   showToast('Création supprimée');
 }
-
+ 
 // ── IMPRESSIONS ──
+function updateImpTotalPreview(){
+  const qty=parseFloat(document.getElementById('imp-qty').value)||0;
+  const prix=parseFloat(document.getElementById('imp-prix').value)||0;
+  document.getElementById('imp-total-preview').value=fmtMoney(qty*prix);
+}
+ 
 async function loadImpressions(){
   document.getElementById('impWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   const {data,error}=await sb.from('impressions').select('*').order('created_at',{ascending:false});
@@ -583,61 +595,179 @@ async function loadImpressions(){
   }
   const stLabel={en_cours:'En cours',pret:'Prêt',livre:'Livré'};
   const stClass={en_cours:'imp-st-encours',pret:'imp-st-pret',livre:'imp-st-livre'};
-  const rows=data.map(imp=>`<tr>
-    <td><strong>${imp.client_name}</strong></td>
+  const rows=data.map(imp=>{
+    const qty=imp.quantite||1;
+    const prixUnitaire=imp.prix_unitaire||0;
+    const total=(imp.montant_total!=null)?imp.montant_total:(qty*prixUnitaire);
+    return `<tr>
+    <td><strong>${imp.client_name}</strong>${imp.numero_facture?`<div class="imp-fact-badge">🧾 ${imp.numero_facture}</div>`:''}</td>
     <td>${imp.description||'—'}</td>
-    <td>${imp.quantite||1} carte(s)</td>
+    <td>${qty} carte(s)</td>
+    <td>${fmtMoney(total)}</td>
     <td>${imp.date_livraison?new Date(imp.date_livraison).toLocaleDateString('fr-FR'):'—'}</td>
     <td><span class="imp-status ${stClass[imp.statut]||'imp-st-encours'}">${stLabel[imp.statut]||imp.statut}</span></td>
-    <td>
+    <td style="white-space:nowrap">
       <select onchange="updateImpStatus('${imp.id}',this.value)" style="padding:4px 8px;border:1px solid var(--cream2);border-radius:var(--r);font-size:11px;font-family:'Jost',sans-serif;cursor:pointer">
         <option value="en_cours" ${imp.statut==='en_cours'?'selected':''}>En cours</option>
         <option value="pret" ${imp.statut==='pret'?'selected':''}>Prêt</option>
         <option value="livre" ${imp.statut==='livre'?'selected':''}>Livré</option>
       </select>
-      <button onclick="deleteImpression('${imp.id}')" style="margin-left:6px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:var(--r);color:#C62828;cursor:pointer;padding:4px 8px;font-size:11px">✕</button>
+      <button class="imp-btn imp-btn-fact" onclick="generateInvoice('${imp.id}')" style="margin-left:6px;padding:5px 10px;font-size:10px">${imp.facture?'📄 Revoir facture':'🖨️ Facturer'}</button>
+      <button onclick="deleteImpression('${imp.id}')" style="margin-left:6px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:var(--r);color:#C62828;cursor:pointer;padding:5px 8px;font-size:11px">✕</button>
     </td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
   document.getElementById('impWrap').innerHTML=`<table class="imp-table"><thead><tr>
-    <th>Client</th><th>Description</th><th>Quantité</th><th>Livraison</th><th>Statut</th><th>Actions</th>
+    <th>Client</th><th>Description</th><th>Quantité</th><th>Montant</th><th>Livraison</th><th>Statut</th><th>Actions</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
 }
-
+ 
 async function addImpression(){
   const client=document.getElementById('imp-client').value.trim();
   if(!client){showToast('Le nom du client est obligatoire');return;}
+  const qty=parseInt(document.getElementById('imp-qty').value)||1;
+  const prixUnitaire=parseFloat(document.getElementById('imp-prix').value)||0;
   const payload={
     client_name:client,
     description:document.getElementById('imp-desc').value.trim()||null,
-    quantite:parseInt(document.getElementById('imp-qty').value)||1,
+    quantite:qty,
+    prix_unitaire:prixUnitaire,
+    montant_total:qty*prixUnitaire,
     date_livraison:document.getElementById('imp-date').value||null,
     notes:document.getElementById('imp-notes').value.trim()||null,
-    statut:'en_cours'
+    statut:'en_cours',
+    facture:false
   };
   const {error}=await sb.from('impressions').insert(payload);
   if(error){showToast('Erreur: '+error.message);return;}
   document.getElementById('imp-client').value='';
   document.getElementById('imp-desc').value='';
   document.getElementById('imp-qty').value='1';
+  document.getElementById('imp-prix').value='';
   document.getElementById('imp-date').value='';
   document.getElementById('imp-notes').value='';
+  updateImpTotalPreview();
   loadImpressions();
   showToast('✓ Impression enregistrée !');
 }
-
+ 
 async function updateImpStatus(id,statut){
   await sb.from('impressions').update({statut}).eq('id',id);
   showToast('✓ Statut mis à jour');
   loadImpressions();
 }
-
+ 
 async function deleteImpression(id){
   if(!confirm('Supprimer cette impression ?'))return;
   await sb.from('impressions').delete().eq('id',id);
   loadImpressions();
   showToast('Impression supprimée');
 }
-
+ 
+// ── FACTURATION / PDF ──
+async function generateInvoice(id){
+  if(typeof window.jspdf==='undefined'){showToast('Erreur: bibliothèque PDF non chargée');return;}
+  const {data:imp,error}=await sb.from('impressions').select('*').eq('id',id).single();
+  if(error||!imp){showToast('Erreur: impression introuvable');return;}
+ 
+  let numeroFacture=imp.numero_facture;
+  if(!numeroFacture){
+    const today=new Date();
+    const datePart=today.getFullYear().toString()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
+    numeroFacture=`PL-${datePart}-${String(Math.floor(Math.random()*9000)+1000)}`;
+    const {error:updErr}=await sb.from('impressions').update({facture:true,numero_facture:numeroFacture,date_facture:new Date().toISOString()}).eq('id',id);
+    if(updErr){showToast('Erreur enregistrement facture: '+updErr.message);return;}
+  }
+ 
+  const qty=imp.quantite||1;
+  const prixUnitaire=imp.prix_unitaire||0;
+  const total=(imp.montant_total!=null)?imp.montant_total:(qty*prixUnitaire);
+ 
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+ 
+  // En-tête
+  doc.setFillColor(10,10,10);
+  doc.rect(0,0,210,32,'F');
+  doc.setTextColor(212,175,106);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(20);
+  doc.text('PRINT LEGACY',15,17);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(230,230,230);
+  doc.text('Studio graphique & Cartes NFC — Dakar, Sénégal',15,24);
+ 
+  // Titre facture
+  doc.setTextColor(10,10,10);
+  doc.setFontSize(18);
+  doc.setFont('helvetica','bold');
+  doc.text('FACTURE',195,45,{align:'right'});
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(80,80,80);
+  doc.text(`N° ${numeroFacture}`,195,52,{align:'right'});
+  doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`,195,58,{align:'right'});
+ 
+  // Client
+  doc.setTextColor(10,10,10);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','bold');
+  doc.text('Facturé à :',15,50);
+  doc.setFont('helvetica','normal');
+  doc.text(imp.client_name||'',15,56);
+ 
+  // Tableau
+  const startY=70;
+  doc.setFillColor(10,10,10);
+  doc.rect(15,startY,180,9,'F');
+  doc.setTextColor(212,175,106);
+  doc.setFontSize(9);
+  doc.setFont('helvetica','bold');
+  doc.text('DESCRIPTION',18,startY+6);
+  doc.text('QTÉ',120,startY+6);
+  doc.text('PRIX UNIT.',140,startY+6);
+  doc.text('TOTAL',195,startY+6,{align:'right'});
+ 
+  const rowY=startY+9;
+  doc.setDrawColor(230,230,230);
+  doc.rect(15,rowY,180,12);
+  doc.setTextColor(30,30,30);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.5);
+  doc.text(imp.description||'Impression carte NFC',18,rowY+8,{maxWidth:98});
+  doc.text(String(qty),122,rowY+8);
+  doc.text(prixUnitaire.toLocaleString('fr-FR')+' F',140,rowY+8);
+  doc.text(total.toLocaleString('fr-FR')+' F',195,rowY+8,{align:'right'});
+ 
+  // Total
+  const totalY=rowY+26;
+  doc.setDrawColor(220,220,220);
+  doc.line(120,totalY-8,195,totalY-8);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.setTextColor(10,10,10);
+  doc.text(`TOTAL : ${total.toLocaleString('fr-FR')} FCFA`,195,totalY,{align:'right'});
+ 
+  if(imp.notes){
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.setTextColor(120,120,120);
+    doc.text('Notes : '+imp.notes,15,totalY+14,{maxWidth:120});
+  }
+ 
+  // Pied de page
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(140,140,140);
+  doc.text('Merci pour votre confiance.',15,275);
+  doc.text('Print Legacy — Dakar, Sénégal — printlegacy.github.io',15,280);
+ 
+  doc.save(`Facture_${numeroFacture}_${(imp.client_name||'client').replace(/\s+/g,'_')}.pdf`);
+  showToast('✓ Facture générée et téléchargée !');
+  loadImpressions();
+}
+ 
 // ── NFC ──
 function openNFC(slug,name){
   document.getElementById('nfcClientName').textContent=name.trim();
@@ -652,7 +782,7 @@ function copyNFC(){
   document.querySelector('.nfc-copy-btn').textContent='✓ Copié';
   setTimeout(()=>{document.getElementById('nfcCopied').style.display='none';document.querySelector('.nfc-copy-btn').textContent='Copier'},2000);
 }
-
+ 
 // ── EDIT ──
 function selTheme(id){
   document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
@@ -679,7 +809,7 @@ function clearEditCover(e){
   document.getElementById('editCoverMeta').style.display='none';
   document.getElementById('editCoverInput').value='';
 }
-
+ 
 function addCatRow(existing){
   const id=++catCounter;
   const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
@@ -701,7 +831,7 @@ function addCatRow(existing){
   div.querySelector('#catthumb-'+id).addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>catFileChange(e,id);inp.click();});
   div.querySelector('#catdel-'+id).addEventListener('click',()=>{catRows=catRows.filter(r=>r.id!==id);delete catFiles[id];div.remove();});
 }
-
+ 
 function catFileChange(e,id){
   const f=e.target.files[0];if(!f)return;
   catFiles[id].file=f;
@@ -714,7 +844,7 @@ function catFileChange(e,id){
   };
   reader.readAsDataURL(f);
 }
-
+ 
 async function openEdit(clientId){
   currentId=clientId;
   catRows=[];catCounter=0;
@@ -737,7 +867,7 @@ async function openEdit(clientId){
   btn.disabled=false;btn.textContent='💾 Sauvegarder';
 }
 function closeEdit(){document.getElementById('editOv').classList.remove('open')}
-
+ 
 async function upFile(file,folder){
   if(!file)return null;
   const ext=file.name.split('.').pop();
@@ -746,7 +876,7 @@ async function upFile(file,folder){
   if(error){showToast('Erreur upload: '+error.message);return null;}
   return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
 }
-
+ 
 async function saveEdit(){
   if(!currentId)return;
   const btn=document.getElementById('editSaveBtn');
@@ -772,23 +902,24 @@ async function saveEdit(){
   }catch(err){showToast('Erreur: '+err.message);}
   finally{btn.disabled=false;btn.textContent='💾 Sauvegarder';}
 }
-
+ 
 async function deleteClient(){
   if(!currentId)return;
   if(!confirm('Supprimer ce client ?'))return;
   await sb.from('clients').delete().eq('id',currentId);
   closeEdit();loadData();showToast('Client supprimé');
 }
-
+ 
 function showToast(msg){
   const t=document.getElementById('saveToast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
 function logout(){window.location.href='https://printlegacy.github.io'}
-
+ 
 loadData();
 setInterval(loadData,30000);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </body>
 </html>
