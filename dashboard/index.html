@@ -790,31 +790,30 @@ function buildInvoicePDF(imp){
   doc.setFont('helvetica','normal');
   doc.text(imp.client_name||'',15,56);
 
-  // Tableau
-  const startY=70;
-  doc.setFillColor(10,10,10);
-  doc.rect(15,startY,180,9,'F');
-  doc.setTextColor(212,175,106);
-  doc.setFontSize(9);
-  doc.setFont('helvetica','bold');
-  doc.text('DESCRIPTION',18,startY+6);
-  doc.text('QTÉ',120,startY+6);
-  doc.text('PRIX UNIT.',140,startY+6);
-  doc.text('TOTAL',195,startY+6,{align:'right'});
-
-  const rowY=startY+9;
-  doc.setDrawColor(230,230,230);
-  doc.rect(15,rowY,180,12);
-  doc.setTextColor(30,30,30);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9.5);
-  doc.text(imp.description||'Impression carte NFC',18,rowY+8,{maxWidth:98});
-  doc.text(String(qty),122,rowY+8);
-  doc.text(fmtNum(prixUnitaire)+' F',140,rowY+8);
-  doc.text(fmtNum(total)+' F',195,rowY+8,{align:'right'});
+  // Tableau (via autoTable pour éviter tout débordement)
+  doc.autoTable({
+    startY:70,
+    margin:{left:15,right:15},
+    head:[['Description','Qté','Prix unitaire','Total']],
+    body:[[
+      imp.description||'Impression carte NFC',
+      String(qty),
+      fmtNum(prixUnitaire)+' FCFA',
+      fmtNum(total)+' FCFA'
+    ]],
+    theme:'grid',
+    styles:{font:'helvetica',fontSize:9.5,cellPadding:4,textColor:[30,30,30],lineColor:[230,230,230]},
+    headStyles:{fillColor:[10,10,10],textColor:[212,175,106],fontStyle:'bold',fontSize:9},
+    columnStyles:{
+      0:{cellWidth:80},
+      1:{cellWidth:20,halign:'center'},
+      2:{cellWidth:38,halign:'right'},
+      3:{cellWidth:42,halign:'right'}
+    }
+  });
 
   // Total
-  const totalY=rowY+26;
+  const totalY=doc.lastAutoTable.finalY+14;
   doc.setDrawColor(220,220,220);
   doc.line(120,totalY-8,195,totalY-8);
   doc.setFont('helvetica','bold');
@@ -992,5 +991,6 @@ loadData();
 setInterval(loadData,30000);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
