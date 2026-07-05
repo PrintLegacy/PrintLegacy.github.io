@@ -486,6 +486,7 @@ function statusBadge(s){
   return '<span class="status st-d"><span class="sd"></span>'+s+'</span>';
 }
 function fmtMoney(n){return (n||0).toLocaleString('fr-FR')+' FCFA';}
+function fmtNum(n){return Math.round(n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
 
 // ── CLIENTS TABLE ──
 function renderTable(){
@@ -809,8 +810,8 @@ function buildInvoicePDF(imp){
   doc.setFontSize(9.5);
   doc.text(imp.description||'Impression carte NFC',18,rowY+8,{maxWidth:98});
   doc.text(String(qty),122,rowY+8);
-  doc.text(prixUnitaire.toLocaleString('fr-FR')+' F',140,rowY+8);
-  doc.text(total.toLocaleString('fr-FR')+' F',195,rowY+8,{align:'right'});
+  doc.text(fmtNum(prixUnitaire)+' F',140,rowY+8);
+  doc.text(fmtNum(total)+' F',195,rowY+8,{align:'right'});
 
   // Total
   const totalY=rowY+26;
@@ -819,7 +820,7 @@ function buildInvoicePDF(imp){
   doc.setFont('helvetica','bold');
   doc.setFontSize(12);
   doc.setTextColor(10,10,10);
-  doc.text(`TOTAL : ${total.toLocaleString('fr-FR')} FCFA`,195,totalY,{align:'right'});
+  doc.text(`TOTAL : ${fmtNum(total)} FCFA`,195,totalY,{align:'right'});
 
   if(imp.notes){
     doc.setFont('helvetica','italic');
