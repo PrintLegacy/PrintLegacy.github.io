@@ -372,6 +372,30 @@ tr:hover td{background:var(--cream)}
   </div>
 </div>
 
+<!-- INVOICE PREVIEW/EDIT MODAL -->
+<div class="ov" id="invoiceOv" onclick="if(event.target===this)closeInvoiceModal()">
+  <div class="edit-box" style="width:480px">
+    <div class="modal-hd"><div class="modal-hd-title">🧾 Aperçu de la facture</div><button class="modal-hd-close" onclick="closeInvoiceModal()">✕</button></div>
+    <div class="edit-body">
+      <div class="edit-grid">
+        <div class="edit-field full"><div class="edit-label">Client</div><input class="edit-input" id="inv-client"></div>
+        <div class="edit-field full"><div class="edit-label">Description</div><input class="edit-input" id="inv-desc" placeholder="Type de carte, format..."></div>
+        <div class="edit-field"><div class="edit-label">Quantité</div><input class="edit-input" id="inv-qty" type="number" min="1" oninput="updateInvoiceTotal()"></div>
+        <div class="edit-field"><div class="edit-label">Prix unitaire (FCFA)</div><input class="edit-input" id="inv-prix" type="number" min="0" oninput="updateInvoiceTotal()"></div>
+        <div class="edit-field full"><div class="edit-label">Notes (apparaissent sur la facture)</div><textarea class="edit-input" id="inv-notes" rows="2" style="resize:vertical"></textarea></div>
+        <div class="edit-field full" style="background:var(--cream);padding:12px 14px;border-radius:var(--r);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:var(--smoke2);text-transform:uppercase;letter-spacing:.1em;font-weight:600">Total</span>
+          <span id="inv-total-display" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold)">0 FCFA</span>
+        </div>
+      </div>
+    </div>
+    <div class="edit-foot">
+      <button class="edit-cancel" onclick="closeInvoiceModal()">Annuler</button>
+      <button class="edit-save" id="invConfirmBtn" onclick="confirmAndDownloadInvoice()">⬇️ Télécharger la facture PDF</button>
+    </div>
+  </div>
+</div>
+
 <div class="save-toast" id="saveToast"></div>
 
 <script>
@@ -612,7 +636,7 @@ async function loadImpressions(){
         <option value="pret" ${imp.statut==='pret'?'selected':''}>Prêt</option>
         <option value="livre" ${imp.statut==='livre'?'selected':''}>Livré</option>
       </select>
-      <button class="imp-btn imp-btn-fact" onclick="generateInvoice('${imp.id}')" style="margin-left:6px;padding:5px 10px;font-size:10px">${imp.facture?'📄 Revoir facture':'🖨️ Facturer'}</button>
+      <button class="imp-btn imp-btn-fact" onclick="openInvoiceModal('${imp.id}')" style="margin-left:6px;padding:5px 10px;font-size:10px">${imp.facture?'📄 Revoir / modifier':'🖨️ Facturer'}</button>
       <button onclick="deleteImpression('${imp.id}')" style="margin-left:6px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:var(--r);color:#C62828;cursor:pointer;padding:5px 8px;font-size:11px">✕</button>
     </td>
   </tr>`;
@@ -665,23 +689,71 @@ async function deleteImpression(id){
 }
 
 // ── FACTURATION / PDF ──
-async function generateInvoice(id){
+let currentInvoiceId=null;
+
+async function openInvoiceModal(id){
   if(typeof window.jspdf==='undefined'){showToast('Erreur: bibliothèque PDF non chargée');return;}
+  currentInvoiceId=id;
   const {data:imp,error}=await sb.from('impressions').select('*').eq('id',id).single();
   if(error||!imp){showToast('Erreur: impression introuvable');return;}
+  document.getElementById('inv-client').value=imp.client_name||'';
+  document.getElementById('inv-desc').value=imp.description||'';
+  document.getElementById('inv-qty').value=imp.quantite||1;
+  document.getElementById('inv-prix').value=imp.prix_unitaire||0;
+  document.getElementById('inv-notes').value=imp.notes||'';
+  updateInvoiceTotal();
+  document.getElementById('invoiceOv').classList.add('open');
+}
 
-  let numeroFacture=imp.numero_facture;
+function closeInvoiceModal(){
+  document.getElementById('invoiceOv').classList.remove('open');
+  currentInvoiceId=null;
+}
+
+function updateInvoiceTotal(){
+  const qty=parseFloat(document.getElementById('inv-qty').value)||0;
+  const prix=parseFloat(document.getElementById('inv-prix').value)||0;
+  document.getElementById('inv-total-display').textContent=fmtMoney(qty*prix);
+}
+
+async function confirmAndDownloadInvoice(){
+  if(!currentInvoiceId)return;
+  const client=document.getElementById('inv-client').value.trim();
+  if(!client){showToast('Le nom du client est obligatoire');return;}
+  const desc=document.getElementById('inv-desc').value.trim();
+  const qty=parseFloat(document.getElementById('inv-qty').value)||1;
+  const prixUnitaire=parseFloat(document.getElementById('inv-prix').value)||0;
+  const notes=document.getElementById('inv-notes').value.trim();
+  const total=qty*prixUnitaire;
+
+  const btn=document.getElementById('invConfirmBtn');
+  btn.disabled=true;btn.textContent='⏳ Génération...';
+
+  const {data:existing}=await sb.from('impressions').select('numero_facture').eq('id',currentInvoiceId).single();
+  let numeroFacture=existing?.numero_facture;
   if(!numeroFacture){
     const today=new Date();
     const datePart=today.getFullYear().toString()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
     numeroFacture=`PL-${datePart}-${String(Math.floor(Math.random()*9000)+1000)}`;
-    const {error:updErr}=await sb.from('impressions').update({facture:true,numero_facture:numeroFacture,date_facture:new Date().toISOString()}).eq('id',id);
-    if(updErr){showToast('Erreur enregistrement facture: '+updErr.message);return;}
   }
 
+  const updates={client_name:client,description:desc||null,quantite:qty,prix_unitaire:prixUnitaire,montant_total:total,notes:notes||null,facture:true,numero_facture:numeroFacture,date_facture:new Date().toISOString()};
+  const {error}=await sb.from('impressions').update(updates).eq('id',currentInvoiceId);
+  if(error){showToast('Erreur: '+error.message);btn.disabled=false;btn.textContent='⬇️ Télécharger la facture PDF';return;}
+
+  buildInvoicePDF({client_name:client,description:desc,quantite:qty,prix_unitaire:prixUnitaire,total,notes,numero_facture:numeroFacture});
+
+  btn.disabled=false;btn.textContent='⬇️ Télécharger la facture PDF';
+  showToast('✓ Facture générée et téléchargée !');
+  closeInvoiceModal();
+  loadImpressions();
+}
+
+function buildInvoicePDF(imp){
   const qty=imp.quantite||1;
   const prixUnitaire=imp.prix_unitaire||0;
-  const total=(imp.montant_total!=null)?imp.montant_total:(qty*prixUnitaire);
+  const total=(imp.total!=null)?imp.total:(qty*prixUnitaire);
+  const numeroFacture=imp.numero_facture;
 
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
@@ -764,8 +836,6 @@ async function generateInvoice(id){
   doc.text('Print Legacy — Dakar, Sénégal — 78 400 00 66 — leamalou4@gmail.com',15,280);
 
   doc.save(`Facture_${numeroFacture}_${(imp.client_name||'client').replace(/\s+/g,'_')}.pdf`);
-  showToast('✓ Facture générée et téléchargée !');
-  loadImpressions();
 }
 
 // ── NFC ──
