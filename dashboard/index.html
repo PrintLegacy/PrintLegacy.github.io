@@ -142,7 +142,7 @@ tr:hover td{background:var(--cream)}
 .cat-add-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
 .save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
 .save-toast.show{display:block}
- 
+
 /* ── CRÉATIONS ── */
 .creation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:20px}
 .creation-card{border:1px solid var(--cream2);border-radius:8px;overflow:hidden;background:var(--w);position:relative;transition:.15s}
@@ -160,7 +160,7 @@ tr:hover td{background:var(--cream)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .upload-prog{height:3px;background:var(--cream2);border-radius:2px;margin:0 20px 20px;display:none}
 .upload-prog-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;width:0;transition:width .3s}
- 
+
 /* ── IMPRESSIONS ── */
 .imp-table th,.imp-table td{padding:10px 16px}
 .imp-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:100px}
@@ -209,7 +209,7 @@ tr:hover td{background:var(--cream)}
       </div>
     </div>
   </div>
- 
+
   <div class="main">
     <div class="topbar">
       <div class="tb-title" id="pageTitle">Tableau de bord <span id="dateLabel"></span></div>
@@ -219,9 +219,9 @@ tr:hover td{background:var(--cream)}
         <a href="https://printlegacy.github.io/order" class="tb-cta">+ Nouvelle commande</a>
       </div>
     </div>
- 
+
     <div class="content">
- 
+
       <!-- PAGE: DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="stats">
@@ -238,7 +238,7 @@ tr:hover td{background:var(--cream)}
           <div id="tableWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
- 
+
       <!-- PAGE: CRÉATIONS -->
       <div class="page" id="page-creations">
         <div class="card">
@@ -263,7 +263,7 @@ tr:hover td{background:var(--cream)}
           <div class="creation-grid" id="creationGrid"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
- 
+
       <!-- PAGE: IMPRESSIONS -->
       <div class="page" id="page-impressions">
         <div class="card" style="margin-bottom:16px">
@@ -286,11 +286,11 @@ tr:hover td{background:var(--cream)}
           <div id="impWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
- 
+
     </div>
   </div>
 </div>
- 
+
 <!-- NFC MODAL -->
 <div class="ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
   <div class="nfc-box">
@@ -313,7 +313,7 @@ tr:hover td{background:var(--cream)}
     </div>
   </div>
 </div>
- 
+
 <!-- EDIT MODAL -->
 <div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
   <div class="edit-box">
@@ -371,18 +371,18 @@ tr:hover td{background:var(--cream)}
     </div>
   </div>
 </div>
- 
+
 <div class="save-toast" id="saveToast"></div>
- 
+
 <script>
 const {createClient}=supabase;
 const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
- 
+
 document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
- 
+
 // ── ÉTAT GLOBAL ──
 let currentTheme='noir', currentStatus='pending', currentId=null;
 let allData=[], currentView='all', searchQuery='';
@@ -390,7 +390,7 @@ let catRows=[], catCounter=0;
 const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let currentPage='dashboard';
- 
+
 // ── THEMES ──
 const THEMES=[
   {id:'noir',name:'Noir & Or',h1:'#0A0A0A',ac:'#D4AF6A',tc:'#0A0A0A'},
@@ -421,9 +421,9 @@ THEMES.forEach(t=>{
     <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
   </div>`;
 });
- 
+
 document.getElementById('catAddBtn').addEventListener('click',()=>addCatRow());
- 
+
 // ── NAVIGATION ──
 function setPage(page){
   currentPage=page;
@@ -436,7 +436,7 @@ function setPage(page){
   if(page==='creations') loadCreations();
   if(page==='impressions') loadImpressions();
 }
- 
+
 function setView(view){
   currentView=view;
   if(currentPage!=='dashboard') setPage('dashboard');
@@ -446,13 +446,13 @@ function setView(view){
   document.getElementById('card-title').textContent=labels[view]||'Clients';
   renderTable();
 }
- 
+
 function refreshPage(){
   if(currentPage==='dashboard') loadData();
   else if(currentPage==='creations') loadCreations();
   else if(currentPage==='impressions') loadImpressions();
 }
- 
+
 // ── HELPERS ──
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
@@ -462,7 +462,7 @@ function statusBadge(s){
   return '<span class="status st-d"><span class="sd"></span>'+s+'</span>';
 }
 function fmtMoney(n){return (n||0).toLocaleString('fr-FR')+' FCFA';}
- 
+
 // ── CLIENTS TABLE ──
 function renderTable(){
   let data=allData;
@@ -503,7 +503,7 @@ function renderTable(){
     <th>Thème</th><th>Statut</th><th>Date</th><th>Actions</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
 }
- 
+
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
@@ -517,13 +517,13 @@ async function loadData(){
   allData=data;
   renderTable();
 }
- 
+
 async function toggleStatus(id,current){
   const next=current==='active'?'pending':'active';
   await sb.from('clients').update({status:next}).eq('id',id);
   loadData();
 }
- 
+
 // ── CRÉATIONS ──
 async function loadCreations(){
   document.getElementById('creationGrid').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
@@ -546,7 +546,7 @@ async function loadCreations(){
     </div>
   `).join('');
 }
- 
+
 async function uploadCreations(e){
   const files=Array.from(e.target.files);
   if(!files.length) return;
@@ -571,21 +571,21 @@ async function uploadCreations(e){
   loadCreations();
   showToast('✓ '+files.length+' fichier(s) uploadé(s) !');
 }
- 
+
 async function deleteCreation(id){
   if(!confirm('Supprimer cette création ?'))return;
   await sb.from('creations').delete().eq('id',id);
   loadCreations();
   showToast('Création supprimée');
 }
- 
+
 // ── IMPRESSIONS ──
 function updateImpTotalPreview(){
   const qty=parseFloat(document.getElementById('imp-qty').value)||0;
   const prix=parseFloat(document.getElementById('imp-prix').value)||0;
   document.getElementById('imp-total-preview').value=fmtMoney(qty*prix);
 }
- 
+
 async function loadImpressions(){
   document.getElementById('impWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   const {data,error}=await sb.from('impressions').select('*').order('created_at',{ascending:false});
@@ -621,7 +621,7 @@ async function loadImpressions(){
     <th>Client</th><th>Description</th><th>Quantité</th><th>Montant</th><th>Livraison</th><th>Statut</th><th>Actions</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
 }
- 
+
 async function addImpression(){
   const client=document.getElementById('imp-client').value.trim();
   if(!client){showToast('Le nom du client est obligatoire');return;}
@@ -650,26 +650,26 @@ async function addImpression(){
   loadImpressions();
   showToast('✓ Impression enregistrée !');
 }
- 
+
 async function updateImpStatus(id,statut){
   await sb.from('impressions').update({statut}).eq('id',id);
   showToast('✓ Statut mis à jour');
   loadImpressions();
 }
- 
+
 async function deleteImpression(id){
   if(!confirm('Supprimer cette impression ?'))return;
   await sb.from('impressions').delete().eq('id',id);
   loadImpressions();
   showToast('Impression supprimée');
 }
- 
+
 // ── FACTURATION / PDF ──
 async function generateInvoice(id){
   if(typeof window.jspdf==='undefined'){showToast('Erreur: bibliothèque PDF non chargée');return;}
   const {data:imp,error}=await sb.from('impressions').select('*').eq('id',id).single();
   if(error||!imp){showToast('Erreur: impression introuvable');return;}
- 
+
   let numeroFacture=imp.numero_facture;
   if(!numeroFacture){
     const today=new Date();
@@ -678,14 +678,14 @@ async function generateInvoice(id){
     const {error:updErr}=await sb.from('impressions').update({facture:true,numero_facture:numeroFacture,date_facture:new Date().toISOString()}).eq('id',id);
     if(updErr){showToast('Erreur enregistrement facture: '+updErr.message);return;}
   }
- 
+
   const qty=imp.quantite||1;
   const prixUnitaire=imp.prix_unitaire||0;
   const total=(imp.montant_total!=null)?imp.montant_total:(qty*prixUnitaire);
- 
+
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
- 
+
   // En-tête
   doc.setFillColor(10,10,10);
   doc.rect(0,0,210,32,'F');
@@ -697,7 +697,7 @@ async function generateInvoice(id){
   doc.setFontSize(9);
   doc.setTextColor(230,230,230);
   doc.text('Studio graphique & Cartes NFC — Dakar, Sénégal',15,24);
- 
+
   // Titre facture
   doc.setTextColor(10,10,10);
   doc.setFontSize(18);
@@ -708,7 +708,7 @@ async function generateInvoice(id){
   doc.setTextColor(80,80,80);
   doc.text(`N° ${numeroFacture}`,195,52,{align:'right'});
   doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`,195,58,{align:'right'});
- 
+
   // Client
   doc.setTextColor(10,10,10);
   doc.setFontSize(10);
@@ -716,7 +716,7 @@ async function generateInvoice(id){
   doc.text('Facturé à :',15,50);
   doc.setFont('helvetica','normal');
   doc.text(imp.client_name||'',15,56);
- 
+
   // Tableau
   const startY=70;
   doc.setFillColor(10,10,10);
@@ -728,7 +728,7 @@ async function generateInvoice(id){
   doc.text('QTÉ',120,startY+6);
   doc.text('PRIX UNIT.',140,startY+6);
   doc.text('TOTAL',195,startY+6,{align:'right'});
- 
+
   const rowY=startY+9;
   doc.setDrawColor(230,230,230);
   doc.rect(15,rowY,180,12);
@@ -739,7 +739,7 @@ async function generateInvoice(id){
   doc.text(String(qty),122,rowY+8);
   doc.text(prixUnitaire.toLocaleString('fr-FR')+' F',140,rowY+8);
   doc.text(total.toLocaleString('fr-FR')+' F',195,rowY+8,{align:'right'});
- 
+
   // Total
   const totalY=rowY+26;
   doc.setDrawColor(220,220,220);
@@ -748,26 +748,26 @@ async function generateInvoice(id){
   doc.setFontSize(12);
   doc.setTextColor(10,10,10);
   doc.text(`TOTAL : ${total.toLocaleString('fr-FR')} FCFA`,195,totalY,{align:'right'});
- 
+
   if(imp.notes){
     doc.setFont('helvetica','italic');
     doc.setFontSize(9);
     doc.setTextColor(120,120,120);
     doc.text('Notes : '+imp.notes,15,totalY+14,{maxWidth:120});
   }
- 
+
   // Pied de page
   doc.setFont('helvetica','normal');
   doc.setFontSize(9);
   doc.setTextColor(140,140,140);
   doc.text('Merci pour votre confiance.',15,275);
-  doc.text('Print Legacy — Dakar, Sénégal — printlegacy.github.io',15,280);
- 
+  doc.text('Print Legacy — Dakar, Sénégal — 78 400 00 66 — leamalou4@gmail.com',15,280);
+
   doc.save(`Facture_${numeroFacture}_${(imp.client_name||'client').replace(/\s+/g,'_')}.pdf`);
   showToast('✓ Facture générée et téléchargée !');
   loadImpressions();
 }
- 
+
 // ── NFC ──
 function openNFC(slug,name){
   document.getElementById('nfcClientName').textContent=name.trim();
@@ -782,7 +782,7 @@ function copyNFC(){
   document.querySelector('.nfc-copy-btn').textContent='✓ Copié';
   setTimeout(()=>{document.getElementById('nfcCopied').style.display='none';document.querySelector('.nfc-copy-btn').textContent='Copier'},2000);
 }
- 
+
 // ── EDIT ──
 function selTheme(id){
   document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
@@ -809,7 +809,7 @@ function clearEditCover(e){
   document.getElementById('editCoverMeta').style.display='none';
   document.getElementById('editCoverInput').value='';
 }
- 
+
 function addCatRow(existing){
   const id=++catCounter;
   const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
@@ -831,7 +831,7 @@ function addCatRow(existing){
   div.querySelector('#catthumb-'+id).addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>catFileChange(e,id);inp.click();});
   div.querySelector('#catdel-'+id).addEventListener('click',()=>{catRows=catRows.filter(r=>r.id!==id);delete catFiles[id];div.remove();});
 }
- 
+
 function catFileChange(e,id){
   const f=e.target.files[0];if(!f)return;
   catFiles[id].file=f;
@@ -844,7 +844,7 @@ function catFileChange(e,id){
   };
   reader.readAsDataURL(f);
 }
- 
+
 async function openEdit(clientId){
   currentId=clientId;
   catRows=[];catCounter=0;
@@ -867,7 +867,7 @@ async function openEdit(clientId){
   btn.disabled=false;btn.textContent='💾 Sauvegarder';
 }
 function closeEdit(){document.getElementById('editOv').classList.remove('open')}
- 
+
 async function upFile(file,folder){
   if(!file)return null;
   const ext=file.name.split('.').pop();
@@ -876,7 +876,7 @@ async function upFile(file,folder){
   if(error){showToast('Erreur upload: '+error.message);return null;}
   return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
 }
- 
+
 async function saveEdit(){
   if(!currentId)return;
   const btn=document.getElementById('editSaveBtn');
@@ -902,21 +902,21 @@ async function saveEdit(){
   }catch(err){showToast('Erreur: '+err.message);}
   finally{btn.disabled=false;btn.textContent='💾 Sauvegarder';}
 }
- 
+
 async function deleteClient(){
   if(!currentId)return;
   if(!confirm('Supprimer ce client ?'))return;
   await sb.from('clients').delete().eq('id',currentId);
   closeEdit();loadData();showToast('Client supprimé');
 }
- 
+
 function showToast(msg){
   const t=document.getElementById('saveToast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
 function logout(){window.location.href='https://printlegacy.github.io'}
- 
+
 loadData();
 setInterval(loadData,30000);
 </script>
