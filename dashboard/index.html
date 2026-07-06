@@ -44,6 +44,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 .sc.feat::before{background:linear-gradient(90deg,var(--gold),#EDD89A)}
 .sc-lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke2);margin-bottom:8px}
 .sc-num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--ink);line-height:1;margin-bottom:4px}
+.sc-money{font-size:22px}
 .sc-sub{font-size:10px;color:var(--smoke2)}
 .sc-ico{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:13px}
 .card{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
@@ -198,6 +199,7 @@ tr:hover td{background:var(--cream)}
       <div class="sb-sec">Studio</div>
       <div class="sb-item" id="nav-creations" onclick="setPage('creations')"><span class="ico">🎨</span> Créations</div>
       <div class="sb-item" id="nav-impressions" onclick="setPage('impressions')"><span class="ico">🖨️</span> Impressions</div>
+      <div class="sb-item" id="nav-stats" onclick="setPage('stats')"><span class="ico">📈</span> Statistiques</div>
       <div class="sb-sec">Compte</div>
       <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io'"><span class="ico">🌐</span> Voir le site</div>
       <div class="sb-item" onclick="logout()"><span class="ico">🔒</span> Déconnexion</div>
@@ -284,6 +286,31 @@ tr:hover td{background:var(--cream)}
         <div class="card">
           <div class="card-h"><div class="card-t">🖨️ Suivi des impressions</div><button class="card-a" onclick="loadImpressions()">Actualiser →</button></div>
           <div id="impWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+      </div>
+
+      <!-- PAGE: STATISTIQUES -->
+      <div class="page" id="page-stats">
+        <div class="stats">
+          <div class="sc feat"><div class="sc-ico">💰</div><div class="sc-lbl">CA facturé (total)</div><div class="sc-num sc-money" id="stat-ca-total">—</div><div class="sc-sub">Toutes factures émises</div></div>
+          <div class="sc"><div class="sc-ico">📅</div><div class="sc-lbl">CA ce mois-ci</div><div class="sc-num sc-money" id="stat-ca-month">—</div><div class="sc-sub" id="stat-ca-month-label"></div></div>
+          <div class="sc"><div class="sc-ico">🧾</div><div class="sc-lbl">Factures émises</div><div class="sc-num" id="stat-ca-count">—</div><div class="sc-sub">Nombre total</div></div>
+          <div class="sc"><div class="sc-ico">📦</div><div class="sc-lbl">Panier moyen</div><div class="sc-num sc-money" id="stat-ca-avg">—</div><div class="sc-sub">Par facture</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div class="card-t">📊 Évolution du chiffre d'affaires (12 derniers mois)</div><button class="card-a" onclick="loadStats()">Actualiser →</button></div>
+          <div id="statsChart" style="padding:20px 24px"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div class="card-t">🏆 Chiffre d'affaires par client</div></div>
+          <div id="statsClientsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div class="card-t">⏳ En attente de facturation</div></div>
+          <div id="statsPendingWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
 
@@ -455,10 +482,11 @@ function setPage(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.sb-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
   document.getElementById('nav-'+page)?.classList.add('active');
-  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions'};
+  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques'};
   document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
   if(page==='creations') loadCreations();
   if(page==='impressions') loadImpressions();
+  if(page==='stats') loadStats();
 }
 
 function setView(view){
@@ -475,6 +503,7 @@ function refreshPage(){
   if(currentPage==='dashboard') loadData();
   else if(currentPage==='creations') loadCreations();
   else if(currentPage==='impressions') loadImpressions();
+  else if(currentPage==='stats') loadStats();
 }
 
 // ── HELPERS ──
@@ -687,6 +716,94 @@ async function deleteImpression(id){
   await sb.from('impressions').delete().eq('id',id);
   loadImpressions();
   showToast('Impression supprimée');
+}
+
+// ── STATISTIQUES / CHIFFRE D'AFFAIRES ──
+async function loadStats(){
+  const {data,error}=await sb.from('impressions').select('*');
+  if(error){
+    ['statsChart','statsClientsWrap','statsPendingWrap'].forEach(id=>{
+      document.getElementById(id).innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+error.message+'</div>';
+    });
+    return;
+  }
+  const all=data||[];
+  const montant=d=>(d.montant_total!=null)?d.montant_total:((d.quantite||1)*(d.prix_unitaire||0));
+  const invoiced=all.filter(d=>d.facture);
+  const pending=all.filter(d=>!d.facture);
+
+  const caTotal=invoiced.reduce((s,d)=>s+montant(d),0);
+  const caPending=pending.reduce((s,d)=>s+montant(d),0);
+
+  const now=new Date();
+  const curKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const caMonth=invoiced.filter(d=>{
+    const dt=new Date(d.date_facture||d.created_at);
+    return (dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'))===curKey;
+  }).reduce((s,d)=>s+montant(d),0);
+
+  document.getElementById('stat-ca-total').textContent=fmtMoney(caTotal);
+  document.getElementById('stat-ca-month').textContent=fmtMoney(caMonth);
+  document.getElementById('stat-ca-month-label').textContent=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  document.getElementById('stat-ca-count').textContent=invoiced.length;
+  document.getElementById('stat-ca-avg').textContent=invoiced.length?fmtMoney(caTotal/invoiced.length):'0 FCFA';
+
+  // Évolution sur 12 mois
+  const months=[];
+  for(let i=11;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}),total:0});
+  }
+  invoiced.forEach(d=>{
+    const dt=new Date(d.date_facture||d.created_at);
+    const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    const m=months.find(x=>x.key===key);
+    if(m) m.total+=montant(d);
+  });
+  const maxTotal=Math.max(...months.map(m=>m.total),1);
+  document.getElementById('statsChart').innerHTML=months.map(m=>`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px">
+      <div style="width:55px;font-size:11px;color:var(--smoke2);text-transform:capitalize;flex-shrink:0">${m.label}</div>
+      <div style="flex:1;background:var(--cream);border-radius:4px;overflow:hidden;height:16px">
+        <div style="height:100%;width:${(m.total/maxTotal*100).toFixed(1)}%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;transition:width .4s"></div>
+      </div>
+      <div style="width:120px;text-align:right;font-size:11px;font-weight:600;color:var(--ink);flex-shrink:0">${fmtMoney(m.total)}</div>
+    </div>
+  `).join('');
+
+  // Par client
+  const byClient={};
+  invoiced.forEach(d=>{
+    const key=d.client_name||'—';
+    if(!byClient[key]) byClient[key]={count:0,total:0};
+    byClient[key].count++;
+    byClient[key].total+=montant(d);
+  });
+  const clientsArr=Object.entries(byClient).map(([name,v])=>({name,...v})).sort((a,b)=>b.total-a.total);
+  if(!clientsArr.length){
+    document.getElementById('statsClientsWrap').innerHTML='<div class="empty"><div class="empty-ico">🏆</div>Aucune facture émise pour le moment.</div>';
+  }else{
+    const rows=clientsArr.map(c=>`<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.count} facture(s)</td>
+      <td>${fmtMoney(c.total)}</td>
+      <td>${caTotal?((c.total/caTotal)*100).toFixed(1):'0'}%</td>
+    </tr>`).join('');
+    document.getElementById('statsClientsWrap').innerHTML=`<table><thead><tr><th>Client</th><th>Commandes</th><th>Chiffre d'affaires</th><th>Part du CA</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  // En attente de facturation
+  if(!pending.length){
+    document.getElementById('statsPendingWrap').innerHTML='<div class="empty"><div class="empty-ico">✅</div>Tout est facturé.</div>';
+  }else{
+    const rows=pending.map(d=>`<tr>
+      <td><strong>${d.client_name}</strong></td>
+      <td>${d.description||'—'}</td>
+      <td>${fmtMoney(montant(d))}</td>
+    </tr>`).join('');
+    document.getElementById('statsPendingWrap').innerHTML=`<table><thead><tr><th>Client</th><th>Description</th><th>Montant estimé</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="padding:12px 20px;font-size:11.5px;color:var(--smoke2);border-top:1px solid var(--cream2)">Total en attente de facturation : <strong style="color:var(--ink)">${fmtMoney(caPending)}</strong></div>`;
+  }
 }
 
 // ── FACTURATION / PDF ──
