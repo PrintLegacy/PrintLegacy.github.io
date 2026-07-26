@@ -189,6 +189,16 @@ tr:hover td{background:var(--cream)}
 .db-banner-retry{background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:7px 14px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap}
 .db-banner-retry:hover{background:var(--gold);color:var(--ink)}
 
+/* ── STATS CARTES NFC ── */
+.card-stats-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.csm{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);padding:16px 18px}
+.csm-lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke2);margin-bottom:8px}
+.csm-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--ink);line-height:1}
+.csm-sub{font-size:10px;color:var(--smoke2);margin-top:4px}
+.bar-mini{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--cream);margin-top:6px;width:80px}
+.bar-mini-nfc{background:var(--gold)}
+.bar-mini-link{background:var(--smoke2)}
+
 /* ── MOBILE / RESPONSIVE ── */
 .hamburger{display:none;width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998}
@@ -223,6 +233,7 @@ tr:hover td{background:var(--cream)}
   .edit-theme-grid{grid-template-columns:repeat(3,1fr)}
   .cat-fields{grid-template-columns:1fr;gap:6px}
   .creation-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:12px}
+  .card-stats-mini{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -369,6 +380,18 @@ tr:hover td{background:var(--cream)}
         <div class="card">
           <div class="card-h"><div class="card-t">⏳ En attente de facturation</div></div>
           <div id="statsPendingWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div class="card-t">📶 Performance des cartes NFC</div><button class="card-a" onclick="loadCardStats()">Actualiser →</button></div>
+          <div style="padding:20px 24px 4px">
+            <div class="card-stats-mini">
+              <div class="csm"><div class="csm-lbl">Vues totales</div><div class="csm-num" id="cs-total">—</div><div class="csm-sub">Toutes cartes confondues</div></div>
+              <div class="csm"><div class="csm-lbl">📶 Scans NFC</div><div class="csm-num" id="cs-nfc">—</div><div class="csm-sub">Carte physique approchée</div></div>
+              <div class="csm"><div class="csm-lbl">🔗 Clics lien</div><div class="csm-num" id="cs-link">—</div><div class="csm-sub">Lien partagé (bio, sms...)</div></div>
+            </div>
+          </div>
+          <div id="statsCardsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
 
@@ -556,7 +579,7 @@ function setPage(page){
   document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
   if(page==='creations') loadCreations();
   if(page==='impressions') loadImpressions();
-  if(page==='stats') loadStats();
+  if(page==='stats'){loadStats();loadCardStats();}
 }
 
 function setView(view){
@@ -573,7 +596,7 @@ function refreshPage(){
   if(currentPage==='dashboard') loadData();
   else if(currentPage==='creations') loadCreations();
   else if(currentPage==='impressions') loadImpressions();
-  else if(currentPage==='stats') loadStats();
+  else if(currentPage==='stats'){loadStats();loadCardStats();}
 }
 
 // ── SIDEBAR MOBILE ──
@@ -628,7 +651,7 @@ function renderTable(){
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
       <td><div style="display:flex;gap:6px;align-items:center">
         ${c.cv_url?`<a href="${c.cv_url}" target="_blank" style="font-size:14px;text-decoration:none">📄</a>`:''}
-        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${c.slug}','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
+        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${c.slug}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
         <span onclick="openNFC('${c.slug}','${esc(c.firstname||'')} ${esc(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
         <span onclick="openEdit('${c.id}')" style="cursor:pointer;font-size:14px">✏️</span>
         <span onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
@@ -962,6 +985,81 @@ async function loadStats(){
   }
 }
 
+// ── STATISTIQUES DES CARTES NFC (vues / scans / clics) ──
+async function loadCardStats(){
+  const wrap=document.getElementById('statsCardsWrap');
+  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  try{
+    // On a besoin des clients (pour le nom + slug) et des vues enregistrées
+    const [{data:clients,error:cErr},{data:views,error:vErr}]=await Promise.all([
+      sb.from('clients').select('id,firstname,lastname,slug'),
+      sb.from('card_views').select('client_id,source,created_at')
+    ]);
+    if(cErr||vErr){
+      const msg=(cErr||vErr).message||'';
+      // Si la table card_views n'existe pas encore, on l'indique clairement
+      if(msg.toLowerCase().includes('card_views')||msg.toLowerCase().includes('does not exist')||msg.toLowerCase().includes('relation')){
+        wrap.innerHTML='<div class="empty"><div class="empty-ico">📶</div>La table <strong>card_views</strong> n\'existe pas encore dans Supabase.<br><span style="font-size:11px">Crée-la avec le script SQL fourni pour activer le suivi des scans et clics.</span></div>';
+        ['cs-total','cs-nfc','cs-link'].forEach(id=>document.getElementById(id).textContent='—');
+        return;
+      }
+      wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+msg+'</div>';
+      return;
+    }
+    hideDbBanner();
+    const allViews=(views||[]).filter(v=>v.source!=='admin'); // on exclut les prévisualisations internes
+    const totalNfc=allViews.filter(v=>v.source==='nfc').length;
+    const totalLink=allViews.filter(v=>v.source!=='nfc').length;
+    document.getElementById('cs-total').textContent=fmtNum(allViews.length);
+    document.getElementById('cs-nfc').textContent=fmtNum(totalNfc);
+    document.getElementById('cs-link').textContent=fmtNum(totalLink);
+
+    if(!clients||!clients.length){
+      wrap.innerHTML='<div class="empty"><div class="empty-ico">📭</div>Aucun client.</div>';
+      return;
+    }
+
+    const byClient={};
+    clients.forEach(c=>{byClient[c.id]={name:(c.firstname||'')+' '+(c.lastname||''),slug:c.slug,nfc:0,link:0,last:null};});
+    allViews.forEach(v=>{
+      const row=byClient[v.client_id];
+      if(!row) return;
+      if(v.source==='nfc') row.nfc++; else row.link++;
+      const d=new Date(v.created_at);
+      if(!row.last||d>row.last) row.last=d;
+    });
+    const arr=Object.values(byClient).sort((a,b)=>(b.nfc+b.link)-(a.nfc+a.link));
+
+    const rows=arr.map(c=>{
+      const total=c.nfc+c.link;
+      const pctNfc=total?Math.round((c.nfc/total)*100):0;
+      return `<tr>
+        <td><strong>${esc(c.name.trim()||'—')}</strong></td>
+        <td>${fmtNum(total)}</td>
+        <td>📶 ${fmtNum(c.nfc)}</td>
+        <td>🔗 ${fmtNum(c.link)}</td>
+        <td><div class="bar-mini"><div class="bar-mini-nfc" style="width:${pctNfc}%"></div><div class="bar-mini-link" style="width:${100-pctNfc}%"></div></div></td>
+        <td style="font-size:10px;color:var(--smoke2)">${c.last?c.last.toLocaleDateString('fr-FR'):'—'}</td>
+      </tr>`;
+    }).join('');
+
+    wrap.innerHTML=`<table><thead><tr>
+      <th>Client</th><th>Vues totales</th><th>Scans NFC</th><th>Clics lien</th><th>Répartition</th><th>Dernière vue</th>
+    </tr></thead><tbody>${rows}</tbody></table>
+    <div style="padding:12px 20px;font-size:11px;color:var(--smoke2);border-top:1px solid var(--cream2)">
+      💡 "Scans NFC" = carte physique approchée. "Clics lien" = lien partagé ouvert (bio, SMS, WhatsApp...). Les prévisualisations depuis ce dashboard ne sont pas comptées.
+    </div>`;
+  }catch(err){
+    if(isNetworkFailure(err)){
+      showDbBanner();
+      wrap.innerHTML=friendlyEmptyState();
+      ['cs-total','cs-nfc','cs-link'].forEach(id=>document.getElementById(id).textContent='—');
+    }else{
+      wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
+    }
+  }
+}
+
 // ── FACTURATION / PDF ──
 let currentInvoiceId=null;
 
@@ -1125,7 +1223,7 @@ function buildInvoicePDF(imp){
 // ── NFC ──
 function openNFC(slug,name){
   document.getElementById('nfcClientName').textContent=name.trim();
-  document.getElementById('nfcUrl').textContent=`https://printlegacy-platform.vercel.app/?carte=${slug}`;
+  document.getElementById('nfcUrl').textContent=`https://printlegacy-platform.vercel.app/?carte=${slug}&src=nfc`;
   document.getElementById('nfcCopied').style.display='none';
   document.getElementById('nfcOv').classList.add('open');
 }
