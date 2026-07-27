@@ -216,6 +216,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         <div class="field"><label>Titre / Poste <span class="req">*</span></label><input type="text" id="f-jt" placeholder="CEO, Consultant..." oninput="upd()"></div>
         <div class="field"><label>Entreprise</label><input type="text" id="f-co" placeholder="Votre entreprise" oninput="upd()"></div>
       </div>
+
+      <!-- ── ENTREPRISE : logo, à propos, horaires ── -->
+      <div style="margin:0 0 1.2rem;padding-top:1rem;border-top:1px solid var(--cream3)">
+        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🏢 Logo de l'entreprise <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(optionnel)</span></label>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div id="coLogoCircle" onclick="document.getElementById('coLogoIn').click()" style="width:64px;height:64px;border-radius:10px;background:var(--cream);border:2px dashed var(--cream3);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;overflow:hidden;transition:.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
+            <span id="coLogoPlaceholder" style="font-size:1.4rem">🏢</span>
+            <img id="coLogoImg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;background:#fff">
+            <div id="coLogoOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;font-size:1rem">📷</div>
+          </div>
+          <div>
+            <input type="file" id="coLogoIn" accept="image/*" style="display:none" onchange="prevCoLogo(event)">
+            <button class="av-btn" type="button" onclick="document.getElementById('coLogoIn').click()" style="padding:.5rem 1rem;font-size:.75rem">📤 Ajouter le logo</button>
+            <div id="coLogoOk" style="font-size:.7rem;color:var(--gold);margin-top:4px;display:none">✓ Logo sélectionné</div>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>À propos de l'entreprise</label><textarea id="f-co-about" placeholder="Ce que fait votre entreprise, son activité..." rows="3"></textarea></div>
+      <div class="field"><label>Horaires d'ouverture</label><input type="text" id="f-co-hours" placeholder="Lun-Ven 9h-18h, Sam 9h-13h"></div>
+
       <div class="row2">
         <div class="field"><label>Téléphone <span class="req">*</span></label><input type="tel" id="f-ph" placeholder="+221 78 400 00 66" oninput="upd()"></div>
         <div class="field"><label>Email</label><input type="email" id="f-em" placeholder="votre@email.com"></div>
@@ -425,7 +445,7 @@ const sb = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
  
-const S = {offre:'',prix:'',qty:'1',theme:'noir',photo:null,cv:null,cover:null};
+const S = {offre:'',prix:'',qty:'1',theme:'noir',photo:null,cv:null,cover:null,companyLogo:null};
  
 // ── CATALOGUE STATE ──
 let catItems = []; // [{id, title, desc, price, file, previewUrl}]
@@ -508,7 +528,7 @@ function updateCatSummary() {
   }
 }
  
-// ── PHOTO / COVER ──
+// ── PHOTO / COVER / LOGO ENTREPRISE ──
 function prevPhoto(e){
   const f=e.target.files[0];if(!f)return;
   S.photo=f;
@@ -532,6 +552,19 @@ function prevCover(e){
   r.readAsDataURL(f);
   document.getElementById('coverOk').style.display='block';
   updatePreview();
+}
+
+function prevCoLogo(e){
+  const f=e.target.files[0];if(!f)return;
+  S.companyLogo=f;
+  const r=new FileReader();
+  r.onload=x=>{
+    const img=document.getElementById('coLogoImg');
+    img.src=x.target.result;img.style.display='block';
+    document.getElementById('coLogoPlaceholder').style.display='none';
+  };
+  r.readAsDataURL(f);
+  document.getElementById('coLogoOk').style.display='block';
 }
  
 function upd(){
@@ -648,6 +681,7 @@ async function submit(){
     const photoUrl=await upFile(S.photo,'photos');
     const coverUrl=await upFile(S.cover,'covers');
     const cvUrl=await upFile(S.cv,'cvs');
+    const companyLogoUrl=await upFile(S.companyLogo,'company-logos');
  
     // Upload catalogue images
     btn.innerHTML='<span class="spin"></span> Upload catalogue...';
@@ -681,6 +715,9 @@ async function submit(){
       firstname:fn, lastname:ln, slug,
       jobtitle:document.getElementById('f-jt').value.trim()||null,
       company:document.getElementById('f-co').value.trim()||null,
+      company_logo_url:companyLogoUrl,
+      company_about:document.getElementById('f-co-about').value.trim()||null,
+      company_hours:document.getElementById('f-co-hours').value.trim()||null,
       bio:document.getElementById('f-bio').value.trim()||null,
       phone:ph,
       whatsapp:document.getElementById('f-wa').value.trim()||null,
@@ -721,3 +758,4 @@ async function submit(){
 }
 </script>
 </body>
+</html>
