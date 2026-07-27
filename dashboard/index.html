@@ -448,6 +448,22 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
         <div class="edit-field"><div class="edit-label">Localisation</div><input class="edit-input" id="edit-location" placeholder="Dakar"></div>
+        <div class="edit-section">Entreprise</div>
+        <div class="edit-field full">
+          <div class="edit-label">🏢 Logo de l'entreprise</div>
+          <div class="cover-zone" id="editCompanyLogoZone" style="height:70px" onclick="document.getElementById('editCompanyLogoInput').click()">
+            <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
+            <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
+            <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
+            <div class="cz-overlay">📷 Changer</div>
+          </div>
+          <div id="editCompanyLogoMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
+            <span id="editCompanyLogoMetaName"></span>
+            <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+          </div>
+        </div>
+        <div class="edit-field full"><div class="edit-label">À propos de l'entreprise</div><textarea class="edit-input" id="edit-company_about" rows="3" placeholder="Ce que fait l'entreprise, son activité..." style="resize:vertical"></textarea></div>
+        <div class="edit-field full"><div class="edit-label">Horaires d'ouverture</div><input class="edit-input" id="edit-company_hours" placeholder="Lun-Ven 9h-18h, Sam 9h-13h"></div>
         <div class="edit-section">Contact</div>
         <div class="edit-field"><div class="edit-label">Téléphone</div><input class="edit-input" id="edit-phone" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
@@ -521,6 +537,7 @@ let allData=[], currentView='all', searchQuery='';
 let catRows=[], catCounter=0;
 const catFiles={};
 let newCoverFile=null, coverDeleted=false;
+let newCompanyLogoFile=null, companyLogoDeleted=false;
 let currentPage='dashboard';
 
 // ── DÉTECTION PANNE RÉSEAU / DB EN PAUSE ──
@@ -1262,6 +1279,22 @@ function clearEditCover(e){
   document.getElementById('editCoverInput').value='';
 }
 
+function onEditCompanyLogoChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newCompanyLogoFile=f;companyLogoDeleted=false;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('editCompanyLogoImg');img.src=x.target.result;img.style.display='block';document.getElementById('editCompanyLogoHint').style.display='none';showCompanyLogoMeta(f.name);};
+  r.readAsDataURL(f);
+}
+function showCompanyLogoMeta(name){const el=document.getElementById('editCompanyLogoMeta');el.style.display='flex';document.getElementById('editCompanyLogoMetaName').textContent=name;}
+function clearEditCompanyLogo(e){
+  e.stopPropagation();companyLogoDeleted=true;newCompanyLogoFile=null;
+  const img=document.getElementById('editCompanyLogoImg');img.style.display='none';img.src='';
+  document.getElementById('editCompanyLogoHint').style.display='block';
+  document.getElementById('editCompanyLogoMeta').style.display='none';
+  document.getElementById('editCompanyLogoInput').value='';
+}
+
 function addCatRow(existing){
   const id=++catCounter;
   const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
@@ -1303,17 +1336,22 @@ async function openEdit(clientId){
   Object.keys(catFiles).forEach(k=>delete catFiles[k]);
   document.getElementById('catRowsList').innerHTML='';
   newCoverFile=null;coverDeleted=false;
+  newCompanyLogoFile=null;companyLogoDeleted=false;
   document.getElementById('editOv').classList.add('open');
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='⏳ Chargement...';
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance','company_about','company_hours'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
     document.getElementById('editCoverMeta').style.display='none';
     if(c.cover_url){img.src=c.cover_url;img.style.display='block';document.getElementById('editCoverHint').style.display='none';showCoverMeta(c.cover_url.split('/').pop().slice(0,40));}
+    const cimg=document.getElementById('editCompanyLogoImg');cimg.style.display='none';cimg.src='';
+    document.getElementById('editCompanyLogoHint').style.display='block';
+    document.getElementById('editCompanyLogoMeta').style.display='none';
+    if(c.company_logo_url){cimg.src=c.company_logo_url;cimg.style.display='block';document.getElementById('editCompanyLogoHint').style.display='none';showCompanyLogoMeta(c.company_logo_url.split('/').pop().slice(0,40));}
     let items=[];try{items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'?JSON.parse(c.catalogue):[]);}catch(e){}
     items.forEach(item=>addCatRow(item));
     selTheme(c.theme||'noir');selStatus(c.status||'pending');
@@ -1341,9 +1379,11 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent='💾 Sauvegarde...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance','company_about','company_hours'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
+    if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
+    else if(companyLogoDeleted){updates.company_logo_url=null;}
     const catalogue=[];
     for(const row of catRows){
       let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
