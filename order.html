@@ -140,6 +140,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .tip{display:flex;align-items:flex-start;gap:8px;padding:.75rem;background:var(--cream);border-radius:var(--r);border:1px solid var(--cream3);font-size:.7rem;color:var(--smoke2);line-height:1.5}
 @media(max-width:768px){.layout{grid-template-columns:1fr;padding:1rem}.sidebar{position:static}.row2,.sg{grid-template-columns:1fr}.og{grid-template-columns:1fr}.nav{padding:.75rem 1.5rem}.cat-grid{grid-template-columns:1fr}}
+.fmode.fmode-hidden{display:none!important}
+.pb-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.35);border-radius:100px;padding:.3rem .9rem;font-size:.7rem;font-weight:600;color:var(--gold2);margin-bottom:1rem}
  
 /* PREVIEW CARD */
 .prev-card{background:var(--w);border:1px solid var(--cream3);border-radius:var(--r);overflow:hidden;margin-bottom:1rem}
@@ -168,9 +170,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 </nav>
  
 <div class="hero">
-  <div class="hero-badge">Commande en ligne · Dakar 🇸🇳</div>
-  <h1>Créez votre carte<br><em>NFC professionnelle</em></h1>
-  <p>Remplissez le formulaire. Notre équipe crée votre profil et livre votre carte sous 48h.</p>
+  <div class="hero-badge" id="heroBadge">Commande en ligne · Dakar 🇸🇳</div>
+  <h1 id="heroTitle">Créez votre carte<br><em>NFC professionnelle</em></h1>
+  <p id="heroSub">Remplissez le formulaire. Notre équipe crée votre profil et livre votre carte sous 48h.</p>
 </div>
  
 <div class="layout">
@@ -181,8 +183,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   <div class="s-card">
     <div class="s-header"><div class="s-num">1</div><div class="s-title">Informations personnelles</div><div class="s-sub">Identité</div></div>
     <div class="s-body">
-      <div style="margin-bottom:1.2rem">
-        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🖼️ Photo de couverture <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(s'affiche en grand sur le profil)</span></label>
+      <div class="fmode" data-products="pro,plaque" style="margin-bottom:1.2rem">
+        <label id="lbl-cover" style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🖼️ Photo de couverture <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(s'affiche en grand sur le profil)</span></label>
         <div id="coverZone" onclick="document.getElementById('coverIn').click()" style="width:100%;height:120px;border-radius:8px;border:2px dashed var(--cream3);overflow:hidden;cursor:pointer;position:relative;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
           <input type="file" id="coverIn" accept="image/*" style="display:none" onchange="prevCover(event)">
           <img id="coverPrev" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
@@ -195,7 +197,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         </div>
         <div id="coverOk" style="font-size:.7rem;color:var(--gold);margin-top:4px;display:none">✓ Photo de couverture sélectionnée</div>
       </div>
-      <div class="av-row">
+      <div class="av-row fmode" data-products="student,pro,porteclefs">
         <div class="av-circle" id="avCircle" onclick="document.getElementById('photoIn').click()">
           <span id="avInit">?</span>
           <img id="avImg">
@@ -209,17 +211,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         </div>
       </div>
       <div class="row2">
-        <div class="field"><label>Prénom <span class="req">*</span></label><input type="text" id="f-fn" placeholder="Mamadou" oninput="upd()"></div>
-        <div class="field"><label>Nom <span class="req">*</span></label><input type="text" id="f-ln" placeholder="Diallo" oninput="upd()"></div>
+        <div class="field"><label id="lbl-fn">Prénom <span class="req">*</span></label><input type="text" id="f-fn" placeholder="Mamadou" oninput="upd()"></div>
+        <div class="field"><label id="lbl-ln">Nom <span class="req">*</span></label><input type="text" id="f-ln" placeholder="Diallo" oninput="upd()"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Titre / Poste <span class="req">*</span></label><input type="text" id="f-jt" placeholder="CEO, Consultant..." oninput="upd()"></div>
-        <div class="field"><label>Entreprise</label><input type="text" id="f-co" placeholder="Votre entreprise" oninput="upd()"></div>
+        <div class="field"><label id="lbl-jt">Titre / Poste <span class="req">*</span></label><input type="text" id="f-jt" placeholder="CEO, Consultant..." oninput="upd()"></div>
+        <div class="field"><label id="lbl-co">Entreprise</label><input type="text" id="f-co" placeholder="Votre entreprise" oninput="upd()"></div>
       </div>
 
-      <!-- ── ENTREPRISE : logo, à propos, horaires ── -->
-      <div style="margin:0 0 1.2rem;padding-top:1rem;border-top:1px solid var(--cream3)">
-        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🏢 Logo de l'entreprise <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(optionnel)</span></label>
+      <!-- ── ENTREPRISE / ÉTABLISSEMENT : logo, à propos, horaires ── -->
+      <div class="fmode" data-products="pro,plaque" style="margin:0 0 1.2rem;padding-top:1rem;border-top:1px solid var(--cream3)">
+        <label id="lbl-co-logo" style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">🏢 Logo de l'entreprise <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(optionnel)</span></label>
         <div style="display:flex;align-items:center;gap:1rem">
           <div id="coLogoCircle" onclick="document.getElementById('coLogoIn').click()" style="width:64px;height:64px;border-radius:10px;background:var(--cream);border:2px dashed var(--cream3);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;overflow:hidden;transition:.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream3)'">
             <span id="coLogoPlaceholder" style="font-size:1.4rem">🏢</span>
@@ -233,15 +235,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
           </div>
         </div>
       </div>
-      <div class="field"><label>À propos de l'entreprise</label><textarea id="f-co-about" placeholder="Ce que fait votre entreprise, son activité..." rows="3"></textarea></div>
-      <div class="field"><label>Horaires d'ouverture</label><input type="text" id="f-co-hours" placeholder="Lun-Ven 9h-18h, Sam 9h-13h"></div>
+      <div class="field fmode" data-products="pro,plaque"><label id="lbl-co-about">À propos de l'entreprise</label><textarea id="f-co-about" placeholder="Ce que fait votre entreprise, son activité..." rows="3"></textarea></div>
+      <div class="field fmode" data-products="pro,plaque"><label id="lbl-co-hours">Horaires d'ouverture</label><input type="text" id="f-co-hours" placeholder="Lun-Ven 9h-18h, Sam 9h-13h"></div>
 
       <div class="row2">
         <div class="field"><label>Téléphone <span class="req">*</span></label><input type="tel" id="f-ph" placeholder="+221 78 400 00 66" oninput="upd()"></div>
         <div class="field"><label>Email</label><input type="email" id="f-em" placeholder="votre@email.com"></div>
       </div>
-      <div class="field"><label>Localisation</label><input type="text" id="f-loc" placeholder="Plateau, Dakar, Sénégal"></div>
-      <div class="field"><label>Bio professionnelle</label><textarea id="f-bio" placeholder="Décrivez votre activité, votre expertise..." rows="3"></textarea></div>
+      <div class="field"><label id="lbl-loc">Localisation</label><input type="text" id="f-loc" placeholder="Plateau, Dakar, Sénégal"></div>
+      <div class="field"><label id="lbl-bio">Bio professionnelle</label><textarea id="f-bio" placeholder="Décrivez votre activité, votre expertise..." rows="3"></textarea></div>
+
+      <!-- ── BRACELET : événement ── -->
+      <div class="fmode" data-products="bracelet" style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--cream3)">
+        <div class="row2">
+          <div class="field"><label>Date de l'événement</label><input type="date" id="f-event-date"></div>
+          <div class="field"><label>Nombre de bracelets estimé <span class="req">*</span></label><input type="number" id="f-event-qty" min="1" placeholder="Ex : 150" oninput="upd()"></div>
+        </div>
+        <div class="field">
+          <label>Usage souhaité <span style="color:var(--smoke2);font-size:.65rem;text-transform:none;letter-spacing:0;font-weight:400">(plusieurs choix possibles)</span></label>
+          <div class="sg" id="usageGroup" style="grid-template-columns:repeat(2,1fr)">
+            <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" value="Contrôle d'accès" class="usage-chk"> Contrôle d'accès</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" value="Pointage du personnel" class="usage-chk"> Pointage du personnel</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" value="Identification" class="usage-chk"> Identification</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" value="Billetterie" class="usage-chk"> Billetterie</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" value="Paiement sans contact" class="usage-chk"> Paiement sans contact</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" value="Gestion des événements" class="usage-chk"> Gestion des événements</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PLAQUE : établissement ── -->
+      <div class="fmode" data-products="plaque" style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--cream3)">
+        <div class="row2">
+          <div class="field"><label>Nom du réseau Wi-Fi (SSID)</label><input type="text" id="f-wifi-ssid" placeholder="Nom du Wi-Fi à partager"></div>
+          <div class="field"><label>Mot de passe Wi-Fi</label><input type="text" id="f-wifi-pass" placeholder="Mot de passe"></div>
+        </div>
+        <div class="field"><label>Lien Avis Google</label><input type="url" id="f-google-review" placeholder="https://g.page/r/..."></div>
+        <div class="field"><label>Infos paiement / réservation</label><textarea id="f-reservation" placeholder="Modalités de paiement en ligne, lien de réservation..." rows="2"></textarea></div>
+      </div>
     </div>
   </div>
  
@@ -266,10 +297,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   </div>
  
   <!-- 3. CATALOGUE -->
-  <div class="s-card">
+  <div class="s-card fmode" data-products="pro,plaque">
     <div class="s-header">
       <div class="s-num">3</div>
-      <div class="s-title">Catalogue de produits / services <span id="catCountBadge" class="cat-count" style="display:none">0</span></div>
+      <div class="s-title" id="lbl-catalogue-title">Catalogue de produits / services <span id="catCountBadge" class="cat-count" style="display:none">0</span></div>
       <div class="s-sub">Optionnel</div>
     </div>
     <div class="s-body">
@@ -285,18 +316,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
  
   <!-- 4. FICHIERS -->
   <div class="s-card">
-    <div class="s-header"><div class="s-num">4</div><div class="s-title">CV & Documents</div><div class="s-sub">Optionnel</div></div>
+    <div class="s-header"><div class="s-num">4</div><div class="s-title" id="lbl-files-title">CV & Documents</div><div class="s-sub">Optionnel</div></div>
     <div class="s-body">
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">📄 CV / Portfolio PDF</label>
-      <div class="upzone" onclick="document.getElementById('cvIn').click()">
-        <input type="file" id="cvIn" accept=".pdf,.doc,.docx" onchange="handleUp(event,'cv')">
-        <div style="font-size:1.5rem;margin-bottom:.3rem">📄</div>
-        <div style="font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:2px">Glissez votre CV ici</div>
-        <div style="font-size:.75rem;color:var(--smoke2)">PDF, DOC · Max 10MB</div>
+      <div class="fmode" data-products="student,pro">
+        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">📄 CV / Portfolio PDF</label>
+        <div class="upzone" onclick="document.getElementById('cvIn').click()">
+          <input type="file" id="cvIn" accept=".pdf,.doc,.docx" onchange="handleUp(event,'cv')">
+          <div style="font-size:1.5rem;margin-bottom:.3rem">📄</div>
+          <div style="font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:2px">Glissez votre CV ici</div>
+          <div style="font-size:.75rem;color:var(--smoke2)">PDF, DOC · Max 10MB</div>
+        </div>
+        <div class="uprev" id="cv-rev"><span>📄</span><span class="uprev-name" id="cv-nm"></span><button class="uprev-del" onclick="delUp('cv')">✕</button></div>
       </div>
-      <div class="uprev" id="cv-rev"><span>📄</span><span class="uprev-name" id="cv-nm"></span><button class="uprev-del" onclick="delUp('cv')">✕</button></div>
       <div style="margin-top:1rem">
-        <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">✏️ Notes pour le design</label>
+        <label id="lbl-notes" style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.5rem">✏️ Notes pour le design</label>
         <textarea id="f-notes" placeholder="Couleurs souhaitées, style, inspirations..." rows="3" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none;resize:vertical;transition:.15s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--cream3)'"></textarea>
       </div>
     </div>
@@ -304,51 +337,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
  
   <!-- 5. OFFRE -->
   <div class="s-card">
-    <div class="s-header"><div class="s-num">5</div><div class="s-title">Offre & Style</div><div class="s-sub">Choisissez votre formule</div></div>
+    <div class="s-header"><div class="s-num">5</div><div class="s-title">Offre & Style</div><div class="s-sub" id="lbl-offer-sub">Votre produit</div></div>
     <div class="s-body">
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Formule <span class="req">*</span></label>
-      <div class="og" style="grid-template-columns:1fr 1fr">
-        <div class="ocard feat sel" onclick="selOffre('Pro NFC','16000',this)">
-          <div class="obadge">Populaire</div>
-          <div class="oname">Pro NFC</div>
-          <div class="oprice">16 000</div>
-          <div class="operiod">FCFA · paiement unique</div>
-          <ul class="ofeat">
-            <li>1 carte NFC physique</li>
-            <li>Profil digital complet</li>
-            <li>Liens illimités</li>
-            <li>Galerie photos</li>
-            <li>Catalogue produits</li>
-            <li>CV téléchargeable</li>
-            <li>QR Code personnalisé</li>
-            <li>Statistiques de vues</li>
-          </ul>
+      <div id="productSummary" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.2rem;border:2px solid var(--gold);border-radius:var(--r);background:var(--gold4);margin-bottom:1.5rem">
+        <div>
+          <div id="prodSumName" style="font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--ink);margin-bottom:2px">Carte NFC Pro</div>
+          <div id="prodSumTag" style="font-size:.75rem;color:var(--smoke)">La carte de visite nouvelle génération.</div>
         </div>
-        <div class="ocard" onclick="selOffre('Entreprise','devis',this)">
-          <div class="oname">Entreprise</div>
-          <div class="oprice" style="font-size:1rem">Sur devis</div>
-          <div class="operiod">Pour toute une équipe</div>
-          <ul class="ofeat">
-            <li>Cartes NFC en masse</li>
-            <li>Branding unifié</li>
-            <li>Gestion centralisée</li>
-            <li>Analytics avancés</li>
-            <li>Support dédié</li>
-            <li>Livraison prioritaire</li>
-          </ul>
+        <div id="prodSumPrice" style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold-dark);white-space:nowrap">16 000 FCFA</div>
+      </div>
+
+      <div class="fmode" data-products="student,pro,plaque,porteclefs">
+        <label id="lbl-qty" style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Quantité</label>
+        <div class="qrow">
+          <div class="qopt sel" onclick="selQty('1',this)">1</div>
+          <div class="qopt" onclick="selQty('5',this)">5</div>
+          <div class="qopt" onclick="selQty('10',this)">10</div>
+          <div class="qopt" onclick="selQty('20',this)">20</div>
+          <div class="qopt" onclick="selQty('50',this)">50</div>
+          <div class="qopt" onclick="selQty('100+',this)">100+</div>
         </div>
       </div>
- 
-      <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Nombre de cartes</label>
-      <div class="qrow">
-        <div class="qopt sel" onclick="selQty('1',this)">1</div>
-        <div class="qopt" onclick="selQty('5',this)">5</div>
-        <div class="qopt" onclick="selQty('10',this)">10</div>
-        <div class="qopt" onclick="selQty('20',this)">20</div>
-        <div class="qopt" onclick="selQty('50',this)">50</div>
-        <div class="qopt" onclick="selQty('100+',this)">100+</div>
-      </div>
- 
+
       <label style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);display:block;margin-bottom:.75rem">Thème couleur <span style="color:var(--smoke2);font-size:.65rem;text-transform:none;letter-spacing:0;font-weight:400">(20 choix)</span></label>
       <div class="tg" style="grid-template-columns:repeat(5,1fr)">
         <div class="topt sel" onclick="selTheme('noir',this)"><div class="ttop" style="background:#0A0A0A"></div><div class="tbot" style="background:#D4AF6A"><span class="tname" style="color:#0A0A0A">Noir Or</span></div><div class="tchk">✓</div></div>
@@ -405,7 +415,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
           <div class="mini-hero-pat"></div>
           <img id="prevCoverImg" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.5)">
           <div style="position:relative;z-index:2;width:100%;padding:8px 10px 0">
-            <div style="font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;display:inline-block;padding:2px 8px;margin-bottom:4px">Carte Professionnelle</div>
+            <div id="prevBadge" style="font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;display:inline-block;padding:2px 8px;margin-bottom:4px">Carte Professionnelle</div>
             <div class="mini-name" id="prevName" style="color:#fff;font-size:.8rem;text-align:left;margin-bottom:1px">Prénom Nom</div>
             <div id="prevRole" style="font-size:.55rem;color:var(--gold);letter-spacing:.05em;font-weight:600;text-align:left;margin-bottom:8px">Votre poste</div>
           </div>
@@ -446,7 +456,85 @@ const sb = createClient(
 );
  
 const S = {offre:'',prix:'',qty:'1',theme:'noir',photo:null,cv:null,cover:null,companyLogo:null};
- 
+
+// ── PRODUITS ──
+const PRODUCTS = {
+  student:   {key:'student',   name:'Carte NFC Student', price:12000, mode:'profile',  badge:'Carte NFC Student', tag:'Votre identité professionnelle, toujours à portée de main.', heroTitle:'Créez votre carte<br><em>NFC Student</em>', heroSub:'Remplissez le formulaire. Votre profil digital est prêt et votre carte livrée sous 48h.'},
+  pro:       {key:'pro',       name:'Carte NFC Pro',     price:16000, mode:'profile',  badge:'Carte NFC Pro',     tag:'La carte de visite nouvelle génération.',                       heroTitle:'Créez votre carte<br><em>NFC Professionnelle</em>', heroSub:'Remplissez le formulaire. Notre équipe crée votre profil et livre votre carte sous 48h.'},
+  porteclefs:{key:'porteclefs',name:'Porte-clés NFC',    price:8000,  mode:'profile',  badge:'Porte-clés NFC',    tag:'Votre profil toujours à portée de main.',                       heroTitle:'Créez votre<br><em>Porte-clés NFC</em>', heroSub:'Remplissez le formulaire. Nous préparons votre porte-clés connecté sous 48h.'},
+  plaque:    {key:'plaque',    name:'Plaque NFC',        price:null,  mode:'business', badge:'Plaque NFC',        tag:'Transformez chaque visite en expérience connectée.',           heroTitle:'Configurez votre<br><em>Plaque NFC</em>', heroSub:'Remplissez le formulaire. Nous vous recontactons sous 24h avec votre devis.'},
+  bracelet:  {key:'bracelet',  name:'Bracelet NFC',      price:null,  mode:'event',    badge:'Bracelet NFC',      tag:'Portez votre identité digitale.',                               heroTitle:'Configurez vos<br><em>Bracelets NFC</em>', heroSub:'Remplissez le formulaire. Nous vous recontactons sous 24h avec votre devis.'},
+};
+
+const LABELS = {
+  student:{fn:'Prénom',ln:'Nom',jt:'Titre / statut',co:'Établissement scolaire',loc:'Localisation',bio:'Bio / à propos de vous',notes:'✏️ Notes pour le design'},
+  pro:{fn:'Prénom',ln:'Nom',jt:'Titre / Poste',co:'Entreprise',loc:'Localisation',bio:'Bio professionnelle',notes:'✏️ Notes pour le design'},
+  porteclefs:{fn:'Prénom',ln:'Nom',jt:'Titre / statut',co:'Entreprise',loc:'Localisation',bio:'Bio / à propos de vous',notes:'✏️ Notes pour le design'},
+  plaque:{fn:'Prénom du contact',ln:'Nom du contact',jt:'Fonction',co:"Nom de l'établissement",loc:'Adresse',bio:"Description de l'établissement",notes:'✏️ Notes pour le design'},
+  bracelet:{fn:'Prénom du contact',ln:'Nom du contact',jt:'Fonction (organisateur, RH...)',co:"Nom de l'événement / organisation",loc:'Lieu',bio:"Contexte / description de l'événement",notes:'✏️ Notes pour le design'},
+};
+
+function getProduct(){
+  const params = new URLSearchParams(window.location.search);
+  const key = (params.get('produit')||'pro').toLowerCase();
+  return PRODUCTS[key] || PRODUCTS.pro;
+}
+
+const P = getProduct();
+
+function applyProduct(){
+  // show/hide fmode blocks
+  document.querySelectorAll('.fmode').forEach(el=>{
+    const allowed = (el.getAttribute('data-products')||'').split(',').map(s=>s.trim());
+    if(allowed.includes(P.key)) el.classList.remove('fmode-hidden');
+    else el.classList.add('fmode-hidden');
+  });
+
+  // hero
+  document.getElementById('heroBadge').textContent = 'Commande en ligne · '+P.badge;
+  document.getElementById('heroTitle').innerHTML = P.heroTitle;
+  document.getElementById('heroSub').textContent = P.heroSub;
+  document.title = 'Print Legacy — Commander : '+P.name;
+
+  // labels
+  const L = LABELS[P.key] || LABELS.pro;
+  document.getElementById('lbl-fn').innerHTML = L.fn+' <span class="req">*</span>';
+  document.getElementById('lbl-ln').innerHTML = L.ln+' <span class="req">*</span>';
+  document.getElementById('lbl-jt').innerHTML = L.jt+(P.mode==='profile'?' <span class="req">*</span>':'');
+  document.getElementById('lbl-co').textContent = L.co;
+  document.getElementById('lbl-loc').textContent = L.loc;
+  document.getElementById('lbl-bio').textContent = L.bio;
+  document.getElementById('lbl-notes').textContent = L.notes;
+  document.getElementById('f-fn').placeholder = P.mode==='profile' ? 'Mamadou' : 'Prénom';
+  document.getElementById('f-jt').placeholder = P.mode==='event' ? 'Organisateur, RH...' : (P.mode==='business' ? 'Gérant, Responsable...' : 'CEO, Consultant...');
+  document.getElementById('f-co').placeholder = P.mode==='event' ? "Nom de l'événement" : (P.mode==='business' ? "Nom de l'établissement" : 'Votre entreprise');
+  document.getElementById('f-bio').placeholder = P.mode==='event' ? "Décrivez le contexte de l'événement..." : (P.mode==='business' ? "Décrivez votre établissement, votre activité..." : 'Décrivez votre activité, votre expertise...');
+  const catTitle = document.getElementById('lbl-catalogue-title');
+  if(catTitle) catTitle.innerHTML = (P.mode==='business' ? 'Menu / Catalogue de services' : 'Catalogue de produits / services') + ' <span id="catCountBadge" class="cat-count" style="display:none">0</span>';
+  const filesTitle = document.getElementById('lbl-files-title');
+  if(filesTitle) filesTitle.textContent = P.mode==='profile' ? 'CV & Documents' : 'Notes & Documents';
+  const qtyLbl = document.getElementById('lbl-qty');
+  if(qtyLbl) qtyLbl.textContent = P.key==='plaque' ? 'Nombre de plaques' : 'Nombre de cartes';
+  if(P.key==='plaque'){
+    document.getElementById('lbl-co-logo').innerHTML = "🏢 Logo de l'établissement <span style=\"color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0\">(optionnel)</span>";
+    document.getElementById('lbl-co-about').textContent = "À propos de l'établissement";
+  }
+
+  // offer/product summary
+  S.offre = P.name;
+  S.prix = P.price===null ? 'devis' : String(P.price);
+  document.getElementById('prodSumName').textContent = P.name;
+  document.getElementById('prodSumTag').textContent = P.tag;
+  document.getElementById('prodSumPrice').textContent = P.price===null ? 'Sur devis' : P.price.toLocaleString()+' FCFA';
+  document.getElementById('s-offre').textContent = P.name;
+  document.getElementById('s-total').textContent = P.price===null ? 'Sur devis' : P.price.toLocaleString()+' FCFA';
+  document.getElementById('prevBadge').textContent = P.name;
+
+  // sidebar quantity row label
+  const sQtyRow = document.getElementById('s-qty');
+  if(P.key==='bracelet' && sQtyRow) sQtyRow.closest('.sum-row').style.display='none';
+}
+
 // ── CATALOGUE STATE ──
 let catItems = []; // [{id, title, desc, price, file, previewUrl}]
 let catIdCounter = 0;
@@ -671,7 +759,10 @@ async function submit(){
   const ph=document.getElementById('f-ph').value.trim();
   if(!fn||!ln){alert('Veuillez entrer votre prénom et nom.');return;}
   if(!ph){alert('Veuillez entrer votre téléphone.');return;}
-  if(!S.offre){alert('Veuillez choisir une formule.');return;}
+  if(P.mode==='event'){
+    const eq=document.getElementById('f-event-qty').value.trim();
+    if(!eq){alert('Veuillez indiquer le nombre de bracelets estimé.');return;}
+  }
  
   const btn=document.getElementById('submitBtn');
   btn.disabled=true;
@@ -711,6 +802,34 @@ async function submit(){
     if(yt)cl.push({type:'youtube',url:yt});
     if(beh)cl.push({type:'behance',url:beh});
  
+    // ── Infos spécifiques Plaque / Bracelet (ajoutées à la bio pour ne rien perdre) ──
+    let extraLines = [];
+    let waExtra = '';
+    let qtyForMsg = S.qty + (P.key==='plaque' ? ' plaque(s)' : ' unité(s)');
+    if(P.mode==='business'){
+      const ssid=document.getElementById('f-wifi-ssid').value.trim();
+      const pass=document.getElementById('f-wifi-pass').value.trim();
+      const review=document.getElementById('f-google-review').value.trim();
+      const resa=document.getElementById('f-reservation').value.trim();
+      if(ssid) extraLines.push('Wi-Fi SSID : '+ssid);
+      if(pass) extraLines.push('Wi-Fi mot de passe : '+pass);
+      if(review) extraLines.push('Avis Google : '+review);
+      if(resa) extraLines.push('Paiement/réservation : '+resa);
+      if(ssid||review) waExtra = `\n📶 Wi-Fi : ${ssid||'—'}\n⭐ Avis Google : ${review||'—'}`;
+    }
+    if(P.mode==='event'){
+      const edate=document.getElementById('f-event-date').value;
+      const eqty=document.getElementById('f-event-qty').value.trim();
+      const usages=[...document.querySelectorAll('.usage-chk:checked')].map(c=>c.value);
+      if(edate) extraLines.push('Date événement : '+edate);
+      if(eqty) extraLines.push('Nombre de bracelets estimé : '+eqty);
+      if(usages.length) extraLines.push('Usage souhaité : '+usages.join(', '));
+      qtyForMsg = (eqty||'—') + ' bracelet(s)';
+      waExtra = `\n📅 Date : ${edate||'—'}\n🎯 Usage : ${usages.join(', ')||'—'}`;
+    }
+    const bioBase = document.getElementById('f-bio').value.trim();
+    const bioFull = extraLines.length ? (bioBase ? bioBase+'\n\n' : '') + extraLines.join('\n') : bioBase;
+
     const row={
       firstname:fn, lastname:ln, slug,
       jobtitle:document.getElementById('f-jt').value.trim()||null,
@@ -718,7 +837,7 @@ async function submit(){
       company_logo_url:companyLogoUrl,
       company_about:document.getElementById('f-co-about').value.trim()||null,
       company_hours:document.getElementById('f-co-hours').value.trim()||null,
-      bio:document.getElementById('f-bio').value.trim()||null,
+      bio:bioFull||null,
       phone:ph,
       whatsapp:document.getElementById('f-wa').value.trim()||null,
       email:document.getElementById('f-em').value.trim()||null,
@@ -746,7 +865,8 @@ async function submit(){
     document.getElementById('sucOv').classList.add('open');
  
     const catTxt = catalogueData.length > 0 ? `\n🛍️ Catalogue : ${catalogueData.length} article(s)` : '';
-    const msg=encodeURIComponent(`🌟 Nouvelle commande Print Legacy\n\n👤 ${fn} ${ln}\n💼 ${document.getElementById('f-jt').value.trim()}\n📞 ${ph}\n📦 ${S.offre}\n🔢 ${S.qty} carte(s)\n🎨 ${S.theme}${catTxt}\n🆔 ${ref}`);
+    const priceTxt = P.price===null ? 'Sur devis' : P.price.toLocaleString()+' FCFA';
+    const msg=encodeURIComponent(`🌟 Nouvelle commande Print Legacy\n\n👤 ${fn} ${ln}\n💼 ${document.getElementById('f-jt').value.trim()}\n📞 ${ph}\n📦 ${S.offre} (${priceTxt})\n🔢 ${qtyForMsg}\n🎨 ${S.theme}${catTxt}${waExtra}\n🆔 ${ref}`);
     setTimeout(()=>window.open(`https://wa.me/221784000066?text=${msg}`,'_blank'),800);
  
   }catch(err){
@@ -756,6 +876,8 @@ async function submit(){
     btn.innerHTML='✦ Envoyer ma commande';
   }
 }
+
+applyProduct();
 </script>
 </body>
 </html>
