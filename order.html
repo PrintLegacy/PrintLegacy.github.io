@@ -290,6 +290,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         <div class="field"><label>💼 LinkedIn</label><input type="text" id="f-li" placeholder="linkedin.com/in/..."></div>
         <div class="field"><label>📘 Facebook</label><input type="text" id="f-fb" placeholder="facebook.com/..."></div>
         <div class="field"><label>🎵 TikTok</label><input type="text" id="f-tt" placeholder="@votrecompte"></div>
+        <div class="field"><label>👻 Snapchat</label><input type="text" id="f-sc" placeholder="@votrecompte"></div>
         <div class="field"><label>▶️ YouTube</label><input type="text" id="f-yt" placeholder="youtube.com/..."></div>
         <div class="field"><label>🎨 Behance</label><input type="text" id="f-beh" placeholder="behance.net/..."></div>
       </div>
@@ -798,9 +799,12 @@ async function submit(){
     const fb=document.getElementById('f-fb').value.trim();
     const yt=document.getElementById('f-yt').value.trim();
     const beh=document.getElementById('f-beh').value.trim();
-    if(fb)cl.push({type:'facebook',url:fb});
-    if(yt)cl.push({type:'youtube',url:yt});
-    if(beh)cl.push({type:'behance',url:beh});
+    const sc=document.getElementById('f-sc').value.trim();
+    const normUrl=(v)=>v.startsWith('http')?v:'https://'+v.replace(/^@/,'');
+    if(fb)cl.push({type:'facebook',url:normUrl(fb),icon:'📘',label:'Facebook'});
+    if(yt)cl.push({type:'youtube',url:normUrl(yt),icon:'▶️',label:'YouTube'});
+    if(beh)cl.push({type:'behance',url:normUrl(beh),icon:'🎨',label:'Behance'});
+    if(sc)cl.push({type:'snapchat',url:sc.startsWith('http')?sc:'https://www.snapchat.com/add/'+sc.replace(/^@/,''),icon:'👻',label:'Snapchat'});
  
     // ── Infos spécifiques Plaque / Bracelet (ajoutées à la bio pour ne rien perdre) ──
     let extraLines = [];
