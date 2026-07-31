@@ -340,7 +340,11 @@ tr:hover td{background:var(--cream)}
         <div class="card" style="margin-bottom:16px">
           <div class="card-h"><div class="card-t">➕ Nouvelle impression</div></div>
           <div class="imp-form">
-            <div class="imp-field"><div class="imp-label">Client *</div><input class="imp-input" id="imp-client" placeholder="Nom du client"></div>
+            <div class="imp-field"><div class="imp-label">Client *</div>
+              <select class="imp-input" id="imp-client">
+                <option value="">— Sélectionner un client —</option>
+              </select>
+            </div>
             <div class="imp-field"><div class="imp-label">Quantité</div><input class="imp-input" id="imp-qty" type="number" placeholder="1" min="1" value="1" oninput="updateImpTotalPreview()"></div>
             <div class="imp-field"><div class="imp-label">Prix unitaire (FCFA)</div><input class="imp-input" id="imp-prix" type="number" placeholder="0" min="0" oninput="updateImpTotalPreview()"></div>
             <div class="imp-field"><div class="imp-label">Description</div><input class="imp-input" id="imp-desc" placeholder="Type de carte, format..."></div>
@@ -444,6 +448,16 @@ tr:hover td{background:var(--cream)}
         </div>
         <div class="edit-field"><div class="edit-label">Prénom</div><input class="edit-input" id="edit-firstname" placeholder="Prénom"></div>
         <div class="edit-field"><div class="edit-label">Nom</div><input class="edit-input" id="edit-lastname" placeholder="Nom"></div>
+        <div class="edit-field"><div class="edit-label">Type de produit</div>
+          <select class="edit-input" id="edit-produit">
+            <option value="">— Non défini —</option>
+            <option value="student">🎓 Carte NFC Student</option>
+            <option value="pro">💼 Carte NFC Pro</option>
+            <option value="plaque">🪧 Plaque NFC</option>
+            <option value="bracelet">⌚ Bracelet NFC</option>
+            <option value="porteclefs">🔑 Porte-clés NFC</option>
+          </select>
+        </div>
         <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
         <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
@@ -473,6 +487,7 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">📸 Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
         <div class="edit-field"><div class="edit-label">🎵 TikTok</div><input class="edit-input" id="edit-tiktok" placeholder="@compte"></div>
+        <div class="edit-field"><div class="edit-label">👻 Snapchat</div><input class="edit-input" id="edit-snapchat" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
         <div class="edit-field"><div class="edit-label">🎨 Behance</div><input class="edit-input" id="edit-behance" placeholder="behance.net/..."></div>
@@ -595,7 +610,7 @@ function setPage(page){
   const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques'};
   document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
   if(page==='creations') loadCreations();
-  if(page==='impressions') loadImpressions();
+  if(page==='impressions'){loadImpressions();loadClientsForImpressions();}
   if(page==='stats'){loadStats();loadCardStats();}
 }
 
@@ -641,6 +656,18 @@ function fmtMoney(n){return (n||0).toLocaleString('fr-FR')+' FCFA';}
 function fmtNum(n){return Math.round(n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
 
 // ── CLIENTS TABLE ──
+const PRODUIT_META={
+  student:{label:'🎓 Student',bg:'#EAF2FF',fg:'#2563EB'},
+  pro:{label:'💼 Pro',bg:'var(--gold4)',fg:'var(--gold)'},
+  plaque:{label:'🪧 Plaque',bg:'#FDEFE0',fg:'#B26A00'},
+  bracelet:{label:'⌚ Bracelet',bg:'#F3E8FF',fg:'#7C3AED'},
+  porteclefs:{label:'🔑 Porte-clés',bg:'#E6F7EE',fg:'#0F9D58'},
+};
+function produitBadge(p){
+  const m=PRODUIT_META[p];
+  if(!m) return '<span class="badge" style="background:var(--cream2);color:var(--smoke2)">—</span>';
+  return `<span class="badge" style="background:${m.bg};color:${m.fg}">${m.label}</span>`;
+}
 function renderTable(){
   let data=allData;
   if(currentView==='pending') data=data.filter(c=>!c.status||c.status==='pending');
@@ -660,6 +687,7 @@ function renderTable(){
         <div class="av">${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'">`:''}${!c.photo?initials(c.firstname,c.lastname):''}</div>
         <div><div class="cn">${c.firstname||''} ${c.lastname||''}</div><div class="cs">${c.company||c.jobtitle||''}</div></div>
       </div></td>
+      <td>${produitBadge(c.produit)}</td>
       <td>${c.jobtitle||'—'}</td>
       <td>${c.phone||'—'}</td>
       <td>${c.email||'—'}</td>
@@ -676,7 +704,7 @@ function renderTable(){
     </tr>`;
   }).join('');
   document.getElementById('tableWrap').innerHTML=`<table><thead><tr>
-    <th>Client</th><th>Poste</th><th>Téléphone</th><th>Email</th>
+    <th>Client</th><th>Produit</th><th>Poste</th><th>Téléphone</th><th>Email</th>
     <th>Thème</th><th>Statut</th><th>Date</th><th>Actions</th>
   </tr></thead><tbody>${rows}</tbody></table>`;
 }
@@ -794,6 +822,25 @@ async function deleteCreation(id){
 }
 
 // ── IMPRESSIONS ──
+async function loadClientsForImpressions(){
+  const sel=document.getElementById('imp-client');
+  const keepVal=sel.value;
+  try{
+    const {data,error}=await sb.from('clients').select('firstname,lastname,company,produit').order('firstname');
+    if(error||!data){sel.innerHTML='<option value="">— Aucun client trouvé —</option>';return;}
+    if(!data.length){sel.innerHTML='<option value="">— Aucun client pour le moment —</option>';return;}
+    sel.innerHTML='<option value="">— Sélectionner un client —</option>'+data.map(c=>{
+      const name=`${c.firstname||''} ${c.lastname||''}`.trim();
+      const m=PRODUIT_META[c.produit];
+      const tag=m?' ['+m.label.replace(/^\S+\s/,'')+']':'';
+      return `<option value="${esc(name)}">${esc(name)}${c.company?' — '+esc(c.company):''}${tag}</option>`;
+    }).join('');
+    if(keepVal) sel.value=keepVal;
+  }catch(err){
+    if(isNetworkFailure(err)){showDbBanner();}
+  }
+}
+
 function updateImpTotalPreview(){
   const qty=parseFloat(document.getElementById('imp-qty').value)||0;
   const prix=parseFloat(document.getElementById('imp-prix').value)||0;
@@ -1343,7 +1390,7 @@ async function openEdit(clientId){
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance','company_about','company_hours'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','behance','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
     document.getElementById('editCoverMeta').style.display='none';
@@ -1379,7 +1426,7 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent='💾 Sauvegarde...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','behance','company_about','company_hours'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','behance','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
