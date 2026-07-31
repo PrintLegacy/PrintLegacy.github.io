@@ -48,6 +48,15 @@ body{
   height:48px;background:var(--white);
   border-radius:50% 50% 0 0/48px 48px 0 0;
 }
+.hd-cover{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  opacity:.4;
+}
+.hd-cover-shade{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(13,13,13,.35) 0%,rgba(13,13,13,.75) 70%,var(--ink) 100%);
+}
  
 /* Mini logo */
 .hd-logo{
@@ -184,6 +193,59 @@ body{
   font-family:"DM Sans",sans-serif;
 }
 .share-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* Business card (logo + about) */
+.biz-card{
+  display:flex;gap:1rem;align-items:flex-start;
+  background:var(--cream);border-radius:12px;
+  padding:1.1rem 1.2rem;margin-bottom:1rem;
+  border:1px solid var(--border);
+}
+.biz-logo{
+  width:64px;height:64px;border-radius:12px;flex-shrink:0;
+  background:var(--white);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;font-size:1.6rem;
+}
+.biz-logo img{width:100%;height:100%;object-fit:contain;padding:6px}
+.biz-name{font-family:"Playfair Display",serif;font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.3rem}
+.biz-about{font-size:.82rem;line-height:1.6;color:var(--muted)}
+.biz-hours{
+  display:flex;align-items:center;gap:8px;
+  font-size:.8rem;color:var(--muted);font-weight:500;
+  padding:.7rem 1rem;background:var(--white);
+  border:1px solid var(--border);border-radius:9px;
+  margin-bottom:1.6rem;
+}
+
+/* Catalogue / Menu grid */
+.catalogue{margin-bottom:1.6rem}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.cat-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:transform .2s,border-color .2s;
+}
+.cat-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.cat-img{
+  width:100%;height:110px;background:var(--cream2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;overflow:hidden;
+}
+.cat-img img{width:100%;height:100%;object-fit:cover}
+.cat-body{padding:.75rem .8rem .9rem;display:flex;flex-direction:column;gap:.3rem;flex:1}
+.cat-title{font-size:.82rem;font-weight:700;color:var(--ink);line-height:1.3}
+.cat-desc{font-size:.72rem;color:var(--muted);line-height:1.5;flex:1}
+.cat-price{font-family:"Playfair Display",serif;font-size:.95rem;font-weight:700;color:var(--gold-dark);margin-top:.2rem}
+.cat-btn{
+  margin-top:.5rem;padding:.55rem;border-radius:8px;
+  background:var(--ink);color:var(--white);
+  font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  text-align:center;text-decoration:none;border:none;cursor:pointer;
+  font-family:"DM Sans",sans-serif;transition:background .2s;
+}
+.cat-btn:hover{background:var(--gold);color:var(--ink)}
  
 /* Footer */
 .foot{
@@ -374,7 +436,48 @@ function render(c){
     </div>`:'';
  
   const bioHTML=c.bio?`<div class="bio"><p>${c.bio}</p></div>`:'';
- 
+
+  const bizLogoHTML=c.company_logo_url
+    ?`<img src="${c.company_logo_url}" alt="${c.company||''}">`
+    :'🏢';
+  const bizHTML=(c.company_logo_url||c.company_about)?`
+    <div class="biz-card">
+      <div class="biz-logo">${bizLogoHTML}</div>
+      <div>
+        ${c.company?`<div class="biz-name">${c.company}</div>`:''}
+        ${c.company_about?`<p class="biz-about">${c.company_about}</p>`:''}
+      </div>
+    </div>`:'';
+  const hoursHTML=c.company_hours?`<div class="biz-hours"><span>🕒</span><span>${c.company_hours}</span></div>`:'';
+
+  let catItems=[];
+  if(c.catalogue){
+    try{ catItems = typeof c.catalogue==='string'?JSON.parse(c.catalogue):c.catalogue; }catch(e){ catItems=[]; }
+  }
+  const waBase=(c.whatsapp||c.phone||'').replace(/\D/g,'');
+  const catalogueHTML=(catItems&&catItems.length)?`
+    <div class="catalogue">
+      <p class="lbl">${c.company?'Menu / Catalogue':'Catalogue'}</p>
+      <div class="cat-grid">
+        ${catItems.map(it=>{
+          const img=it.image_url?`<img src="${it.image_url}" alt="${it.title||''}">`:'🛍️';
+          const price=(it.price!==null&&it.price!==undefined&&it.price!=='')?Number(it.price).toLocaleString()+' FCFA':'';
+          const orderMsg=encodeURIComponent(`Bonjour${c.company?' '+c.company:''}, je suis intéressé(e) par : ${it.title||'cet article'}`);
+          const orderBtn=waBase?`<a href="https://wa.me/${waBase}?text=${orderMsg}" target="_blank" class="cat-btn">Commander</a>`:'';
+          return `
+          <div class="cat-card">
+            <div class="cat-img">${img}</div>
+            <div class="cat-body">
+              <div class="cat-title">${it.title||''}</div>
+              ${it.desc?`<div class="cat-desc">${it.desc}</div>`:''}
+              ${price?`<div class="cat-price">${price}</div>`:''}
+              ${orderBtn}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`:'';
+
   const avHTML=c.photo
     ?`<img src="${c.photo}" alt="${fullName}">`
     :ini(c.firstname,c.lastname);
@@ -382,6 +485,7 @@ function render(c){
   document.getElementById('app').innerHTML=`
     <div class="wrap ${tc}">
       <div class="hd">
+        ${c.cover_url?`<div class="hd-cover" style="background-image:url('${c.cover_url}')"></div><div class="hd-cover-shade"></div>`:''}
         <div class="hd-pattern"></div>
         <div class="hd-glow"></div>
         <div class="hd-logo">
@@ -404,8 +508,13 @@ function render(c){
           <span>💾</span><span>Enregistrer le contact</span>
         </button>
  
+        ${bizHTML}
+        ${hoursHTML}
+
         ${bioHTML}
- 
+
+        ${catalogueHTML}
+
         ${links.length?`<div class="links"><p class="lbl">Contact</p>${linksHTML}</div>`:''}
  
         ${socialsHTML}
