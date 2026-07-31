@@ -835,6 +835,7 @@ async function submit(){
     const bioFull = extraLines.length ? (bioBase ? bioBase+'\n\n' : '') + extraLines.join('\n') : bioBase;
 
     const row={
+      produit:P.key,
       firstname:fn, lastname:ln, slug,
       jobtitle:document.getElementById('f-jt').value.trim()||null,
       company:document.getElementById('f-co').value.trim()||null,
