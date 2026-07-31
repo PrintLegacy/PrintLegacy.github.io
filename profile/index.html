@@ -193,6 +193,12 @@ body{
   font-family:"DM Sans",sans-serif;
 }
 .share-btn:hover{border-color:var(--gold);color:var(--gold)}
+.foot-stats{
+  display:block;font-size:.65rem;color:var(--border);
+  text-decoration:none;margin-top:.5rem;letter-spacing:.02em;
+  transition:color .2s;
+}
+.foot-stats:hover{color:var(--muted)}
 
 /* Business card (logo + about) */
 .biz-card{
@@ -530,6 +536,7 @@ function render(c){
         <a href="https://printlegacy.github.io">
           <span class="foot-logo">Print <span>Legacy</span></span>
         </a>
+        <a href="stats.html?slug=${c.slug}" class="foot-stats">📊 Statistiques de la carte</a>
       </div>
     </div>`;
 }
@@ -546,6 +553,16 @@ async function init(){
     return;
   }
   render(data);
+  trackView(data.id);
+}
+
+function trackView(clientId){
+  const p=new URLSearchParams(location.search);
+  let source=p.get('src')||'link';
+  if(!['nfc','admin','link'].includes(source)) source='link';
+  sb.from('card_views').insert({client_id:clientId,source}).then(({error})=>{
+    if(error) console.warn('Tracking désactivé :',error.message);
+  });
 }
 init();
 </script>
