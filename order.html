@@ -444,10 +444,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     <div style="font-size:3rem;margin-bottom:1rem">✦</div>
     <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.75rem">Commande enregistrée !</h2>
     <p style="font-size:.9rem;color:var(--smoke);line-height:1.7;margin-bottom:1.5rem">Merci ! Notre équipe vous contacte sous <strong>24h</strong> pour confirmer et démarrer votre carte NFC.</p>
-    <div style="background:var(--cream);border-radius:var(--r);padding:.75rem 1.25rem;font-size:.8rem;color:var(--smoke2);margin-bottom:1.5rem;border:1px solid var(--cream3)">Référence : <strong id="sucRef" style="color:var(--gold);font-size:1rem"></strong></div>
+    <div style="background:var(--cream);border-radius:var(--r);padding:.75rem 1.25rem;font-size:.8rem;color:var(--smoke2);margin-bottom:1rem;border:1px solid var(--cream3)">Référence : <strong id="sucRef" style="color:var(--gold);font-size:1rem"></strong></div>
+    <div id="sucEmailStatus" style="display:none;font-size:.78rem;color:var(--gold);margin-bottom:1rem">✓ Un email de confirmation vous a été envoyé</div>
+    <button id="sucWaBtn" style="display:block;width:100%;background:#25D366;color:#fff;border:none;border-radius:var(--r);padding:.85rem 1.5rem;font-size:.8rem;font-weight:700;letter-spacing:.05em;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:.75rem">📲 Recevoir la confirmation sur WhatsApp</button>
     <button onclick="window.location.href='https://printlegacy.github.io'" style="background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:.85rem 2rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif">Retour au site</button>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+// ── EMAILJS — remplace ces 3 valeurs par les tiennes (voir emailjs.com, compte gratuit) ──
+const EMAILJS_PUBLIC_KEY = 'lmPwCQG16iOtA6x_L';
+const EMAILJS_SERVICE_ID = 'service_zcb4s0h';
+const EMAILJS_TEMPLATE_ID = 'template_1zvagz9';
+if(window.emailjs && EMAILJS_PUBLIC_KEY.indexOf('COLLE_')!==0) emailjs.init(EMAILJS_PUBLIC_KEY);
+</script>
  
 <script>
 const { createClient } = supabase;
@@ -871,8 +882,33 @@ async function submit(){
  
     const catTxt = catalogueData.length > 0 ? `\n🛍️ Catalogue : ${catalogueData.length} article(s)` : '';
     const priceTxt = P.price===null ? 'Sur devis' : P.price.toLocaleString()+' FCFA';
+    const profileLink = `https://printlegacy-platform.vercel.app/?carte=${slug}`;
+    const statsLink = `https://printlegacy-platform.vercel.app/stats.html?slug=${slug}`;
+
+    // ── Message admin (notification interne) ──
     const msg=encodeURIComponent(`🌟 Nouvelle commande Print Legacy\n\n👤 ${fn} ${ln}\n💼 ${document.getElementById('f-jt').value.trim()}\n📞 ${ph}\n📦 ${S.offre} (${priceTxt})\n🔢 ${qtyForMsg}\n🎨 ${S.theme}${catTxt}${waExtra}\n🆔 ${ref}`);
     setTimeout(()=>window.open(`https://wa.me/221784000066?text=${msg}`,'_blank'),800);
+
+    // ── Message client (confirmation, auto-envoyée sur son propre WhatsApp) ──
+    const clientMsg=encodeURIComponent(`✦ Print Legacy — Confirmation de commande\n\nMerci ${fn} ! Votre commande a bien été reçue.\n\n📦 ${S.offre} (${priceTxt})\n🆔 Référence : ${ref}\n\nNotre équipe vous contacte sous 24h. Votre carte sera prête sous 48h après validation.\n\n🔗 Votre carte : ${profileLink}\n📊 Vos statistiques : ${statsLink}\n(liens actifs dès l'activation de votre carte)`);
+    const clientPhone=ph.replace(/\D/g,'');
+    document.getElementById('sucWaBtn').onclick=()=>window.open(`https://wa.me/${clientPhone}?text=${clientMsg}`,'_blank');
+
+    // ── Email de confirmation (EmailJS) ──
+    const clientEmail=document.getElementById('f-em').value.trim();
+    if(clientEmail && window.emailjs && EMAILJS_PUBLIC_KEY.indexOf('COLLE_')!==0){
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: clientEmail,
+        to_name: fn+' '+ln,
+        reference: ref,
+        produit: S.offre,
+        prix: priceTxt,
+        profile_link: profileLink,
+        stats_link: statsLink
+      }).then(()=>{
+        document.getElementById('sucEmailStatus').style.display='block';
+      }).catch(err=>console.warn('Email non envoyé :',err));
+    }
  
   }catch(err){
     console.error(err);
