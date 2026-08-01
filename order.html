@@ -884,7 +884,8 @@ async function submit(){
     const catTxt = catalogueData.length > 0 ? `\n🛍️ Catalogue : ${catalogueData.length} article(s)` : '';
     const priceTxt = P.price===null ? 'Sur devis' : P.price.toLocaleString()+' FCFA';
     const profileLink = `https://printlegacy-platform.vercel.app/?carte=${slug}`;
-    const statsLink = `https://printlegacy-platform.vercel.app/stats.html?slug=${slug}`;
+    const statsRelevant = (P.key==='pro' || P.key==='plaque');
+    const statsLink = statsRelevant ? `https://printlegacy-platform.vercel.app/stats.html?slug=${slug}` : '';
 
     // ── Email de confirmation au client (EmailJS) ──
     const clientEmail=document.getElementById('f-em').value.trim();
