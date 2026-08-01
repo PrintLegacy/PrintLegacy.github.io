@@ -782,7 +782,9 @@ async function loadData(){
 async function toggleStatus(id,current){
   const next=current==='active'?'pending':'active';
   try{
-    await sb.from('clients').update({status:next}).eq('id',id);
+    const {data,error}=await sb.from('clients').update({status:next}).eq('id',id).select();
+    if(error)throw error;
+    if(!data||data.length===0){showToast('⚠️ Changement non appliqué — vérifiez les permissions (RLS)');return;}
     loadData();
   }catch(err){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
@@ -1486,8 +1488,12 @@ async function saveEdit(){
       if(title||desc||price) catalogue.push({title,desc,price:price?parseInt(price):null,image_url:imgUrl});
     }
     updates.catalogue=catalogue.length>0?catalogue:null;
-    const {error}=await sb.from('clients').update(updates).eq('id',currentId);
+    const {data,error}=await sb.from('clients').update(updates).eq('id',currentId).select();
     if(error)throw error;
+    if(!data||data.length===0){
+      showToast('⚠️ Aucune ligne modifiée — vérifiez les permissions (RLS) dans Supabase');
+      return;
+    }
     closeEdit();showToast('✓ Profil mis à jour !');loadData();
   }catch(err){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
