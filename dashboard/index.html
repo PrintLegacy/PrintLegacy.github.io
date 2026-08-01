@@ -35,6 +35,16 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 .tb-search{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);padding:7px 14px;font-size:12px;color:var(--smoke2);min-width:200px;outline:none;font-family:'Jost',sans-serif}
 .tb-btn{width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--smoke);font-size:15px}
 .tb-cta{display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--gold2);padding:8px 16px;border-radius:var(--r);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;font-family:'Jost',sans-serif;text-decoration:none}
+.order-menu-wrap{position:relative}
+.order-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);box-shadow:0 12px 34px rgba(0,0,0,.14);z-index:600;min-width:210px;overflow:hidden;display:none}
+.order-menu.open{display:block}
+.order-menu-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:12px;color:var(--ink);cursor:pointer;text-decoration:none;transition:.12s}
+.order-menu-item:hover{background:var(--cream)}
+.order-menu-item .om-ico{font-size:14px;width:16px;text-align:center}
+.order-menu-item .om-price{margin-left:auto;font-size:10px;color:var(--smoke2)}
+.sb-item.order-menu-wrap{padding:0}
+.sb-item.order-menu-wrap>.order-trigger{display:flex;align-items:center;gap:10px;padding:9px 22px;width:100%}
+.sb-item.order-menu-wrap .order-menu{top:0;left:calc(100% + 6px);right:auto;min-width:220px}
 .content{flex:1;overflow-y:auto;padding:24px 28px}
 .page{display:none}.page.active{display:block}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
@@ -248,7 +258,10 @@ tr:hover td{background:var(--cream)}
     <div class="sb-nav">
       <div class="sb-sec">Principal</div>
       <div class="sb-item active" id="nav-dashboard" onclick="setPage('dashboard')"><span class="ico">📊</span> Tableau de bord</div>
-      <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io/order'"><span class="ico">➕</span> Nouvelle commande</div>
+      <div class="sb-item order-menu-wrap" id="sbOrderWrap">
+        <div class="order-trigger" onclick="toggleOrderMenu('sbOrderMenu',event)"><span class="ico">➕</span> Nouvelle commande</div>
+        <div class="order-menu" id="sbOrderMenu"></div>
+      </div>
       <div class="sb-sec">Clients</div>
       <div class="sb-item" id="nav-all" onclick="setPage('dashboard');setView('all')"><span class="ico">👥</span> Tous les clients</div>
       <div class="sb-item" id="nav-pending" onclick="setPage('dashboard');setView('pending')"><span class="ico">⏳</span> En attente <span id="sb-pending" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
@@ -278,7 +291,10 @@ tr:hover td{background:var(--cream)}
       <div class="tb-right">
         <input id="searchInput" class="tb-search" placeholder="🔍 Rechercher..." oninput="searchQuery=this.value;renderTable()" style="cursor:text">
         <div class="tb-btn" onclick="refreshPage()" title="Actualiser">🔄</div>
-        <a href="https://printlegacy.github.io/order" class="tb-cta">+ Nouvelle commande</a>
+        <div class="order-menu-wrap" id="tbOrderWrap">
+          <button class="tb-cta" onclick="toggleOrderMenu('tbOrderMenu',event)" style="cursor:pointer">+ Nouvelle commande</button>
+          <div class="order-menu" id="tbOrderMenu"></div>
+        </div>
       </div>
     </div>
 
@@ -490,7 +506,6 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">👻 Snapchat</div><input class="edit-input" id="edit-snapchat" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
-        <div class="edit-field"><div class="edit-label">🎨 Behance</div><input class="edit-input" id="edit-behance" placeholder="behance.net/..."></div>
         <div class="edit-section">Catalogue produits</div>
         <div class="cat-editor-wrap"><div id="catRowsList"></div><button class="cat-add-btn" id="catAddBtn">＋ Ajouter un produit</button></div>
         <div class="edit-section">Apparence</div>
@@ -639,13 +654,43 @@ function toggleSidebar(force){
   sb.classList.toggle('open',open);
   ov.classList.toggle('show',open);
 }
-// Ferme le menu automatiquement après un tap sur mobile
+// Ferme le menu automatiquement après un tap sur mobile (sauf sur le déclencheur du menu "Nouvelle commande")
 document.querySelectorAll('.sb-item').forEach(el=>{
-  el.addEventListener('click',()=>{ if(window.innerWidth<=860) toggleSidebar(false); });
+  el.addEventListener('click',(e)=>{ if(e.target.closest('.order-trigger')) return; if(window.innerWidth<=860) toggleSidebar(false); });
 });
 
 // ── HELPERS ──
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── Menu déroulant "Nouvelle commande" ──
+const ORDER_PRODUCTS=[
+  {key:'student',   icon:'🎓', label:'Carte NFC Student',  price:'12 000 FCFA'},
+  {key:'pro',       icon:'💼', label:'Carte NFC Pro',       price:'16 000 FCFA'},
+  {key:'porteclefs',icon:'🔑', label:'Porte-clés NFC',      price:'8 000 FCFA'},
+  {key:'plaque',    icon:'🏢', label:'Plaque NFC',          price:'Sur devis'},
+  {key:'bracelet',  icon:'🎫', label:'Bracelet NFC',        price:'Sur devis'},
+];
+function buildOrderMenuHtml(){
+  return ORDER_PRODUCTS.map(p=>`<a class="order-menu-item" href="https://printlegacy.github.io/order?produit=${p.key}"><span class="om-ico">${p.icon}</span>${p.label}<span class="om-price">${p.price}</span></a>`).join('');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const sbMenu=document.getElementById('sbOrderMenu');
+  const tbMenu=document.getElementById('tbOrderMenu');
+  if(sbMenu) sbMenu.innerHTML=buildOrderMenuHtml();
+  if(tbMenu) tbMenu.innerHTML=buildOrderMenuHtml();
+});
+function toggleOrderMenu(id,ev){
+  if(ev){ev.stopPropagation();}
+  const menu=document.getElementById(id);
+  const wasOpen=menu.classList.contains('open');
+  document.querySelectorAll('.order-menu.open').forEach(m=>m.classList.remove('open'));
+  if(!wasOpen) menu.classList.add('open');
+}
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.order-menu-wrap')){
+    document.querySelectorAll('.order-menu.open').forEach(m=>m.classList.remove('open'));
+  }
+});
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
 function statusBadge(s){
   if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
@@ -1390,7 +1435,7 @@ async function openEdit(clientId){
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','behance','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
     document.getElementById('editCoverMeta').style.display='none';
@@ -1426,7 +1471,7 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent='💾 Sauvegarde...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','behance','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
