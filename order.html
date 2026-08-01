@@ -292,7 +292,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
         <div class="field"><label>🎵 TikTok</label><input type="text" id="f-tt" placeholder="@votrecompte"></div>
         <div class="field"><label>👻 Snapchat</label><input type="text" id="f-sc" placeholder="@votrecompte"></div>
         <div class="field"><label>▶️ YouTube</label><input type="text" id="f-yt" placeholder="youtube.com/..."></div>
-        <div class="field"><label>🎨 Behance</label><input type="text" id="f-beh" placeholder="behance.net/..."></div>
       </div>
     </div>
   </div>
@@ -810,12 +809,10 @@ async function submit(){
     const cl=[];
     const fb=document.getElementById('f-fb').value.trim();
     const yt=document.getElementById('f-yt').value.trim();
-    const beh=document.getElementById('f-beh').value.trim();
     const sc=document.getElementById('f-sc').value.trim();
     const normUrl=(v)=>v.startsWith('http')?v:'https://'+v.replace(/^@/,'');
     if(fb)cl.push({type:'facebook',url:normUrl(fb),icon:'📘',label:'Facebook'});
     if(yt)cl.push({type:'youtube',url:normUrl(yt),icon:'▶️',label:'YouTube'});
-    if(beh)cl.push({type:'behance',url:normUrl(beh),icon:'🎨',label:'Behance'});
     if(sc)cl.push({type:'snapchat',url:sc.startsWith('http')?sc:'https://www.snapchat.com/add/'+sc.replace(/^@/,''),icon:'👻',label:'Snapchat'});
  
     // ── Infos spécifiques Plaque / Bracelet (ajoutées à la bio pour ne rien perdre) ──
@@ -863,7 +860,8 @@ async function submit(){
       linkedin:document.getElementById('f-li').value.trim()||null,
       tiktok:document.getElementById('f-tt').value.trim()||null,
       youtube:yt||null,
-      behance:beh||null,
+      facebook:fb||null,
+      snapchat:sc||null,
       theme:S.theme,
       photo:photoUrl,
       cover_url:coverUrl,
