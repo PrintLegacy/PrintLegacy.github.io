@@ -235,7 +235,7 @@ body{
 }
 .cat-card:hover{border-color:var(--gold);transform:translateY(-2px)}
 .cat-img{
-  width:100%;height:110px;background:var(--cream2);
+  width:100%;aspect-ratio:1/1;background:var(--cream2);
   display:flex;align-items:center;justify-content:center;
   font-size:1.8rem;overflow:hidden;
 }
@@ -252,6 +252,68 @@ body{
   font-family:"DM Sans",sans-serif;transition:background .2s;
 }
 .cat-btn:hover{background:var(--gold);color:var(--ink)}
+.cat-card{cursor:pointer}
+
+/* Catalogue lightbox — vue plein écran type Pinterest */
+.cat-lightbox{
+  display:none;position:fixed;inset:0;z-index:3000;
+  background:rgba(10,8,4,.94);
+  align-items:flex-end;justify-content:center;
+}
+.cat-lightbox.open{display:flex}
+.cat-lb-close{
+  position:absolute;top:14px;right:14px;z-index:5;
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.14);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;border:none;
+}
+.cat-lb-counter{
+  position:absolute;top:16px;left:16px;z-index:5;
+  color:rgba(255,255,255,.75);font-size:.7rem;
+  background:rgba(255,255,255,.12);padding:4px 11px;border-radius:100px;
+  letter-spacing:.05em;
+}
+.cat-lb-nav{
+  position:absolute;top:38%;transform:translateY(-50%);z-index:5;
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.14);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;border:none;user-select:none;
+  transition:background .15s;
+}
+.cat-lb-nav:hover{background:rgba(255,255,255,.28)}
+.cat-lb-nav.disabled{opacity:.25;pointer-events:none}
+.cat-lb-prev{left:10px}
+.cat-lb-next{right:10px}
+.cat-lb-content{
+  width:100%;max-width:480px;max-height:92vh;
+  display:flex;flex-direction:column;overflow-y:auto;
+  border-radius:20px 20px 0 0;background:var(--white);
+  animation:catLbUp .25s ease;
+}
+@keyframes catLbUp{from{transform:translateY(24px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.cat-lb-img-wrap{
+  width:100%;aspect-ratio:1/1;background:var(--cream2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;flex-shrink:0;overflow:hidden;
+}
+.cat-lb-img-wrap img{width:100%;height:100%;object-fit:cover}
+.cat-lb-info{padding:1.1rem 1.3rem 1.6rem}
+.cat-lb-title{font-family:"Playfair Display",serif;font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.cat-lb-desc{font-size:.85rem;color:var(--muted);line-height:1.65;margin-bottom:.9rem}
+.cat-lb-price{font-family:"Playfair Display",serif;font-size:1.35rem;font-weight:700;color:var(--gold-dark);margin-bottom:1.1rem}
+.cat-lb-btn{
+  display:block;width:100%;padding:.9rem;border-radius:10px;
+  background:var(--ink);color:#fff;text-align:center;
+  font-weight:700;text-decoration:none;font-size:.8rem;
+  letter-spacing:.06em;text-transform:uppercase;border:none;cursor:pointer;
+  font-family:"DM Sans",sans-serif;
+}
+@media (min-width:600px){
+  .cat-lightbox{align-items:center}
+  .cat-lb-content{border-radius:20px;max-height:88vh}
+}
  
 /* Footer */
 .foot{
@@ -312,6 +374,15 @@ body{
   <div class="loading"><div class="spin"></div><p>Chargement...</p></div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- Catalogue lightbox — vue plein écran type Pinterest -->
+<div class="cat-lightbox" id="catLightbox">
+  <div class="cat-lb-counter" id="catLbCounter"></div>
+  <button class="cat-lb-close" onclick="closeCatLightbox()">✕</button>
+  <button class="cat-lb-nav cat-lb-prev" id="catLbPrev" onclick="navCatLightbox(-1)">‹</button>
+  <button class="cat-lb-nav cat-lb-next" id="catLbNext" onclick="navCatLightbox(1)">›</button>
+  <div class="cat-lb-content" id="catLightboxContent"></div>
+</div>
  
 <script>
 const {createClient} = supabase;
@@ -411,6 +482,64 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
 }
+
+// ── Catalogue lightbox (vue plein écran type Pinterest) ──
+let catLbIndex=0;
+function renderCatLightbox(){
+  const items=window.catalogueItems||[];
+  const meta=window.catalogueMeta||{};
+  const it=items[catLbIndex];
+  if(!it) return;
+  const img=it.image_url?`<img src="${it.image_url}" alt="${it.title||''}">`:'🛍️';
+  const price=(it.price!==null&&it.price!==undefined&&it.price!=='')?Number(it.price).toLocaleString()+' FCFA':'';
+  const orderMsg=encodeURIComponent(`Bonjour${meta.company?' '+meta.company:''}, je suis intéressé(e) par : ${it.title||'cet article'}`);
+  const orderBtn=meta.waBase?`<a href="https://wa.me/${meta.waBase}?text=${orderMsg}" target="_blank" class="cat-lb-btn">Commander sur WhatsApp</a>`:'';
+  document.getElementById('catLightboxContent').innerHTML=`
+    <div class="cat-lb-img-wrap">${img}</div>
+    <div class="cat-lb-info">
+      <div class="cat-lb-title">${it.title||''}</div>
+      ${it.desc?`<div class="cat-lb-desc">${it.desc}</div>`:''}
+      ${price?`<div class="cat-lb-price">${price}</div>`:''}
+      ${orderBtn}
+    </div>`;
+  document.getElementById('catLbCounter').textContent=(items.length>1)?`${catLbIndex+1} / ${items.length}`:'';
+  const single=items.length<=1;
+  document.getElementById('catLbPrev').classList.toggle('disabled',single);
+  document.getElementById('catLbNext').classList.toggle('disabled',single);
+}
+function openCatLightbox(idx){
+  catLbIndex=idx;
+  renderCatLightbox();
+  document.getElementById('catLightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeCatLightbox(){
+  document.getElementById('catLightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+function navCatLightbox(dir){
+  const items=window.catalogueItems||[];
+  if(items.length<2) return;
+  catLbIndex=(catLbIndex+dir+items.length)%items.length;
+  renderCatLightbox();
+}
+(function(){
+  const lb=document.getElementById('catLightbox');
+  if(!lb) return;
+  lb.addEventListener('click',(e)=>{ if(e.target===lb) closeCatLightbox(); });
+  let touchStartX=0;
+  lb.addEventListener('touchstart',(e)=>{ touchStartX=e.touches[0].clientX; },{passive:true});
+  lb.addEventListener('touchend',(e)=>{
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    if(Math.abs(dx)>50) navCatLightbox(dx>0?-1:1);
+  },{passive:true});
+  document.addEventListener('keydown',(e)=>{
+    if(!lb.classList.contains('open')) return;
+    if(e.key==='Escape') closeCatLightbox();
+    if(e.key==='ArrowLeft') navCatLightbox(-1);
+    if(e.key==='ArrowRight') navCatLightbox(1);
+  });
+})();
  
 function render(c){
   const fullName=(c.firstname||'')+' '+(c.lastname||'');
@@ -462,17 +591,19 @@ function render(c){
     try{ catItems = typeof c.catalogue==='string'?JSON.parse(c.catalogue):c.catalogue; }catch(e){ catItems=[]; }
   }
   const waBase=(c.whatsapp||c.phone||'').replace(/\D/g,'');
+  window.catalogueItems=catItems||[];
+  window.catalogueMeta={waBase,company:c.company||''};
   const catalogueHTML=(catItems&&catItems.length)?`
     <div class="catalogue">
       <p class="lbl">${c.company?'Menu / Catalogue':'Catalogue'}</p>
       <div class="cat-grid">
-        ${catItems.map(it=>{
+        ${catItems.map((it,idx)=>{
           const img=it.image_url?`<img src="${it.image_url}" alt="${it.title||''}">`:'🛍️';
           const price=(it.price!==null&&it.price!==undefined&&it.price!=='')?Number(it.price).toLocaleString()+' FCFA':'';
           const orderMsg=encodeURIComponent(`Bonjour${c.company?' '+c.company:''}, je suis intéressé(e) par : ${it.title||'cet article'}`);
-          const orderBtn=waBase?`<a href="https://wa.me/${waBase}?text=${orderMsg}" target="_blank" class="cat-btn">Commander</a>`:'';
+          const orderBtn=waBase?`<a href="https://wa.me/${waBase}?text=${orderMsg}" target="_blank" class="cat-btn" onclick="event.stopPropagation()">Commander</a>`:'';
           return `
-          <div class="cat-card">
+          <div class="cat-card" onclick="openCatLightbox(${idx})">
             <div class="cat-img">${img}</div>
             <div class="cat-body">
               <div class="cat-title">${it.title||''}</div>
