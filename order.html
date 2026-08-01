@@ -811,9 +811,8 @@ async function submit(){
     const yt=document.getElementById('f-yt').value.trim();
     const sc=document.getElementById('f-sc').value.trim();
     const normUrl=(v)=>v.startsWith('http')?v:'https://'+v.replace(/^@/,'');
-    if(fb)cl.push({type:'facebook',url:normUrl(fb),icon:'📘',label:'Facebook'});
-    if(yt)cl.push({type:'youtube',url:normUrl(yt),icon:'▶️',label:'YouTube'});
-    if(sc)cl.push({type:'snapchat',url:sc.startsWith('http')?sc:'https://www.snapchat.com/add/'+sc.replace(/^@/,''),icon:'👻',label:'Snapchat'});
+    // Facebook, YouTube et Snapchat sont enregistrés directement dans leurs colonnes dédiées
+    // (voir plus bas : facebook, youtube, snapchat) — ne pas les dupliquer ici dans custom_links.
  
     // ── Infos spécifiques Plaque / Bracelet (ajoutées à la bio pour ne rien perdre) ──
     let extraLines = [];
