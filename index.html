@@ -36,8 +36,8 @@
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: rgba(245,240,232,0.9);
+    padding: 0.9rem 2.5rem;
+    background: rgba(245,240,232,0.85);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
   }
@@ -63,6 +63,7 @@
     transition: background 0.2s, transform 0.15s, box-shadow 0.2s !important;
   }
   .nav-cta:hover { background: var(--gold-light) !important; transform: translateY(-1px); }
+  .cta-short { display: none; }
   .footer-admin {
     display: inline-flex; align-items: center; gap: 0.4rem;
     background: var(--black); color: var(--gold-light) !important;
@@ -454,11 +455,13 @@
 
   /* ── RESPONSIVE — mobile décongestionné ── */
   @media (max-width: 860px) {
-    nav { padding: 0.85rem 1rem; }
-    .nav-logo { font-size: 1.05rem; }
-    .nav-links { gap: 0.9rem; }
-    .nav-links li:not(:last-child):not(:nth-last-child(2)) { display: none; }
-    .nav-cta { padding: 0.4rem 1rem; font-size: 0.78rem; }
+    nav { padding: 0.8rem 1.1rem; }
+    .nav-logo { font-size: 1rem; }
+    .nav-links { gap: 0; }
+    .nav-links li:not(:last-child) { display: none; }
+    .nav-cta { padding: 0.45rem 1rem; font-size: 0.74rem; white-space: nowrap; box-shadow: none; }
+    .cta-full { display: none; }
+    .cta-short { display: inline; }
 
     .hero { grid-template-columns: 1fr; padding: 5.5rem 1.25rem 2.5rem; gap: 2rem; }
     .hero-visual { order: -1; }
@@ -510,7 +513,7 @@
   <ul class="nav-links">
     <li><a href="#products">Nos Produits</a></li>
     <li><a href="#profile-example">Carte Digitale</a></li>
-    <li><a href="#contact" class="nav-cta">Nous contacter →</a></li>
+    <li><a href="#contact" class="nav-cta"><span class="cta-full">Nous contacter →</span><span class="cta-short">Contact</span></a></li>
   </ul>
 </nav>
 
