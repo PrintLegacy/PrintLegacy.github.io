@@ -446,6 +446,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     <div style="background:var(--cream);border-radius:var(--r);padding:.75rem 1.25rem;font-size:.8rem;color:var(--smoke2);margin-bottom:1rem;border:1px solid var(--cream3)">Référence : <strong id="sucRef" style="color:var(--gold);font-size:1rem"></strong></div>
     <div id="sucEmailStatus" style="display:none;font-size:.78rem;color:var(--gold);margin-bottom:.4rem">✓ Un email de confirmation vous a été envoyé</div>
     <div id="sucEmailSpamHint" style="display:none;font-size:.7rem;color:var(--smoke2);margin-bottom:1rem;line-height:1.5">📩 Vous ne le voyez pas ? Pensez à vérifier votre dossier <strong>spam / courriers indésirables</strong>.</div>
+    <a id="sucEditLink" href="#" target="_blank" style="display:block;width:100%;background:var(--gold4);border:1px solid rgba(201,168,76,.35);color:var(--gold-dark);border-radius:var(--r);padding:.8rem 1.2rem;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;margin-bottom:.75rem;box-sizing:border-box">✏️ Modifier mes informations</a>
     <button onclick="window.location.href='https://printlegacy.github.io'" style="background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:.85rem 2rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif">Retour au site</button>
   </div>
 </div>
@@ -755,6 +756,10 @@ function updatePreview(){
 function mkSlug(fn,ln){
   return (fn+'-'+ln).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString().slice(-4);
 }
+function genEditToken(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g,'');
+  return Array.from({length:32},()=>Math.floor(Math.random()*16).toString(16)).join('');
+}
  
 async function upFile(file,folder){
   if(!file)return null;
@@ -806,6 +811,7 @@ async function submit(){
  
     btn.innerHTML='<span class="spin"></span> Finalisation...';
     const slug=mkSlug(fn,ln);
+    const editToken=genEditToken();
     const cl=[];
     const fb=document.getElementById('f-fb').value.trim();
     const yt=document.getElementById('f-yt').value.trim();
@@ -844,7 +850,7 @@ async function submit(){
 
     const row={
       produit:P.key,
-      firstname:fn, lastname:ln, slug,
+      firstname:fn, lastname:ln, slug, edit_token:editToken,
       jobtitle:document.getElementById('f-jt').value.trim()||null,
       company:document.getElementById('f-co').value.trim()||null,
       company_logo_url:companyLogoUrl,
@@ -881,8 +887,10 @@ async function submit(){
     const catTxt = catalogueData.length > 0 ? `\n🛍️ Catalogue : ${catalogueData.length} article(s)` : '';
     const priceTxt = P.price===null ? 'Sur devis' : P.price.toLocaleString()+' FCFA';
     const profileLink = `https://printlegacy-platform.vercel.app/?carte=${slug}`;
+    const editLink = `https://printlegacy-platform.vercel.app/modifier.html?slug=${slug}&token=${editToken}`;
     const statsRelevant = (P.key==='pro' || P.key==='plaque');
     const statsLink = statsRelevant ? `https://printlegacy-platform.vercel.app/stats.html?slug=${slug}` : '';
+    document.getElementById('sucEditLink').href = editLink;
 
     // ── Email de confirmation au client (EmailJS) ──
     const clientEmail=document.getElementById('f-em').value.trim();
@@ -894,7 +902,8 @@ async function submit(){
         produit: S.offre,
         prix: priceTxt,
         profile_link: profileLink,
-        stats_link: statsLink
+        stats_link: statsLink,
+        edit_link: editLink
       }).then(()=>{
         document.getElementById('sucEmailStatus').style.display='block';
         document.getElementById('sucEmailSpamHint').style.display='block';
