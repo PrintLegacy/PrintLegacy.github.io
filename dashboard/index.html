@@ -66,7 +66,10 @@ th{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--smo
 td{padding:12px 20px;font-size:12px;color:#2E2E2E;border-bottom:1px solid var(--cream2)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--cream)}
-.av{width:28px;height:28px;border-radius:50%;background:var(--gold4);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--ink);font-family:'Cormorant Garamond',serif;flex-shrink:0;overflow:hidden}
+.av{width:38px;height:38px;border-radius:50%;background:var(--gold4);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--ink);font-family:'Cormorant Garamond',serif;flex-shrink:0;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.is-logo{background:var(--w);border:1px solid var(--cream2)}
+.av.is-logo img{object-fit:contain;padding:4px}
 .av img{width:100%;height:100%;object-fit:cover}
 .cl{display:flex;align-items:center;gap:10px}
 .cn{font-size:12px;font-weight:500;color:var(--ink)}
@@ -706,6 +709,12 @@ document.addEventListener('click',(e)=>{
   }
 });
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
+function avatarHTML(c){
+  const ini=esc(initials(c.firstname,c.lastname));
+  if(c.photo) return `<img src="${c.photo}" onerror="this.outerHTML='${ini}'">`;
+  if(c.company_logo_url) return `<img src="${c.company_logo_url}" onerror="this.outerHTML='${ini}'">`;
+  return ini;
+}
 function statusBadge(s){
   if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
   if(s==='active') return '<span class="status st-a"><span class="sd"></span>Actif</span>';
@@ -743,7 +752,7 @@ function renderTable(){
     const catCount=Array.isArray(c.catalogue)?c.catalogue.length:0;
     return `<tr>
       <td><div class="cl">
-        <div class="av">${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'">`:''}${!c.photo?initials(c.firstname,c.lastname):''}</div>
+        <div class="av${(!c.photo&&c.company_logo_url)?' is-logo':''}">${avatarHTML(c)}</div>
         <div><div class="cn">${c.firstname||''} ${c.lastname||''}</div><div class="cs">${c.company||c.jobtitle||''}</div></div>
       </div></td>
       <td>${produitBadge(c.produit)}</td>
