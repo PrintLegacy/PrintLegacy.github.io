@@ -660,6 +660,20 @@ document.querySelectorAll('.sb-item').forEach(el=>{
 });
 
 // ── HELPERS ──
+async function copyEditLink(slug,token){
+  if(!token){
+    showToast('⚠️ Ce client n\'a pas encore de jeton — exécutez la migration SQL puis rechargez');
+    return;
+  }
+  const link=`https://printlegacy-platform.vercel.app/modifier.html?slug=${slug}&token=${token}`;
+  try{
+    await navigator.clipboard.writeText(link);
+    showToast('🔗 Lien d\'édition copié !');
+  }catch(e){
+    prompt('Copiez ce lien manuellement :',link);
+  }
+}
+
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ── Menu déroulant "Nouvelle commande" ──
@@ -744,6 +758,7 @@ function renderTable(){
         <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${c.slug}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
         <span onclick="openNFC('${c.slug}','${esc(c.firstname||'')} ${esc(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
         <span onclick="openEdit('${c.id}')" style="cursor:pointer;font-size:14px">✏️</span>
+        <span onclick="copyEditLink('${c.slug}','${c.edit_token||''}')" title="Copier le lien d'édition client" style="cursor:pointer;font-size:14px">🔗</span>
         <span onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
       </div></td>
     </tr>`;
