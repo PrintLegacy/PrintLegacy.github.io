@@ -477,6 +477,21 @@ tr:hover td{background:var(--cream)}
             <option value="porteclefs">🔑 Porte-clés NFC</option>
           </select>
         </div>
+        <div class="edit-field full">
+          <div class="edit-label">👤 Photo de profil</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="cover-zone" id="editPhotoZone" style="width:100px;height:100px;flex-shrink:0;border-radius:50%" onclick="document.getElementById('editPhotoInput').click()">
+              <input type="file" id="editPhotoInput" accept="image/*" style="display:none" onchange="onEditPhotoChange(event)">
+              <img id="editPhotoImg" style="border-radius:50%">
+              <div class="cz-hint" id="editPhotoHint" style="font-size:1.4rem">👤</div>
+              <div class="cz-overlay">📷</div>
+            </div>
+            <div id="editPhotoMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2)">
+              <span id="editPhotoMetaName"></span>
+              <button onclick="clearEditPhoto(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+            </div>
+          </div>
+        </div>
         <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
         <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
@@ -484,7 +499,7 @@ tr:hover td{background:var(--cream)}
         <div class="edit-section">Entreprise</div>
         <div class="edit-field full">
           <div class="edit-label">🏢 Logo de l'entreprise</div>
-          <div class="cover-zone" id="editCompanyLogoZone" style="height:70px" onclick="document.getElementById('editCompanyLogoInput').click()">
+          <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
             <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
             <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
             <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
@@ -571,6 +586,7 @@ let catRows=[], catCounter=0;
 const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let newCompanyLogoFile=null, companyLogoDeleted=false;
+let newPhotoFile=null, photoDeleted=false;
 let currentPage='dashboard';
 
 // ── DÉTECTION PANNE RÉSEAU / DB EN PAUSE ──
@@ -1413,6 +1429,22 @@ function clearEditCompanyLogo(e){
   document.getElementById('editCompanyLogoInput').value='';
 }
 
+function onEditPhotoChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newPhotoFile=f;photoDeleted=false;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('editPhotoImg');img.src=x.target.result;img.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(f.name);};
+  r.readAsDataURL(f);
+}
+function showPhotoMeta(name){const el=document.getElementById('editPhotoMeta');el.style.display='flex';document.getElementById('editPhotoMetaName').textContent=name;}
+function clearEditPhoto(e){
+  e.stopPropagation();photoDeleted=true;newPhotoFile=null;
+  const img=document.getElementById('editPhotoImg');img.style.display='none';img.src='';
+  document.getElementById('editPhotoHint').style.display='block';
+  document.getElementById('editPhotoMeta').style.display='none';
+  document.getElementById('editPhotoInput').value='';
+}
+
 function addCatRow(existing){
   const id=++catCounter;
   const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
@@ -1455,6 +1487,7 @@ async function openEdit(clientId){
   document.getElementById('catRowsList').innerHTML='';
   newCoverFile=null;coverDeleted=false;
   newCompanyLogoFile=null;companyLogoDeleted=false;
+  newPhotoFile=null;photoDeleted=false;
   document.getElementById('editOv').classList.add('open');
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='⏳ Chargement...';
@@ -1470,6 +1503,10 @@ async function openEdit(clientId){
     document.getElementById('editCompanyLogoHint').style.display='block';
     document.getElementById('editCompanyLogoMeta').style.display='none';
     if(c.company_logo_url){cimg.src=c.company_logo_url;cimg.style.display='block';document.getElementById('editCompanyLogoHint').style.display='none';showCompanyLogoMeta(c.company_logo_url.split('/').pop().slice(0,40));}
+    const pimg=document.getElementById('editPhotoImg');pimg.style.display='none';pimg.src='';
+    document.getElementById('editPhotoHint').style.display='block';
+    document.getElementById('editPhotoMeta').style.display='none';
+    if(c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
     let items=[];try{items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'?JSON.parse(c.catalogue):[]);}catch(e){}
     items.forEach(item=>addCatRow(item));
     selTheme(c.theme||'noir');selStatus(c.status||'pending');
@@ -1502,6 +1539,8 @@ async function saveEdit(){
     else if(coverDeleted){updates.cover_url=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
     else if(companyLogoDeleted){updates.company_logo_url=null;}
+    if(newPhotoFile){const url=await upFile(newPhotoFile,'photos');if(url)updates.photo=url;}
+    else if(photoDeleted){updates.photo=null;}
     const catalogue=[];
     for(const row of catRows){
       let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
