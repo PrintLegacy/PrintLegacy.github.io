@@ -494,6 +494,19 @@ tr:hover td{background:var(--cream)}
         </div>
         <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
         <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
+        <div class="edit-field full">
+          <!-- Champ CV/Portfolio : uploadé en base à l'origine sur order.html, -->
+          <!-- mais jamais rajouté ici dans le modal d'édition admin -->
+          <div class="edit-label">📄 CV / Portfolio (PDF, DOC)</div>
+          <div class="cover-zone" id="editCvZone" style="height:56px;flex-direction:row;gap:8px" onclick="document.getElementById('editCvInput').click()">
+            <input type="file" id="editCvInput" accept=".pdf,.doc,.docx" style="display:none" onchange="onEditCvChange(event)">
+            <div class="cz-hint" id="editCvHint" style="display:flex;align-items:center;gap:6px;font-size:12px">📄 <span>Cliquer pour ajouter un fichier</span></div>
+          </div>
+          <div id="editCvMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2);margin-top:4px">
+            <span>📄</span><span id="editCvMetaName"></span>
+            <button onclick="clearEditCv(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+          </div>
+        </div>
         <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
         <div class="edit-field"><div class="edit-label">Localisation</div><input class="edit-input" id="edit-location" placeholder="Dakar"></div>
         <div class="edit-section">Entreprise</div>
@@ -587,6 +600,7 @@ const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let newCompanyLogoFile=null, companyLogoDeleted=false;
 let newPhotoFile=null, photoDeleted=false;
+let newCvFile=null, cvDeleted=false;
 let currentPage='dashboard';
 
 // ── DÉTECTION PANNE RÉSEAU / DB EN PAUSE ──
@@ -1445,6 +1459,20 @@ function clearEditPhoto(e){
   document.getElementById('editPhotoInput').value='';
 }
 
+function onEditCvChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newCvFile=f;cvDeleted=false;
+  document.getElementById('editCvHint').innerHTML=`📄 <span>${f.name}</span>`;
+  showEditCvMeta(f.name);
+}
+function showEditCvMeta(name){const el=document.getElementById('editCvMeta');el.style.display='flex';document.getElementById('editCvMetaName').textContent=name;}
+function clearEditCv(e){
+  e.stopPropagation();cvDeleted=true;newCvFile=null;
+  document.getElementById('editCvHint').innerHTML=`📄 <span>Cliquer pour ajouter un fichier</span>`;
+  document.getElementById('editCvMeta').style.display='none';
+  document.getElementById('editCvInput').value='';
+}
+
 function addCatRow(existing){
   const id=++catCounter;
   const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
@@ -1488,6 +1516,9 @@ async function openEdit(clientId){
   newCoverFile=null;coverDeleted=false;
   newCompanyLogoFile=null;companyLogoDeleted=false;
   newPhotoFile=null;photoDeleted=false;
+  newCvFile=null;cvDeleted=false;
+  document.getElementById('editCvHint').innerHTML=`📄 <span>Cliquer pour ajouter un fichier</span>`;
+  document.getElementById('editCvMeta').style.display='none';
   document.getElementById('editOv').classList.add('open');
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='⏳ Chargement...';
@@ -1507,6 +1538,7 @@ async function openEdit(clientId){
     document.getElementById('editPhotoHint').style.display='block';
     document.getElementById('editPhotoMeta').style.display='none';
     if(c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
+    if(c.cv_url){document.getElementById('editCvHint').innerHTML=`📄 <span>Fichier actuel</span>`;showEditCvMeta(c.cv_url.split('/').pop().slice(0,40));}
     let items=[];try{items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'?JSON.parse(c.catalogue):[]);}catch(e){}
     items.forEach(item=>addCatRow(item));
     selTheme(c.theme||'noir');selStatus(c.status||'pending');
@@ -1541,6 +1573,8 @@ async function saveEdit(){
     else if(companyLogoDeleted){updates.company_logo_url=null;}
     if(newPhotoFile){const url=await upFile(newPhotoFile,'photos');if(url)updates.photo=url;}
     else if(photoDeleted){updates.photo=null;}
+    if(newCvFile){const url=await upFile(newCvFile,'cvs');if(url)updates.cv_url=url;}
+    else if(cvDeleted){updates.cv_url=null;}
     const catalogue=[];
     for(const row of catRows){
       let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
