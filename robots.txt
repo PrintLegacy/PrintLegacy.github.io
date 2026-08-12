@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /printlegacy-profile.html
+Disallow: /printlegacy-card-editor.html
+Disallow: /printlegacy/
+
+Sitemap: https://printlegacy.github.io/sitemap.xml

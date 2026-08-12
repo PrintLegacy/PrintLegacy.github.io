@@ -1616,10 +1616,28 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
-function logout(){window.location.href='https://printlegacy.github.io'}
+async function logout(){
+  await sb.auth.signOut();
+  window.location.href='https://printlegacy.github.io';
+}
 
-loadData();
-setInterval(loadData,30000);
+async function bootDashboard() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    window.location.href = 'https://printlegacy.github.io/';
+    return;
+  }
+  loadData();
+  setInterval(loadData, 30000);
+}
+
+sb.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_OUT') {
+    window.location.href = 'https://printlegacy.github.io/';
+  }
+});
+
+bootDashboard();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>

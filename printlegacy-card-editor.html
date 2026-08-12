@@ -36,7 +36,8 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 .ed-back{
   width:30px;height:30px;border-radius:var(--r);border:1px solid var(--cream2);
   display:flex;align-items:center;justify-content:center;
-  color:var(--smoke);font-size:14px;cursor:pointer;flex-shrink:0
+  color:var(--smoke);font-size:14px;cursor:pointer;flex-shrink:0;
+  text-decoration:none
 }
 .ed-title-wrap{}
 .ed-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:var(--ink)}
@@ -375,7 +376,7 @@ input[type=file]{display:none}
   <!-- ═══════════════════════════════ EDITOR PANEL ═══════════════════════════════ -->
   <div class="editor">
     <div class="ed-header">
-      <div class="ed-back"><i class="ti ti-arrow-left"></i></div>
+      <a class="ed-back" href="https://printlegacy.github.io/" title="Retour au site"><i class="ti ti-arrow-left"></i></a>
       <div class="ed-title-wrap">
         <div class="ed-title">Mon profil digital</div>
         <div class="ed-sub">Personnalisez votre carte NFC</div>
