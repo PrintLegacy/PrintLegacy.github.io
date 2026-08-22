@@ -47,6 +47,12 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 .sb-item.order-menu-wrap .order-menu{top:0;left:calc(100% + 6px);right:auto;min-width:220px}
 .content{flex:1;overflow-y:auto;padding:24px 28px}
 .page{display:none}.page.active{display:block}
+body:not(.authed) .app{display:none}
+.auth-loader{display:flex;align-items:center;justify-content:center;height:100vh;font-family:'Jost',sans-serif;color:var(--smoke2);font-size:13px}
+body.authed .auth-loader{display:none}
+.admin-badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase}
+.admin-badge.pending{background:rgba(184,149,58,.14);color:var(--gold)}
+.admin-badge.approved{background:rgba(46,125,50,.12);color:var(--success)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .sc{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .sc:hover{border-color:var(--gold2)}
@@ -251,6 +257,7 @@ tr:hover td{background:var(--cream)}
 </style>
 </head>
 <body>
+<div class="auth-loader">Vérification de la session…</div>
 <div class="app">
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
   <div class="sidebar" id="sidebar">
@@ -274,6 +281,7 @@ tr:hover td{background:var(--cream)}
       <div class="sb-item" id="nav-impressions" onclick="setPage('impressions')"><span class="ico">🖨️</span> Impressions</div>
       <div class="sb-item" id="nav-stats" onclick="setPage('stats')"><span class="ico">📈</span> Statistiques</div>
       <div class="sb-sec">Compte</div>
+      <div class="sb-item" id="nav-admins" onclick="setPage('admins')"><span class="ico">🛡️</span> Administrateurs <span id="sb-pending-admins" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
       <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io'"><span class="ico">🌐</span> Voir le site</div>
       <div class="sb-item" onclick="logout()"><span class="ico">🔒</span> Déconnexion</div>
     </div>
@@ -415,6 +423,14 @@ tr:hover td{background:var(--cream)}
             </div>
           </div>
           <div id="statsCardsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+      </div>
+
+      <!-- PAGE: ADMINISTRATEURS -->
+      <div class="page" id="page-admins">
+        <div class="card">
+          <div class="card-h"><div class="card-t">🛡️ Comptes administrateurs</div><button class="card-a" onclick="loadAdmins()">Actualiser →</button></div>
+          <div id="adminsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
 
@@ -587,7 +603,7 @@ tr:hover td{background:var(--cream)}
 const {createClient}=supabase;
 const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+  'sb_publishable_NuZqQ3yjdULy5THdoXJpeQ_F2Il1rEu'
 );
 
 document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
@@ -655,11 +671,60 @@ function setPage(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.sb-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
   document.getElementById('nav-'+page)?.classList.add('active');
-  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques'};
+  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques',admins:'🛡️ Administrateurs'};
   document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
   if(page==='creations') loadCreations();
   if(page==='impressions'){loadImpressions();loadClientsForImpressions();}
   if(page==='stats'){loadStats();loadCardStats();}
+  if(page==='admins') loadAdmins();
+}
+
+let currentUserId=null;
+
+async function loadAdmins(){
+  const wrap=document.getElementById('adminsWrap');
+  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  try{
+    const {data,error}=await sb.from('admins').select('*').order('created_at',{ascending:true});
+    if(error)throw error;
+    const pending=(data||[]).filter(a=>!a.approved).length;
+    const badge=document.getElementById('sb-pending-admins');
+    badge.textContent=pending>0?pending:'';
+    badge.style.display=pending>0?'inline-block':'none';
+    if(!data||!data.length){wrap.innerHTML=friendlyEmptyState();return;}
+    wrap.innerHTML=data.map(a=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--cream2)">
+        <div>
+          <div style="font-size:13px;font-weight:500">${a.email}${a.id===currentUserId?' <span style="color:var(--smoke2);font-size:11px">(vous)</span>':''}</div>
+          <div style="font-size:10.5px;color:var(--smoke2);margin-top:2px">Inscrit le ${new Date(a.created_at).toLocaleDateString('fr-FR')}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="admin-badge ${a.approved?'approved':'pending'}">${a.approved?'Validé':'En attente'}</span>
+          ${!a.approved?`<button class="imp-btn" onclick="approveAdmin('${a.id}')">Approuver</button>`:''}
+          ${a.approved&&a.id!==currentUserId?`<button class="imp-btn" style="background:var(--w);color:#c62828;border:1px solid #c62828" onclick="revokeAdmin('${a.id}')">Révoquer</button>`:''}
+        </div>
+      </div>`).join('');
+  }catch(err){
+    if(isNetworkFailure(err)){showDbBanner();wrap.innerHTML=friendlyEmptyState();}
+    else{wrap.innerHTML='<div class="empty">Erreur: '+(err.message||'')+'</div>';}
+  }
+}
+
+async function approveAdmin(id){
+  try{
+    await sb.from('admins').update({approved:true}).eq('id',id);
+    showToast('Administrateur validé');
+    loadAdmins();
+  }catch(err){showToast('Erreur: '+(err.message||''));}
+}
+
+async function revokeAdmin(id){
+  if(!confirm('Révoquer l\'accès de cet administrateur ?'))return;
+  try{
+    await sb.from('admins').update({approved:false}).eq('id',id);
+    showToast('Accès révoqué');
+    loadAdmins();
+  }catch(err){showToast('Erreur: '+(err.message||''));}
 }
 
 function setView(view){
@@ -708,6 +773,11 @@ async function copyEditLink(slug,token){
 }
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// For values interpolated inside a single-quoted JS string literal within an
+// onclick="..." attribute (e.g. onclick="fn('${escAttr(c.slug)}')") — escapes
+// backslash/quote for the JS layer first, then HTML-escapes the result so it
+// also survives as an HTML attribute value.
+function escAttr(s){return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));}
 
 // ── Menu déroulant "Nouvelle commande" ──
 const ORDER_PRODUCTS=[
@@ -718,7 +788,7 @@ const ORDER_PRODUCTS=[
   {key:'bracelet',  icon:'🎫', label:'Bracelet NFC',        price:'Sur devis'},
 ];
 function buildOrderMenuHtml(){
-  return ORDER_PRODUCTS.map(p=>`<a class="order-menu-item" href="https://printlegacy.github.io/order?produit=${p.key}"><span class="om-ico">${p.icon}</span>${p.label}<span class="om-price">${p.price}</span></a>`).join('');
+  return ORDER_PRODUCTS.map(p=>`<a class="order-menu-item" href="https://printlegacy.github.io/order.html?produit=${p.key}"><span class="om-ico">${p.icon}</span>${p.label}<span class="om-price">${p.price}</span></a>`).join('');
 }
 document.addEventListener('DOMContentLoaded',()=>{
   const sbMenu=document.getElementById('sbOrderMenu');
@@ -740,10 +810,11 @@ document.addEventListener('click',(e)=>{
 });
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
 function avatarHTML(c){
-  const ini=esc(initials(c.firstname,c.lastname));
-  if(c.photo) return `<img src="${c.photo}" onerror="this.outerHTML='${ini}'">`;
-  if(c.company_logo_url) return `<img src="${c.company_logo_url}" onerror="this.outerHTML='${ini}'">`;
-  return ini;
+  const raw=initials(c.firstname,c.lastname);
+  const iniAttr=escAttr(raw);
+  if(c.photo) return `<img src="${esc(c.photo)}" onerror="this.outerHTML='${iniAttr}'">`;
+  if(c.company_logo_url) return `<img src="${esc(c.company_logo_url)}" onerror="this.outerHTML='${iniAttr}'">`;
+  return esc(raw);
 }
 function statusBadge(s){
   if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
@@ -783,22 +854,22 @@ function renderTable(){
     return `<tr>
       <td><div class="cl">
         <div class="av${(!c.photo&&c.company_logo_url)?' is-logo':''}">${avatarHTML(c)}</div>
-        <div><div class="cn">${c.firstname||''} ${c.lastname||''}</div><div class="cs">${c.company||c.jobtitle||''}</div></div>
+        <div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.company||c.jobtitle||'')}</div></div>
       </div></td>
       <td>${produitBadge(c.produit)}</td>
-      <td>${c.jobtitle||'—'}</td>
-      <td>${c.phone||'—'}</td>
-      <td>${c.email||'—'}</td>
-      <td><span class="badge b-p">${c.theme||'noir'}</span>${catCount>0?` <span style="font-size:9px;color:var(--smoke2)">🛍️${catCount}</span>`:''}</td>
+      <td>${esc(c.jobtitle||'—')}</td>
+      <td>${esc(c.phone||'—')}</td>
+      <td>${esc(c.email||'—')}</td>
+      <td><span class="badge b-p">${esc(c.theme||'noir')}</span>${catCount>0?` <span style="font-size:9px;color:var(--smoke2)">🛍️${catCount}</span>`:''}</td>
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
       <td><div style="display:flex;gap:6px;align-items:center">
-        ${c.cv_url?`<a href="${c.cv_url}" target="_blank" style="font-size:14px;text-decoration:none">📄</a>`:''}
-        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${c.slug}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
-        <span onclick="openNFC('${c.slug}','${esc(c.firstname||'')} ${esc(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
-        <span onclick="openEdit('${c.id}')" style="cursor:pointer;font-size:14px">✏️</span>
-        <span onclick="copyEditLink('${c.slug}','${c.edit_token||''}')" title="Copier le lien d'édition client" style="cursor:pointer;font-size:14px">🔗</span>
-        <span onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
+        ${c.cv_url?`<a href="${esc(c.cv_url)}" target="_blank" style="font-size:14px;text-decoration:none">📄</a>`:''}
+        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${escAttr(c.slug)}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
+        <span onclick="openNFC('${escAttr(c.slug)}','${escAttr(c.firstname||'')} ${escAttr(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
+        <span onclick="openEdit('${escAttr(c.id)}')" style="cursor:pointer;font-size:14px">✏️</span>
+        <span onclick="copyEditLink('${escAttr(c.slug)}','${escAttr(c.edit_token||'')}')" title="Copier le lien d'édition client" style="cursor:pointer;font-size:14px">🔗</span>
+        <span onclick="toggleStatus('${escAttr(c.id)}','${escAttr(c.status||'pending')}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
       </div></td>
     </tr>`;
   }).join('');
@@ -1627,7 +1698,16 @@ async function bootDashboard() {
     window.location.href = 'https://printlegacy.github.io/';
     return;
   }
+  const { data: adminRow } = await sb.from('admins').select('approved').eq('id', session.user.id).maybeSingle();
+  if (!adminRow || !adminRow.approved) {
+    await sb.auth.signOut();
+    window.location.href = 'https://printlegacy.github.io/';
+    return;
+  }
+  currentUserId = session.user.id;
+  document.body.classList.add('authed');
   loadData();
+  loadAdmins();
   setInterval(loadData, 30000);
 }
 

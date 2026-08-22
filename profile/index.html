@@ -388,7 +388,7 @@ body{
 const {createClient} = supabase;
 const sb = createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+  'sb_publishable_NuZqQ3yjdULy5THdoXJpeQ_F2Il1rEu'
 );
  
 const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAxoAAARjCAYAAADoylLVAAEAAElEQVR4nOzdd5glR3X38W9Vdbhp0iblVc4REQRC5CBAAttkMMEkG2xysC382hgDJmOMwJgMFhmTwSYIEUQUIIKEIspx4+zM3NShqt4/+s5KgG0EaJP0+zzPaFe7szN9+3bX1Omqcw6IiIiIiIiIiIiI...";
@@ -401,6 +401,8 @@ function getSlug(){
 }
  
 function ini(fn,ln){return((fn||'')[0]+(ln||'')[0]).toUpperCase()||'?'}
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
  
 function themeClass(t){
   if(!t) return '';
@@ -550,41 +552,41 @@ function render(c){
   const tc=themeClass(c.theme);
  
   const linksHTML=links.map(l=>`
-    <a href="${l.href}" class="lnk" ${l.t?'target="'+l.t+'"':''}>
+    <a href="${esc(l.href)}" class="lnk" ${l.t?'target="'+l.t+'"':''}>
       <div class="lnk-ico" style="background:${l.bg}">${l.ico}</div>
       <div class="lnk-body">
-        <span class="lnk-lbl">${l.lbl}</span>
-        <span class="lnk-val">${l.val}</span>
+        <span class="lnk-lbl">${esc(l.lbl)}</span>
+        <span class="lnk-val">${esc(l.val)}</span>
       </div>
       <span class="lnk-arr">›</span>
     </a>`).join('');
- 
+
   const socialsHTML=socials.length?`
     <div class="socials">
       <p class="lbl">Réseaux sociaux</p>
       <div class="soc-grid">
         ${socials.map(s=>`
-          <a href="${s.href}" target="_blank" class="soc-btn">
-            <span class="soc-ico">${s.ico}</span>
-            <span class="soc-name">${s.name}</span>
+          <a href="${esc(s.href)}" target="_blank" class="soc-btn">
+            <span class="soc-ico">${esc(s.ico)}</span>
+            <span class="soc-name">${esc(s.name)}</span>
           </a>`).join('')}
       </div>
     </div>`:'';
- 
-  const bioHTML=c.bio?`<div class="bio"><p>${c.bio}</p></div>`:'';
+
+  const bioHTML=c.bio?`<div class="bio"><p>${esc(c.bio)}</p></div>`:'';
 
   const bizLogoHTML=c.company_logo_url
-    ?`<img src="${c.company_logo_url}" alt="${c.company||''}">`
+    ?`<img src="${esc(c.company_logo_url)}" alt="${esc(c.company||'')}">`
     :'🏢';
   const bizHTML=(c.company_logo_url||c.company_about)?`
     <div class="biz-card">
       <div class="biz-logo">${bizLogoHTML}</div>
       <div>
-        ${c.company?`<div class="biz-name">${c.company}</div>`:''}
-        ${c.company_about?`<p class="biz-about">${c.company_about}</p>`:''}
+        ${c.company?`<div class="biz-name">${esc(c.company)}</div>`:''}
+        ${c.company_about?`<p class="biz-about">${esc(c.company_about)}</p>`:''}
       </div>
     </div>`:'';
-  const hoursHTML=c.company_hours?`<div class="biz-hours"><span>🕒</span><span>${c.company_hours}</span></div>`:'';
+  const hoursHTML=c.company_hours?`<div class="biz-hours"><span>🕒</span><span>${esc(c.company_hours)}</span></div>`:'';
 
   let catItems=[];
   if(c.catalogue){
@@ -598,16 +600,16 @@ function render(c){
       <p class="lbl">${c.company?'Menu / Catalogue':'Catalogue'}</p>
       <div class="cat-grid">
         ${catItems.map((it,idx)=>{
-          const img=it.image_url?`<img src="${it.image_url}" alt="${it.title||''}">`:'🛍️';
+          const img=it.image_url?`<img src="${esc(it.image_url)}" alt="${esc(it.title||'')}">`:'🛍️';
           const price=(it.price!==null&&it.price!==undefined&&it.price!=='')?Number(it.price).toLocaleString()+' FCFA':'';
           const orderMsg=encodeURIComponent(`Bonjour${c.company?' '+c.company:''}, je suis intéressé(e) par : ${it.title||'cet article'}`);
-          const orderBtn=waBase?`<a href="https://wa.me/${waBase}?text=${orderMsg}" target="_blank" class="cat-btn" onclick="event.stopPropagation()">Commander</a>`:'';
+          const orderBtn=waBase?`<a href="https://wa.me/${esc(waBase)}?text=${orderMsg}" target="_blank" class="cat-btn" onclick="event.stopPropagation()">Commander</a>`:'';
           return `
           <div class="cat-card" onclick="openCatLightbox(${idx})">
             <div class="cat-img">${img}</div>
             <div class="cat-body">
-              <div class="cat-title">${it.title||''}</div>
-              ${it.desc?`<div class="cat-desc">${it.desc}</div>`:''}
+              <div class="cat-title">${esc(it.title||'')}</div>
+              ${it.desc?`<div class="cat-desc">${esc(it.desc)}</div>`:''}
               ${price?`<div class="cat-price">${price}</div>`:''}
               ${orderBtn}
             </div>
@@ -617,13 +619,13 @@ function render(c){
     </div>`:'';
 
   const avHTML=c.photo
-    ?`<img src="${c.photo}" alt="${fullName}">`
+    ?`<img src="${esc(c.photo)}" alt="${esc(fullName)}">`
     :ini(c.firstname,c.lastname);
  
   document.getElementById('app').innerHTML=`
     <div class="wrap ${tc}">
       <div class="hd">
-        ${c.cover_url?`<div class="hd-cover" style="background-image:url('${c.cover_url}')"></div><div class="hd-cover-shade"></div>`:''}
+        ${c.cover_url?`<div class="hd-cover" style="background-image:url('${esc(c.cover_url)}')"></div><div class="hd-cover-shade"></div>`:''}
         <div class="hd-pattern"></div>
         <div class="hd-glow"></div>
         <div class="hd-logo">
@@ -635,9 +637,9 @@ function render(c){
           <div class="av">${avHTML}</div>
           <div class="av-nfc">📶</div>
         </div>
-        <div class="hd-name">${fullName}</div>
-        <div class="hd-title">${[c.jobtitle,c.company].filter(Boolean).join(' · ')}</div>
-        ${c.company?`<div class="hd-company"><span>🏢</span><span>${c.company}</span></div>`:''}
+        <div class="hd-name">${esc(fullName)}</div>
+        <div class="hd-title">${esc([c.jobtitle,c.company].filter(Boolean).join(' · '))}</div>
+        ${c.company?`<div class="hd-company"><span>🏢</span><span>${esc(c.company)}</span></div>`:''}
         <div class="hd-wave"></div>
       </div>
  
@@ -667,7 +669,7 @@ function render(c){
         <a href="https://printlegacy.github.io">
           <span class="foot-logo">Print <span>Legacy</span></span>
         </a>
-        <a href="stats.html?slug=${c.slug}" class="foot-stats">📊 Statistiques de la carte</a>
+        <a href="https://printlegacy-platform.vercel.app/stats.html?slug=${esc(c.slug)}" class="foot-stats">📊 Statistiques de la carte</a>
       </div>
     </div>`;
 }
@@ -680,7 +682,7 @@ async function init(){
   }
   const {data,error}=await sb.from('clients').select('*').eq('slug',slug).eq('status','active').single();
   if(error||!data){
-    document.getElementById('app').innerHTML=`<div class="not-found"><div style="font-size:2.5rem">😕</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'existe pas ou n'est pas encore activé.</p><a href="https://printlegacy.github.io" style="color:var(--gold);font-weight:600;text-decoration:none;margin-top:.5rem">← Accueil</a></div>`;
+    document.getElementById('app').innerHTML=`<div class="not-found"><div style="font-size:2.5rem">😕</div><h2>Carte introuvable</h2><p>Le profil "<strong>${esc(slug)}</strong>" n'existe pas ou n'est pas encore activé.</p><a href="https://printlegacy.github.io" style="color:var(--gold);font-weight:600;text-decoration:none;margin-top:.5rem">← Accueil</a></div>`;
     return;
   }
   render(data);

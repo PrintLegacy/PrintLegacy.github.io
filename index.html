@@ -593,7 +593,7 @@
     <h1 class="hero-title">Une carte,<br/><em>mille</em> opportunités.</h1>
     <p class="hero-sub">Print Legacy crée vos cartes de visite NFC professionnelles, vos supports graphiques, et vous offre un profil digital partageable en un simple tap.</p>
     <div class="hero-actions">
-      <a href="https://printlegacy.github.io/order" class="btn-primary">Créer ma carte NFC →</a>
+      <a href="https://printlegacy.github.io/order.html" class="btn-primary">Créer ma carte NFC →</a>
       <a href="#profile-example" class="btn-ghost">Voir un profil exemple</a>
     </div>
   </div>
@@ -735,7 +735,7 @@
         <li>Design personnalisé aux couleurs de votre marque</li>
         <li>Statistiques de consultation en temps réel</li>
       </ul>
-      <a href="https://printlegacy.github.io/order" class="btn-primary">Obtenir mon profil →</a>
+      <a href="https://printlegacy.github.io/order.html" class="btn-primary">Obtenir mon profil →</a>
     </div>
     <div>
       <div class="profile-mock">
@@ -907,12 +907,18 @@
   <div class="admin-box">
     <div class="admin-box-icon">⚙️</div>
     <h3>Accès Administration</h3>
-    <p>Entrez le mot de passe pour accéder au tableau de bord.</p>
-    <input type="password" class="admin-input" id="adminPwd" placeholder="Mot de passe"
+    <p id="adminSubtitle">Connectez-vous pour accéder au tableau de bord.</p>
+    <input type="email" class="admin-input" id="adminEmail" placeholder="Email" autocomplete="username"/>
+    <input type="password" class="admin-input" id="adminPwd" placeholder="Mot de passe" autocomplete="current-password"
       onkeydown="if(event.key==='Enter')checkAdmin()"/>
-    <div class="admin-error" id="adminError">❌ Mot de passe incorrect</div>
-    <button class="admin-submit" onclick="checkAdmin()">Accéder au tableau de bord</button>
-    <br/><button class="admin-cancel" onclick="closeAdmin()">Annuler</button>
+    <input type="password" class="admin-input" id="adminPwd2" placeholder="Confirmer le mot de passe" autocomplete="new-password"
+      style="display:none" onkeydown="if(event.key==='Enter')checkAdmin()"/>
+    <div class="admin-error" id="adminError"></div>
+    <div id="adminSuccess" style="display:none;color:#2e7d32;font-size:12px;margin-top:8px;line-height:1.5"></div>
+    <button class="admin-submit" id="adminSubmitBtn" onclick="checkAdmin()">Se connecter</button>
+    <br/>
+    <a href="#" id="adminToggle" onclick="toggleAdminMode(event)" style="font-size:11px;display:block;margin:10px 0;color:var(--smoke2)">Créer un compte</a>
+    <button class="admin-cancel" onclick="closeAdmin()">Annuler</button>
   </div>
 </div>
 
@@ -922,10 +928,8 @@
   const {createClient} = supabase;
   const sb = createClient(
     'https://szpjpytpciptplqjfwyd.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
+    'sb_publishable_NuZqQ3yjdULy5THdoXJpeQ_F2Il1rEu'
   );
-  const ADMIN_EMAIL = 'printlegacy2@gmail.com'; // Supabase Auth user created for admin access — not a secret
-
   // ── CARD FLIP ──
   function flipCard() {
     document.getElementById("cardScene").classList.toggle("flipped");
@@ -937,35 +941,96 @@
   }, 3000);
 
   // ── ADMIN ──
+  let adminMode = "login";
   function openAdmin(e) {
     e.preventDefault();
+    adminMode = "login";
+    applyAdminMode();
+    document.getElementById("adminEmail").value = "";
     document.getElementById("adminPwd").value = "";
-    document.getElementById("adminError").style.display = "none";
+    document.getElementById("adminPwd2").value = "";
     document.getElementById("adminOverlay").classList.add("open");
-    setTimeout(() => document.getElementById("adminPwd").focus(), 100);
+    setTimeout(() => document.getElementById("adminEmail").focus(), 100);
   }
   function closeAdmin() {
     document.getElementById("adminOverlay").classList.remove("open");
   }
+  function toggleAdminMode(e) {
+    e.preventDefault();
+    adminMode = adminMode === "login" ? "register" : "login";
+    applyAdminMode();
+  }
+  function applyAdminMode() {
+    const isRegister = adminMode === "register";
+    document.getElementById("adminSubtitle").textContent = isRegister
+      ? "Créez un compte — un administrateur devra valider votre accès avant que vous puissiez vous connecter."
+      : "Connectez-vous pour accéder au tableau de bord.";
+    document.getElementById("adminPwd2").style.display = isRegister ? "block" : "none";
+    document.getElementById("adminSubmitBtn").textContent = isRegister ? "Créer le compte" : "Se connecter";
+    document.getElementById("adminToggle").textContent = isRegister ? "J'ai déjà un compte" : "Créer un compte";
+    document.getElementById("adminError").style.display = "none";
+    document.getElementById("adminSuccess").style.display = "none";
+  }
   async function checkAdmin() {
+    const email = document.getElementById("adminEmail").value.trim();
     const pwd = document.getElementById("adminPwd").value;
-    const btn = document.querySelector(".admin-submit");
+    const btn = document.getElementById("adminSubmitBtn");
     const errEl = document.getElementById("adminError");
+    const okEl = document.getElementById("adminSuccess");
     errEl.style.display = "none";
+    okEl.style.display = "none";
+
+    if (!email || !pwd) {
+      errEl.textContent = "❌ Email et mot de passe requis";
+      errEl.style.display = "block";
+      return;
+    }
+
+    if (adminMode === "register") {
+      const pwd2 = document.getElementById("adminPwd2").value;
+      if (pwd !== pwd2) {
+        errEl.textContent = "❌ Les mots de passe ne correspondent pas";
+        errEl.style.display = "block";
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Création...";
+      const { error } = await sb.auth.signUp({ email, password: pwd });
+      btn.disabled = false;
+      btn.textContent = "Créer le compte";
+      if (error) {
+        errEl.textContent = "❌ " + error.message;
+        errEl.style.display = "block";
+        return;
+      }
+      okEl.textContent = "✅ Compte créé. Un administrateur doit valider votre accès avant que vous puissiez vous connecter.";
+      okEl.style.display = "block";
+      await sb.auth.signOut();
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = "Connexion...";
-
-    const { error } = await sb.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pwd });
-
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
     btn.disabled = false;
-    btn.textContent = "Accéder au tableau de bord";
+    btn.textContent = "Se connecter";
 
     if (error) {
+      errEl.textContent = "❌ Email ou mot de passe incorrect";
       errEl.style.display = "block";
       document.getElementById("adminPwd").value = "";
       document.getElementById("adminPwd").focus();
       return;
     }
+
+    const { data: adminRow } = await sb.from("admins").select("approved").eq("id", data.user.id).maybeSingle();
+    if (!adminRow || !adminRow.approved) {
+      await sb.auth.signOut();
+      errEl.textContent = "⏳ Votre compte est en attente de validation par un administrateur.";
+      errEl.style.display = "block";
+      return;
+    }
+
     closeAdmin();
     window.location.href = "https://printlegacy.github.io/dashboard";
   }
