@@ -149,17 +149,6 @@ tr:hover td{background:var(--cream)}
 .cover-zone .cz-hint{font-size:11px;color:var(--smoke2);text-align:center;pointer-events:none}
 .cover-zone .cz-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600}
 .cover-zone:hover .cz-overlay{display:flex}
-.cat-editor-wrap{grid-column:1/-1}
-.cat-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);margin-bottom:7px;position:relative}
-.cat-thumb{width:52px;height:52px;border-radius:6px;background:var(--cream2);border:2px dashed var(--cream2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative;transition:.15s}
-.cat-thumb:hover{border-color:var(--gold);background:var(--gold4)}
-.cat-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:4px}
-.cat-fields{flex:1;display:grid;grid-template-columns:1fr 1fr 80px;gap:5px}
-.cat-inp{padding:5px 8px;border:1px solid var(--cream2);border-radius:var(--r);font-size:11.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;width:100%;transition:.15s}
-.cat-inp:focus{border-color:var(--gold)}
-.cat-del{width:24px;height:24px;border-radius:50%;background:#FFEBEE;border:1px solid #FFCDD2;color:#C62828;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cat-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:2px dashed var(--cream2);border-radius:var(--r);background:none;font-size:11px;font-weight:600;color:var(--smoke);cursor:pointer;font-family:'Jost',sans-serif;transition:.2s}
-.cat-add-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
 .save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
 .save-toast.show{display:block}
 
@@ -218,6 +207,29 @@ tr:hover td{background:var(--cream)}
 .bar-mini-nfc{background:var(--gold)}
 .bar-mini-link{background:var(--smoke2)}
 
+/* ── UNIVERSITÉS / PARTENARIATS ── */
+.uni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:20px}
+.uni-card{border:1px solid var(--cream2);border-radius:8px;overflow:hidden;background:var(--w);transition:.15s;cursor:pointer}
+.uni-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(184,149,58,.1)}
+.uni-card-top{height:78px;display:flex;align-items:center;justify-content:center;padding:14px;position:relative}
+.uni-card-logo{max-width:100%;max-height:100%;object-fit:contain}
+.uni-card-logo-fallback{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600}
+.uni-card-body{padding:12px 14px;border-top:1px solid var(--cream2)}
+.uni-card-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uni-card-sub{font-size:10.5px;color:var(--smoke2);display:flex;align-items:center;justify-content:space-between}
+.uni-card-swatches{display:flex;gap:4px}
+.uni-swatch{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.08)}
+.uni-card-actions{display:flex;gap:6px;padding:0 14px 12px}
+.uni-mini-btn{flex:1;text-align:center;padding:6px 8px;font-size:10px;font-weight:600;border-radius:var(--r);cursor:pointer;border:1px solid var(--cream2);background:var(--cream);color:var(--ink);letter-spacing:.03em}
+.uni-mini-btn:hover{border-color:var(--gold);color:var(--gold)}
+.uni-mini-btn.primary{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
+.uni-mini-btn.primary:hover{background:var(--gold);color:var(--ink)}
+.uni-add-card{border:2px dashed var(--cream2);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:172px;cursor:pointer;color:var(--smoke2);transition:.15s}
+.uni-add-card:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
+.color-field{display:flex;align-items:center;gap:8px}
+.color-field input[type=color]{width:38px;height:34px;border:1px solid var(--cream2);border-radius:var(--r);padding:2px;background:var(--w);cursor:pointer}
+.color-field input[type=text]{flex:1}
+
 /* ── MOBILE / RESPONSIVE ── */
 .hamburger{display:none;width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998}
@@ -250,9 +262,9 @@ tr:hover td{background:var(--cream)}
   .edit-grid{grid-template-columns:1fr}
   .edit-box,.nfc-box{width:94vw;max-height:88vh}
   .edit-theme-grid{grid-template-columns:repeat(3,1fr)}
-  .cat-fields{grid-template-columns:1fr;gap:6px}
   .creation-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:12px}
   .card-stats-mini{grid-template-columns:1fr}
+  .uni-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}
 }
 </style>
 </head>
@@ -276,6 +288,8 @@ tr:hover td{background:var(--cream)}
       <div class="sb-item" id="nav-all" onclick="setPage('dashboard');setView('all')"><span class="ico">👥</span> Tous les clients</div>
       <div class="sb-item" id="nav-pending" onclick="setPage('dashboard');setView('pending')"><span class="ico">⏳</span> En attente <span id="sb-pending" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
       <div class="sb-item" id="nav-active" onclick="setPage('dashboard');setView('active')"><span class="ico">✅</span> Actifs</div>
+      <div class="sb-sec">Partenariats</div>
+      <div class="sb-item" id="nav-universities" onclick="setPage('universities')"><span class="ico">🎓</span> Universités</div>
       <div class="sb-sec">Studio</div>
       <div class="sb-item" id="nav-creations" onclick="setPage('creations')"><span class="ico">🎨</span> Créations</div>
       <div class="sb-item" id="nav-impressions" onclick="setPage('impressions')"><span class="ico">🖨️</span> Impressions</div>
@@ -334,6 +348,31 @@ tr:hover td{background:var(--cream)}
             <button class="card-a" onclick="setView('all')">Tous →</button>
           </div>
           <div id="tableWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+      </div>
+
+      <!-- PAGE: UNIVERSITÉS -->
+      <div class="page" id="page-universities">
+        <div class="card-stats-mini">
+          <div class="csm"><div class="csm-lbl">Universités partenaires</div><div class="csm-num" id="uni-stat-total">—</div><div class="csm-sub">Établissements actifs</div></div>
+          <div class="csm"><div class="csm-lbl">🎓 Cartes étudiantes</div><div class="csm-num" id="uni-stat-cards">—</div><div class="csm-sub">Toutes universités confondues</div></div>
+          <div class="csm"><div class="csm-lbl">⏳ En attente</div><div class="csm-num" id="uni-stat-pending">—</div><div class="csm-sub">Cartes étudiantes non actives</div></div>
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <div class="card-t">🎓 Universités partenaires</div>
+            <button class="card-a" onclick="openUniModal()">+ Nouveau partenariat</button>
+          </div>
+          <div class="uni-grid" id="uniGrid"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+        <div class="card" id="uniStudentsCard" style="display:none">
+          <div class="card-h">
+            <div class="card-t" id="uniStudentsTitle">Étudiants</div>
+            <div style="display:flex;gap:8px">
+              <button class="card-a" onclick="closeUniStudents()">Fermer</button>
+            </div>
+          </div>
+          <div id="uniStudentsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
         </div>
       </div>
 
@@ -464,7 +503,7 @@ tr:hover td{background:var(--cream)}
 <!-- EDIT MODAL -->
 <div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
   <div class="edit-box">
-    <div class="modal-hd"><div class="modal-hd-title">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
+    <div class="modal-hd"><div class="modal-hd-title" id="editModalTitle">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
     <div class="edit-body">
       <div class="edit-grid">
         <div class="edit-section">Identité</div>
@@ -493,6 +532,13 @@ tr:hover td{background:var(--cream)}
             <option value="porteclefs">🔑 Porte-clés NFC</option>
           </select>
         </div>
+        <div class="edit-field">
+          <div class="edit-label">🎓 Université</div>
+          <select class="edit-input" id="edit-university_id">
+            <option value="">— Aucune —</option>
+          </select>
+        </div>
+        <div class="edit-field"><div class="edit-label">N° étudiant (optionnel)</div><input class="edit-input" id="edit-student_id" placeholder="ex: 22012345"></div>
         <div class="edit-field full">
           <div class="edit-label">👤 Photo de profil</div>
           <div style="display:flex;align-items:center;gap:12px">
@@ -550,11 +596,8 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">📸 Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
         <div class="edit-field"><div class="edit-label">🎵 TikTok</div><input class="edit-input" id="edit-tiktok" placeholder="@compte"></div>
-        <div class="edit-field"><div class="edit-label">👻 Snapchat</div><input class="edit-input" id="edit-snapchat" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
-        <div class="edit-section">Catalogue produits</div>
-        <div class="cat-editor-wrap"><div id="catRowsList"></div><button class="cat-add-btn" id="catAddBtn">＋ Ajouter un produit</button></div>
         <div class="edit-section">Apparence</div>
         <div class="edit-theme-grid" id="editThemeGrid"></div>
         <div class="edit-section">Statut</div>
@@ -566,9 +609,47 @@ tr:hover td{background:var(--cream)}
       </div>
     </div>
     <div class="edit-foot">
-      <button class="edit-delete" onclick="deleteClient()">🗑 Supprimer</button>
+      <button class="edit-delete" id="editDeleteBtn" onclick="deleteClient()">🗑 Supprimer</button>
       <button class="edit-cancel" onclick="closeEdit()">Annuler</button>
       <button class="edit-save" id="editSaveBtn" onclick="saveEdit()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- UNIVERSITY MODAL -->
+<div class="ov" id="uniOv" onclick="if(event.target===this)closeUniModal()">
+  <div class="edit-box" style="width:460px">
+    <div class="modal-hd"><div class="modal-hd-title" id="uniModalTitle">🎓 Nouveau partenariat</div><button class="modal-hd-close" onclick="closeUniModal()">✕</button></div>
+    <div class="edit-body">
+      <div class="edit-grid">
+        <div class="edit-field full">
+          <div class="edit-label">🖼️ Logo de l'université</div>
+          <div class="cover-zone" id="uniLogoZone" style="height:100px" onclick="document.getElementById('uniLogoInput').click()">
+            <input type="file" id="uniLogoInput" accept="image/*" style="display:none" onchange="onUniLogoChange(event)">
+            <img id="uniLogoImg" style="object-fit:contain;padding:10px">
+            <div class="cz-hint" id="uniLogoHint"><div style="font-size:1.4rem">🏫</div><div>Cliquer pour ajouter le logo</div></div>
+            <div class="cz-overlay">📷 Changer</div>
+          </div>
+        </div>
+        <div class="edit-field full"><div class="edit-label">Nom de l'université</div><input class="edit-input" id="uni-name" placeholder="Université Paris Dauphine - PSL"></div>
+        <div class="edit-field">
+          <div class="edit-label">Couleur principale</div>
+          <div class="color-field"><input type="color" id="uni-primary" value="#2F4486"><input type="text" id="uni-primary-hex" class="edit-input" value="#2F4486"></div>
+        </div>
+        <div class="edit-field">
+          <div class="edit-label">Couleur secondaire</div>
+          <div class="color-field"><input type="color" id="uni-secondary" value="#FFFFFF"><input type="text" id="uni-secondary-hex" class="edit-input" value="#FFFFFF"></div>
+        </div>
+        <div class="edit-field full" style="background:var(--cream);border-radius:var(--r);padding:12px 14px">
+          <div class="edit-label" style="margin-bottom:6px">Aperçu du thème</div>
+          <div id="uniPreviewSwatch" style="height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;letter-spacing:.05em">CARTE ÉTUDIANTE</div>
+        </div>
+      </div>
+    </div>
+    <div class="edit-foot">
+      <button class="edit-delete" id="uniDeleteBtn" onclick="deleteUniversity()" style="display:none">🗑 Supprimer</button>
+      <button class="edit-cancel" onclick="closeUniModal()">Annuler</button>
+      <button class="edit-save" id="uniSaveBtn" onclick="saveUniversity()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -611,13 +692,16 @@ document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('
 // ── ÉTAT GLOBAL ──
 let currentTheme='noir', currentStatus='pending', currentId=null;
 let allData=[], currentView='all', searchQuery='';
-let catRows=[], catCounter=0;
-const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let newCompanyLogoFile=null, companyLogoDeleted=false;
 let newPhotoFile=null, photoDeleted=false;
 let newCvFile=null, cvDeleted=false;
 let currentPage='dashboard';
+let allUniversities=[];
+
+let currentUniId=null, newUniLogoFile=null;
+let pendingUniversityId=null;
+let activeUniFilter=null;
 
 // ── DÉTECTION PANNE RÉSEAU / DB EN PAUSE ──
 function isNetworkFailure(err){
@@ -654,15 +738,33 @@ const THEMES=[
   {id:'arctic',name:'Arctique',h1:'#0A1018',ac:'#80CBC4',tc:'#004D40'},
   {id:'bronze',name:'Bronze',h1:'#120E08',ac:'#A0744C',tc:'#fff'},
 ];
-const tg=document.getElementById('editThemeGrid');
-THEMES.forEach(t=>{
-  tg.innerHTML+=`<div class="edit-theme" id="et-${t.id}" onclick="selTheme('${t.id}')">
-    <div class="edit-theme-top" style="background:${t.h1}"></div>
-    <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
-  </div>`;
-});
+function renderThemeGrid(){
+  const tg=document.getElementById('editThemeGrid');
+  tg.innerHTML='';
+  THEMES.forEach(t=>{
+    tg.innerHTML+=`<div class="edit-theme" id="et-${t.id}" onclick="selTheme('${t.id}')">
+      <div class="edit-theme-top" style="background:${t.h1}"></div>
+      <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
+    </div>`;
+  });
+}
+renderThemeGrid();
 
-document.getElementById('catAddBtn').addEventListener('click',()=>addCatRow());
+// Enregistre dynamiquement une université comme thème sélectionnable
+// (id préfixé "uni-" pour ne jamais entrer en collision avec les thèmes standards)
+function registerUniversityTheme(u){
+  const themeId='uni-'+u.id;
+  const existingIdx=THEMES.findIndex(t=>t.id===themeId);
+  const entry={id:themeId,name:'🎓 '+u.name,h1:u.primary_color||'#0A0A0A',ac:u.secondary_color||'#D4AF6A',tc:isLightColor(u.secondary_color)?'#0A0A0A':'#fff'};
+  if(existingIdx>-1) THEMES[existingIdx]=entry; else THEMES.push(entry);
+}
+function isLightColor(hex){
+  if(!hex) return false;
+  const c=hex.replace('#','');
+  if(c.length!==6) return false;
+  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  return (0.299*r+0.587*g+0.114*b)>170;
+}
 
 // ── NAVIGATION ──
 function setPage(page){
@@ -671,12 +773,13 @@ function setPage(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.sb-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
   document.getElementById('nav-'+page)?.classList.add('active');
-  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques',admins:'🛡️ Administrateurs'};
+  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques',admins:'🛡️ Administrateurs',universities:'🎓 Universités'};
   document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
   if(page==='creations') loadCreations();
   if(page==='impressions'){loadImpressions();loadClientsForImpressions();}
   if(page==='stats'){loadStats();loadCardStats();}
   if(page==='admins') loadAdmins();
+  if(page==='universities') loadUniversities();
 }
 
 let currentUserId=null;
@@ -742,6 +845,7 @@ function refreshPage(){
   else if(currentPage==='creations') loadCreations();
   else if(currentPage==='impressions') loadImpressions();
   else if(currentPage==='stats'){loadStats();loadCardStats();}
+  else if(currentPage==='universities') loadUniversities();
 }
 
 // ── SIDEBAR MOBILE ──
@@ -778,6 +882,11 @@ function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replac
 // backslash/quote for the JS layer first, then HTML-escapes the result so it
 // also survives as an HTML attribute value.
 function escAttr(s){return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));}
+
+function slugify(s){
+  return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
 
 // ── Menu déroulant "Nouvelle commande" ──
 const ORDER_PRODUCTS=[
@@ -837,6 +946,7 @@ function produitBadge(p){
   if(!m) return '<span class="badge" style="background:var(--cream2);color:var(--smoke2)">—</span>';
   return `<span class="badge" style="background:${m.bg};color:${m.fg}">${m.label}</span>`;
 }
+function universityById(id){return allUniversities.find(u=>u.id===id);}
 function renderTable(){
   let data=allData;
   if(currentView==='pending') data=data.filter(c=>!c.status||c.status==='pending');
@@ -850,17 +960,17 @@ function renderTable(){
     return;
   }
   const rows=data.map(c=>{
-    const catCount=Array.isArray(c.catalogue)?c.catalogue.length:0;
+    const uni=c.university_id?universityById(c.university_id):null;
     return `<tr>
       <td><div class="cl">
         <div class="av${(!c.photo&&c.company_logo_url)?' is-logo':''}">${avatarHTML(c)}</div>
-        <div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.company||c.jobtitle||'')}</div></div>
+        <div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.company||c.jobtitle||'')}${uni?' · 🎓 '+esc(uni.name):''}</div></div>
       </div></td>
       <td>${produitBadge(c.produit)}</td>
       <td>${esc(c.jobtitle||'—')}</td>
       <td>${esc(c.phone||'—')}</td>
       <td>${esc(c.email||'—')}</td>
-      <td><span class="badge b-p">${esc(c.theme||'noir')}</span>${catCount>0?` <span style="font-size:9px;color:var(--smoke2)">🛍️${catCount}</span>`:''}</td>
+      <td><span class="badge b-p">${esc(c.theme||'noir')}</span></td>
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
       <td><div style="display:flex;gap:6px;align-items:center">
@@ -882,6 +992,7 @@ function renderTable(){
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   try{
+    if(!allUniversities.length) await loadUniversitiesQuiet();
     const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
     if(error){document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+error.message+'</div>';return;}
     hideDbBanner();
@@ -915,6 +1026,232 @@ async function toggleStatus(id,current){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
     else{showToast('Erreur: '+(err.message||''));}
   }
+}
+
+// ── UNIVERSITÉS / PARTENARIATS ──
+async function loadUniversitiesQuiet(){
+  try{
+    const {data,error}=await sb.from('universities').select('*').order('created_at',{ascending:true});
+    if(!error&&data){allUniversities=data;allUniversities.forEach(registerUniversityTheme);renderThemeGrid();}
+  }catch(e){/* silencieux : chargé aussi via loadUniversities() */}
+}
+
+async function loadUniversities(){
+  const grid=document.getElementById('uniGrid');
+  grid.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  try{
+    const [{data:unis,error:uErr},{data:clients,error:cErr}]=await Promise.all([
+      sb.from('universities').select('*').order('created_at',{ascending:true}),
+      sb.from('clients').select('id,university_id,status')
+    ]);
+    if(uErr){
+      if((uErr.message||'').toLowerCase().includes('does not exist')||(uErr.message||'').toLowerCase().includes('relation')){
+        grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🎓</div>La table <strong>universities</strong> n'existe pas encore dans Supabase.<br><span style="font-size:11px">Exécutez le script SQL fourni pour activer les partenariats universitaires.</span></div>`;
+        ['uni-stat-total','uni-stat-cards','uni-stat-pending'].forEach(id=>document.getElementById(id).textContent='—');
+        return;
+      }
+      throw uErr;
+    }
+    hideDbBanner();
+    allUniversities=unis||[];
+    allUniversities.forEach(registerUniversityTheme);
+    renderThemeGrid();
+
+    const allClients=clients||[];
+    const studentClients=allClients.filter(c=>c.university_id);
+    document.getElementById('uni-stat-total').textContent=allUniversities.length;
+    document.getElementById('uni-stat-cards').textContent=studentClients.length;
+    document.getElementById('uni-stat-pending').textContent=studentClients.filter(c=>!c.status||c.status==='pending').length;
+
+    populateUniversitySelect();
+
+    if(!allUniversities.length){
+      grid.innerHTML=`<div class="uni-add-card" onclick="openUniModal()">
+        <div style="font-size:1.8rem">🎓</div>
+        <div style="font-size:12px;font-weight:600">Ajouter votre premier partenariat</div>
+      </div>`;
+      return;
+    }
+
+    const cardsHtml=allUniversities.map(u=>{
+      const count=allClients.filter(c=>c.university_id===u.id).length;
+      const logo=u.logo_url?`<img class="uni-card-logo" src="${esc(u.logo_url)}">`:`<div class="uni-card-logo-fallback" style="color:${u.primary_color||'#0A0A0A'}">${esc((u.name||'?').slice(0,2).toUpperCase())}</div>`;
+      return `<div class="uni-card">
+        <div class="uni-card-top" style="background:${u.secondary_color||'#F5F5F5'}" onclick="openUniStudents('${escAttr(u.id)}')">${logo}</div>
+        <div class="uni-card-body" onclick="openUniStudents('${escAttr(u.id)}')">
+          <div class="uni-card-name">${esc(u.name)}</div>
+          <div class="uni-card-sub"><span>${count} carte(s) étudiante(s)</span>
+            <span class="uni-card-swatches"><span class="uni-swatch" style="background:${u.primary_color||'#0A0A0A'}"></span><span class="uni-swatch" style="background:${u.secondary_color||'#fff'}"></span></span>
+          </div>
+        </div>
+        <div class="uni-card-actions">
+          <div class="uni-mini-btn primary" onclick="event.stopPropagation();createStudentFor('${escAttr(u.id)}')">+ Étudiant</div>
+          <div class="uni-mini-btn" onclick="event.stopPropagation();openUniModal('${escAttr(u.id)}')">✏️ Éditer</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    grid.innerHTML=cardsHtml+`<div class="uni-add-card" onclick="openUniModal()">
+      <div style="font-size:1.8rem">＋</div>
+      <div style="font-size:12px;font-weight:600">Nouveau partenariat</div>
+    </div>`;
+  }catch(err){
+    if(isNetworkFailure(err)){
+      showDbBanner();
+      grid.innerHTML='<div style="grid-column:1/-1">'+friendlyEmptyState()+'</div>';
+    }else{
+      grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
+    }
+  }
+}
+
+function populateUniversitySelect(){
+  const sel=document.getElementById('edit-university_id');
+  const keep=sel.value;
+  sel.innerHTML='<option value="">— Aucune —</option>'+allUniversities.map(u=>`<option value="${escAttr(u.id)}">${esc(u.name)}</option>`).join('');
+  if(keep) sel.value=keep;
+}
+
+function openUniModal(id){
+  currentUniId=id||null;
+  newUniLogoFile=null;
+  document.getElementById('uniModalTitle').textContent=id?'✏️ Modifier le partenariat':'🎓 Nouveau partenariat';
+  document.getElementById('uniDeleteBtn').style.display=id?'inline-block':'none';
+  const img=document.getElementById('uniLogoImg');
+  img.style.display='none';img.src='';
+  document.getElementById('uniLogoHint').style.display='block';
+  document.getElementById('uni-name').value='';
+  document.getElementById('uni-primary').value='#2F4486';
+  document.getElementById('uni-primary-hex').value='#2F4486';
+  document.getElementById('uni-secondary').value='#FFFFFF';
+  document.getElementById('uni-secondary-hex').value='#FFFFFF';
+  if(id){
+    const u=universityById(id);
+    if(u){
+      document.getElementById('uni-name').value=u.name||'';
+      const pc=u.primary_color||'#2F4486', sc=u.secondary_color||'#FFFFFF';
+      document.getElementById('uni-primary').value=pc;document.getElementById('uni-primary-hex').value=pc;
+      document.getElementById('uni-secondary').value=sc;document.getElementById('uni-secondary-hex').value=sc;
+      if(u.logo_url){img.src=u.logo_url;img.style.display='block';document.getElementById('uniLogoHint').style.display='none';}
+    }
+  }
+  updateUniPreview();
+  document.getElementById('uniOv').classList.add('open');
+}
+function closeUniModal(){document.getElementById('uniOv').classList.remove('open');}
+
+function onUniLogoChange(e){
+  const f=e.target.files[0];if(!f)return;
+  newUniLogoFile=f;
+  const r=new FileReader();
+  r.onload=x=>{const img=document.getElementById('uniLogoImg');img.src=x.target.result;img.style.display='block';document.getElementById('uniLogoHint').style.display='none';};
+  r.readAsDataURL(f);
+}
+
+function updateUniPreview(){
+  const pc=document.getElementById('uni-primary-hex').value||'#2F4486';
+  const sc=document.getElementById('uni-secondary-hex').value||'#FFFFFF';
+  const sw=document.getElementById('uniPreviewSwatch');
+  sw.style.background=pc;
+  sw.style.color=isLightColor(sc)?pc:sc;
+  sw.style.border=isLightColor(pc)?'1px solid rgba(0,0,0,.1)':'none';
+}
+['uni-primary','uni-secondary'].forEach(id=>{
+  document.addEventListener('DOMContentLoaded',()=>{
+    const colorInp=document.getElementById(id);
+    const hexInp=document.getElementById(id+'-hex');
+    if(!colorInp||!hexInp) return;
+    colorInp.addEventListener('input',()=>{hexInp.value=colorInp.value;updateUniPreview();});
+    hexInp.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(hexInp.value)){colorInp.value=hexInp.value;}updateUniPreview();});
+  });
+});
+
+async function saveUniversity(){
+  const name=document.getElementById('uni-name').value.trim();
+  if(!name){showToast('Le nom de l\'université est obligatoire');return;}
+  const btn=document.getElementById('uniSaveBtn');
+  btn.disabled=true;btn.textContent='💾 Enregistrement...';
+  try{
+    const updates={
+      name,
+      primary_color:document.getElementById('uni-primary-hex').value||'#0A0A0A',
+      secondary_color:document.getElementById('uni-secondary-hex').value||'#D4AF6A'
+    };
+    if(newUniLogoFile){
+      const url=await upFile(newUniLogoFile,'universities');
+      if(url) updates.logo_url=url;
+    }
+    let error;
+    if(currentUniId){
+      ({error}=await sb.from('universities').update(updates).eq('id',currentUniId));
+    }else{
+      ({error}=await sb.from('universities').insert(updates));
+    }
+    if(error) throw error;
+    closeUniModal();
+    showToast('✓ Partenariat enregistré !');
+    loadUniversities();
+  }catch(err){
+    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
+    else{showToast('Erreur: '+(err.message||''));}
+  }finally{
+    btn.disabled=false;btn.textContent='💾 Enregistrer';
+  }
+}
+
+async function deleteUniversity(){
+  if(!currentUniId)return;
+  if(!confirm('Supprimer ce partenariat ? Les cartes étudiantes déjà créées ne seront pas supprimées, mais perdront leur rattachement.'))return;
+  try{
+    await sb.from('universities').delete().eq('id',currentUniId);
+    closeUniModal();
+    showToast('Partenariat supprimé');
+    loadUniversities();
+  }catch(err){
+    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
+    else{showToast('Erreur: '+(err.message||''));}
+  }
+}
+
+async function openUniStudents(uniId){
+  activeUniFilter=uniId;
+  const u=universityById(uniId);
+  const card=document.getElementById('uniStudentsCard');
+  const wrap=document.getElementById('uniStudentsWrap');
+  document.getElementById('uniStudentsTitle').textContent='🎓 Étudiants · '+(u?u.name:'');
+  card.style.display='block';
+  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+  try{
+    const {data,error}=await sb.from('clients').select('*').eq('university_id',uniId).order('created_at',{ascending:false});
+    if(error) throw error;
+    if(!data||!data.length){
+      wrap.innerHTML=`<div class="empty"><div class="empty-ico">🎓</div>Aucune carte étudiante pour cette université pour le moment.<br><button class="imp-btn" style="margin-top:12px" onclick="createStudentFor('${escAttr(uniId)}')">+ Ajouter le premier·ère étudiant·e</button></div>`;
+      return;
+    }
+    const rows=data.map(c=>`<tr>
+      <td><div class="cl"><div class="av">${avatarHTML(c)}</div><div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.student_id||'')}</div></div></div></td>
+      <td>${esc(c.phone||'—')}</td>
+      <td>${esc(c.email||'—')}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td><div style="display:flex;gap:6px">
+        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${escAttr(c.slug)}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
+        <span onclick="openNFC('${escAttr(c.slug)}','${escAttr(c.firstname||'')} ${escAttr(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
+        <span onclick="openEdit('${escAttr(c.id)}')" style="cursor:pointer;font-size:14px">✏️</span>
+      </div></td>
+    </tr>`).join('');
+    wrap.innerHTML=`<table><thead><tr><th>Étudiant</th><th>Téléphone</th><th>Email</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }catch(err){
+    if(isNetworkFailure(err)){showDbBanner();wrap.innerHTML=friendlyEmptyState();}
+    else{wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';}
+  }
+}
+function closeUniStudents(){
+  document.getElementById('uniStudentsCard').style.display='none';
+  activeUniFilter=null;
+}
+function createStudentFor(uniId){
+  openEdit(null, uniId);
 }
 
 // ── CRÉATIONS ──
@@ -1544,46 +1881,12 @@ function clearEditCv(e){
   document.getElementById('editCvInput').value='';
 }
 
-function addCatRow(existing){
-  const id=++catCounter;
-  const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
-  catRows.push(row);
-  catFiles[id]={file:null,previewUrl:existing?.image_url||null,uploadedUrl:existing?.image_url||null};
-  const wrap=document.getElementById('catRowsList');
-  const div=document.createElement('div');
-  div.className='cat-row';div.id='catrow-'+id;
-  div.innerHTML=`<div class="cat-thumb" id="catthumb-${id}" title="Photo">
-    ${existing?.image_url?`<img id="catimg-${id}" src="${existing.image_url}">`:`<span id="catimg-${id}">🖼️</span>`}
-  </div>
-  <div class="cat-fields">
-    <input class="cat-inp" type="text" placeholder="Nom" value="${esc(row.title)}" id="catname-${id}">
-    <input class="cat-inp" type="text" placeholder="Description" value="${esc(row.desc)}" id="catdesc-${id}">
-    <input class="cat-inp" type="number" placeholder="Prix" value="${row.price||''}" id="catprice-${id}" style="text-align:right">
-  </div>
-  <button class="cat-del" id="catdel-${id}">✕</button>`;
-  wrap.appendChild(div);
-  div.querySelector('#catthumb-'+id).addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>catFileChange(e,id);inp.click();});
-  div.querySelector('#catdel-'+id).addEventListener('click',()=>{catRows=catRows.filter(r=>r.id!==id);delete catFiles[id];div.remove();});
-}
-
-function catFileChange(e,id){
-  const f=e.target.files[0];if(!f)return;
-  catFiles[id].file=f;
-  const reader=new FileReader();
-  reader.onload=x=>{
-    catFiles[id].previewUrl=x.target.result;
-    const el=document.getElementById('catimg-'+id);
-    if(el&&el.tagName==='IMG'){el.src=x.target.result;}
-    else{const img=document.createElement('img');img.id='catimg-'+id;img.src=x.target.result;if(el)el.replaceWith(img);}
-  };
-  reader.readAsDataURL(f);
-}
-
-async function openEdit(clientId){
-  currentId=clientId;
-  catRows=[];catCounter=0;
-  Object.keys(catFiles).forEach(k=>delete catFiles[k]);
-  document.getElementById('catRowsList').innerHTML='';
+// openEdit(clientId) → mode édition d'un profil existant.
+// openEdit(null, universityId) → mode création d'une nouvelle carte étudiante
+// pré-rattachée à l'université universityId (utilisé depuis la page Universités).
+async function openEdit(clientId, presetUniversityId){
+  currentId=clientId||null;
+  pendingUniversityId=presetUniversityId||null;
   newCoverFile=null;coverDeleted=false;
   newCompanyLogoFile=null;companyLogoDeleted=false;
   newPhotoFile=null;photoDeleted=false;
@@ -1591,12 +1894,38 @@ async function openEdit(clientId){
   document.getElementById('editCvHint').innerHTML=`📄 <span>Cliquer pour ajouter un fichier</span>`;
   document.getElementById('editCvMeta').style.display='none';
   document.getElementById('editOv').classList.add('open');
+  document.getElementById('editDeleteBtn').style.display=clientId?'inline-block':'none';
+  populateUniversitySelect();
+
+  if(!clientId){
+    // ── MODE CRÉATION ──
+    document.getElementById('editModalTitle').textContent=presetUniversityId?'🎓 Nouvelle carte étudiante':'➕ Nouveau profil';
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','company_about','company_hours','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
+    document.getElementById('edit-produit').value=presetUniversityId?'student':'';
+    document.getElementById('edit-university_id').value=presetUniversityId||'';
+    if(presetUniversityId){
+      document.getElementById('edit-company').value=(universityById(presetUniversityId)||{}).name||'';
+    }
+    ['editCoverImg','editCompanyLogoImg','editPhotoImg'].forEach(id=>{const img=document.getElementById(id);img.style.display='none';img.src='';});
+    ['editCoverHint','editCompanyLogoHint','editPhotoHint'].forEach(id=>document.getElementById(id).style.display='block');
+    ['editCoverMeta','editCompanyLogoMeta','editPhotoMeta'].forEach(id=>document.getElementById(id).style.display='none');
+    const presetTheme=presetUniversityId?('uni-'+presetUniversityId):'noir';
+    selTheme(THEMES.find(t=>t.id===presetTheme)?presetTheme:'noir');
+    selStatus('pending');
+    const btn=document.getElementById('editSaveBtn');
+    btn.disabled=false;btn.textContent='💾 Créer la carte';
+    return;
+  }
+
+  // ── MODE ÉDITION ──
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='⏳ Chargement...';
+  document.getElementById('editModalTitle').textContent='✏️ Modifier le profil';
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','company_about','company_hours','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    document.getElementById('edit-university_id').value=c.university_id||'';
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
     document.getElementById('editCoverMeta').style.display='none';
@@ -1610,8 +1939,6 @@ async function openEdit(clientId){
     document.getElementById('editPhotoMeta').style.display='none';
     if(c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
     if(c.cv_url){document.getElementById('editCvHint').innerHTML=`📄 <span>Fichier actuel</span>`;showEditCvMeta(c.cv_url.split('/').pop().slice(0,40));}
-    let items=[];try{items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'?JSON.parse(c.catalogue):[]);}catch(e){}
-    items.forEach(item=>addCatRow(item));
     selTheme(c.theme||'noir');selStatus(c.status||'pending');
     btn.disabled=false;btn.textContent='💾 Sauvegarder';
   }catch(err){
@@ -1620,7 +1947,7 @@ async function openEdit(clientId){
     else{showToast('Erreur: '+(err.message||''));}
   }
 }
-function closeEdit(){document.getElementById('editOv').classList.remove('open')}
+function closeEdit(){document.getElementById('editOv').classList.remove('open');pendingUniversityId=null;}
 
 async function upFile(file,folder){
   if(!file)return null;
@@ -1632,12 +1959,12 @@ async function upFile(file,folder){
 }
 
 async function saveEdit(){
-  if(!currentId)return;
   const btn=document.getElementById('editSaveBtn');
-  btn.disabled=true;btn.textContent='💾 Sauvegarde...';
+  btn.disabled=true;btn.textContent=currentId?'💾 Sauvegarde...':'💾 Création...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','produit'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','company_about','company_hours','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    updates.university_id=document.getElementById('edit-university_id').value||null;
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
@@ -1646,16 +1973,29 @@ async function saveEdit(){
     else if(photoDeleted){updates.photo=null;}
     if(newCvFile){const url=await upFile(newCvFile,'cvs');if(url)updates.cv_url=url;}
     else if(cvDeleted){updates.cv_url=null;}
-    const catalogue=[];
-    for(const row of catRows){
-      let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
-      if(catFiles[row.id]?.file){const uploaded=await upFile(catFiles[row.id].file,'catalogue');if(uploaded){imgUrl=uploaded;catFiles[row.id].uploadedUrl=uploaded;}}
-      const title=(document.getElementById('catname-'+row.id)?.value||row.title||'').trim();
-      const desc=(document.getElementById('catdesc-'+row.id)?.value||row.desc||'').trim();
-      const price=document.getElementById('catprice-'+row.id)?.value||row.price||'';
-      if(title||desc||price) catalogue.push({title,desc,price:price?parseInt(price):null,image_url:imgUrl});
+
+    if(!currentId){
+      // ── CRÉATION ──
+      if(!updates.firstname&&!updates.lastname){showToast('Prénom ou nom requis');btn.disabled=false;btn.textContent='💾 Créer la carte';return;}
+      const base=slugify(`${updates.firstname||''}-${updates.lastname||''}`)||'carte';
+      let inserted=null, lastErr=null;
+      for(let attempt=0;attempt<5&&!inserted;attempt++){
+        const slug=attempt===0?base:`${base}-${Math.floor(1000+Math.random()*9000)}`;
+        const {data,error}=await sb.from('clients').insert({...updates,slug}).select();
+        if(!error&&data&&data.length){inserted=data[0];break;}
+        lastErr=error;
+        // si l'erreur n'est pas un conflit d'unicité de slug, on arrête d'essayer
+        if(error&&!(error.message||'').toLowerCase().includes('duplicate')&&!(error.message||'').toLowerCase().includes('unique')) break;
+      }
+      if(!inserted){throw lastErr||new Error('Création impossible');}
+      closeEdit();showToast('✓ Carte créée !');
+      if(activeUniFilter) openUniStudents(activeUniFilter);
+      loadData();
+      if(currentPage==='universities') loadUniversities();
+      return;
     }
-    updates.catalogue=catalogue.length>0?catalogue:null;
+
+    // ── ÉDITION ──
     const {data,error}=await sb.from('clients').update(updates).eq('id',currentId).select();
     if(error)throw error;
     if(!data||data.length===0){
@@ -1663,11 +2003,12 @@ async function saveEdit(){
       return;
     }
     closeEdit();showToast('✓ Profil mis à jour !');loadData();
+    if(activeUniFilter) openUniStudents(activeUniFilter);
   }catch(err){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
     else{showToast('Erreur: '+(err.message||''));}
   }
-  finally{btn.disabled=false;btn.textContent='💾 Sauvegarder';}
+  finally{btn.disabled=false;btn.textContent=currentId?'💾 Sauvegarder':'💾 Créer la carte';}
 }
 
 async function deleteClient(){
@@ -1676,6 +2017,7 @@ async function deleteClient(){
   try{
     await sb.from('clients').delete().eq('id',currentId);
     closeEdit();loadData();showToast('Client supprimé');
+    if(activeUniFilter) openUniStudents(activeUniFilter);
   }catch(err){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
     else{showToast('Erreur: '+(err.message||''));}
@@ -1706,6 +2048,7 @@ async function bootDashboard() {
   }
   currentUserId = session.user.id;
   document.body.classList.add('authed');
+  loadUniversitiesQuiet();
   loadData();
   loadAdmins();
   setInterval(loadData, 30000);
