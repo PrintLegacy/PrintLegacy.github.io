@@ -585,8 +585,6 @@ tr:hover td{background:var(--cream)}
             <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
           </div>
         </div>
-        <div class="edit-field full"><div class="edit-label">À propos de l'entreprise</div><textarea class="edit-input" id="edit-company_about" rows="3" placeholder="Ce que fait l'entreprise, son activité..." style="resize:vertical"></textarea></div>
-        <div class="edit-field full"><div class="edit-label">Horaires d'ouverture</div><input class="edit-input" id="edit-company_hours" placeholder="Lun-Ven 9h-18h, Sam 9h-13h"></div>
         <div class="edit-section">Contact</div>
         <div class="edit-field"><div class="edit-label">Téléphone</div><input class="edit-input" id="edit-phone" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
@@ -595,7 +593,6 @@ tr:hover td{background:var(--cream)}
         <div class="edit-section">Réseaux sociaux</div>
         <div class="edit-field"><div class="edit-label">📸 Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
-        <div class="edit-field"><div class="edit-label">🎵 TikTok</div><input class="edit-input" id="edit-tiktok" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
         <div class="edit-section">Apparence</div>
@@ -1900,7 +1897,7 @@ async function openEdit(clientId, presetUniversityId){
   if(!clientId){
     // ── MODE CRÉATION ──
     document.getElementById('editModalTitle').textContent=presetUniversityId?'🎓 Nouvelle carte étudiante':'➕ Nouveau profil';
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','company_about','company_hours','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
     document.getElementById('edit-produit').value=presetUniversityId?'student':'';
     document.getElementById('edit-university_id').value=presetUniversityId||'';
     if(presetUniversityId){
@@ -1924,7 +1921,7 @@ async function openEdit(clientId, presetUniversityId){
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','company_about','company_hours','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     document.getElementById('edit-university_id').value=c.university_id||'';
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
@@ -1963,7 +1960,7 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent=currentId?'💾 Sauvegarde...':'💾 Création...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','youtube','facebook','company_about','company_hours','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     updates.university_id=document.getElementById('edit-university_id').value||null;
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
