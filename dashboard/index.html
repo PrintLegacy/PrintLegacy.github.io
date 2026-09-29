@@ -127,6 +127,15 @@ tr:hover td{background:var(--cream)}
 .edit-input{padding:8px 12px;border:1px solid var(--cream2);border-radius:var(--r);font-size:12.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
 .edit-input:focus{border-color:var(--gold);background:#FFFDF7}
 .edit-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--smoke2);padding:10px 0 8px;border-bottom:1px solid var(--cream2);margin-top:6px;grid-column:1/-1}
+.edit-tabs{display:flex;gap:4px;padding:4px;background:var(--ink);border-radius:10px;margin-bottom:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.edit-tab{flex:1;text-align:center;padding:10px 4px;border-radius:7px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.42);cursor:pointer;transition:.18s;background:transparent;border:none;font-family:'Jost',sans-serif;white-space:nowrap}
+.edit-tab:hover{color:rgba(255,255,255,.8)}
+.edit-tab.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);box-shadow:0 3px 12px rgba(184,149,58,.4)}
+.edit-tab-panel{display:none}
+.edit-tab-panel.active{display:grid}
+.edit-field-highlight{grid-column:1/-1;background:linear-gradient(135deg,var(--gold4),#FFFDF6);border:1px solid rgba(184,149,58,.35);border-radius:8px;padding:12px 14px}
+.edit-field-highlight .edit-label{color:var(--gold);font-weight:700}
+.edit-field-highlight .edit-input{background:#fff;font-weight:600;letter-spacing:.02em;border-color:rgba(184,149,58,.3)}
 .edit-theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;grid-column:1/-1}
 .edit-theme{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
 .edit-theme.sel{border-color:var(--gold)}
@@ -505,8 +514,15 @@ tr:hover td{background:var(--cream)}
   <div class="edit-box">
     <div class="modal-hd"><div class="modal-hd-title" id="editModalTitle">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
     <div class="edit-body">
-      <div class="edit-grid">
-        <div class="edit-section">Identité</div>
+      <div class="edit-tabs" id="editTabs">
+        <button type="button" class="edit-tab active" data-tab="identite" onclick="switchEditTab('identite')">🪪 Identité</button>
+        <button type="button" class="edit-tab" data-tab="contact" onclick="switchEditTab('contact')">📞 Contact</button>
+        <button type="button" class="edit-tab" data-tab="reseaux" onclick="switchEditTab('reseaux')">🔗 Réseaux</button>
+        <button type="button" class="edit-tab" data-tab="apparence" onclick="switchEditTab('apparence')">🎨 Apparence</button>
+        <button type="button" class="edit-tab" data-tab="statut" onclick="switchEditTab('statut')">🚦 Statut</button>
+      </div>
+
+      <div class="edit-tab-panel edit-grid active" data-tab="identite">
         <div class="edit-field full">
           <div class="edit-label">🖼️ Photo de couverture</div>
           <div class="cover-zone" id="editCoverZone" onclick="document.getElementById('editCoverInput').click()">
@@ -523,7 +539,7 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">Prénom</div><input class="edit-input" id="edit-firstname" placeholder="Prénom"></div>
         <div class="edit-field"><div class="edit-label">Nom</div><input class="edit-input" id="edit-lastname" placeholder="Nom"></div>
         <div class="edit-field"><div class="edit-label">Type de produit</div>
-          <select class="edit-input" id="edit-produit">
+          <select class="edit-input" id="edit-produit" onchange="toggleStudentMode()">
             <option value="">— Non défini —</option>
             <option value="student">🎓 Carte NFC Student</option>
             <option value="pro">💼 Carte NFC Pro</option>
@@ -538,9 +554,7 @@ tr:hover td{background:var(--cream)}
             <option value="">— Aucune —</option>
           </select>
         </div>
-        <div class="edit-field"><div class="edit-label">N° étudiant (optionnel)</div><input class="edit-input" id="edit-student_id" placeholder="ex: 22012345"></div>
         <div class="edit-field full">
-          <div class="edit-label">👤 Photo de profil</div>
           <div style="display:flex;align-items:center;gap:12px">
             <div class="cover-zone" id="editPhotoZone" style="width:100px;height:100px;flex-shrink:0;border-radius:50%" onclick="document.getElementById('editPhotoInput').click()">
               <input type="file" id="editPhotoInput" accept="image/*" style="display:none" onchange="onEditPhotoChange(event)">
@@ -548,14 +562,35 @@ tr:hover td{background:var(--cream)}
               <div class="cz-hint" id="editPhotoHint" style="font-size:1.4rem">👤</div>
               <div class="cz-overlay">📷</div>
             </div>
-            <div id="editPhotoMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2)">
-              <span id="editPhotoMetaName"></span>
-              <button onclick="clearEditPhoto(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+            <div style="flex:1">
+              <div class="edit-label" style="margin-bottom:6px">👤 Photo de profil</div>
+              <div id="editPhotoMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2)">
+                <span id="editPhotoMetaName"></span>
+                <button onclick="clearEditPhoto(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+              </div>
             </div>
           </div>
         </div>
+        <div class="edit-field-highlight" id="editStudentIdWrap" style="display:none">
+          <div class="edit-label">🎓 Numéro étudiant</div>
+          <input class="edit-input" id="edit-student_id" placeholder="ex: 22012345">
+        </div>
+        <div class="edit-field" id="editCompanyWrap"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
-        <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
+        <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
+        <div class="edit-field full" id="editCompanyLogoWrap">
+          <div class="edit-label">🏢 Logo de l'entreprise</div>
+          <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
+            <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
+            <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
+            <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
+            <div class="cz-overlay">📷 Changer</div>
+          </div>
+          <div id="editCompanyLogoMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
+            <span id="editCompanyLogoMetaName"></span>
+            <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+          </div>
+        </div>
         <div class="edit-field full">
           <!-- Champ CV/Portfolio : uploadé en base à l'origine sur order.html, -->
           <!-- mais jamais rajouté ici dans le modal d'édition admin -->
@@ -569,35 +604,27 @@ tr:hover td{background:var(--cream)}
             <button onclick="clearEditCv(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
           </div>
         </div>
-        <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
-        <div class="edit-field"><div class="edit-label">Localisation</div><input class="edit-input" id="edit-location" placeholder="Dakar"></div>
-        <div class="edit-section">Entreprise</div>
-        <div class="edit-field full">
-          <div class="edit-label">🏢 Logo de l'entreprise</div>
-          <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
-            <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
-            <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
-            <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
-            <div class="cz-overlay">📷 Changer</div>
-          </div>
-          <div id="editCompanyLogoMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
-            <span id="editCompanyLogoMetaName"></span>
-            <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-          </div>
-        </div>
-        <div class="edit-section">Contact</div>
+      </div>
+
+      <div class="edit-tab-panel edit-grid" data-tab="contact">
         <div class="edit-field"><div class="edit-label">Téléphone</div><input class="edit-input" id="edit-phone" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">Email</div><input class="edit-input" id="edit-email" placeholder="email@..."></div>
         <div class="edit-field"><div class="edit-label">Site web</div><input class="edit-input" id="edit-website" placeholder="https://..."></div>
-        <div class="edit-section">Réseaux sociaux</div>
+      </div>
+
+      <div class="edit-tab-panel edit-grid" data-tab="reseaux">
         <div class="edit-field"><div class="edit-label">📸 Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
-        <div class="edit-section">Apparence</div>
+      </div>
+
+      <div class="edit-tab-panel edit-grid" data-tab="apparence">
         <div class="edit-theme-grid" id="editThemeGrid"></div>
-        <div class="edit-section">Statut</div>
+      </div>
+
+      <div class="edit-tab-panel edit-grid" data-tab="statut">
         <div class="edit-status">
           <div class="edit-status-opt" id="st-pending" onclick="selStatus('pending')">⏳ En attente</div>
           <div class="edit-status-opt" id="st-active" onclick="selStatus('active')">✅ Actif</div>
@@ -1806,6 +1833,16 @@ function copyNFC(){
 }
 
 // ── EDIT ──
+function switchEditTab(name){
+  document.querySelectorAll('.edit-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+  document.querySelectorAll('.edit-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.tab===name));
+}
+function toggleStudentMode(){
+  const isStudent=document.getElementById('edit-produit').value==='student';
+  document.getElementById('editStudentIdWrap').style.display=isStudent?'block':'none';
+  document.getElementById('editCompanyWrap').style.display=isStudent?'none':'block';
+  document.getElementById('editCompanyLogoWrap').style.display=isStudent?'none':'block';
+}
 function selTheme(id){
   document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
   document.getElementById('et-'+id)?.classList.add('sel');
@@ -1892,12 +1929,13 @@ async function openEdit(clientId, presetUniversityId){
   document.getElementById('editCvMeta').style.display='none';
   document.getElementById('editOv').classList.add('open');
   document.getElementById('editDeleteBtn').style.display=clientId?'inline-block':'none';
+  switchEditTab('identite');
   populateUniversitySelect();
 
   if(!clientId){
     // ── MODE CRÉATION ──
     document.getElementById('editModalTitle').textContent=presetUniversityId?'🎓 Nouvelle carte étudiante':'➕ Nouveau profil';
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
+    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
     document.getElementById('edit-produit').value=presetUniversityId?'student':'';
     document.getElementById('edit-university_id').value=presetUniversityId||'';
     if(presetUniversityId){
@@ -1909,6 +1947,7 @@ async function openEdit(clientId, presetUniversityId){
     const presetTheme=presetUniversityId?('uni-'+presetUniversityId):'noir';
     selTheme(THEMES.find(t=>t.id===presetTheme)?presetTheme:'noir');
     selStatus('pending');
+    toggleStudentMode();
     const btn=document.getElementById('editSaveBtn');
     btn.disabled=false;btn.textContent='💾 Créer la carte';
     return;
@@ -1921,8 +1960,9 @@ async function openEdit(clientId, presetUniversityId){
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     document.getElementById('edit-university_id').value=c.university_id||'';
+    toggleStudentMode();
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
     document.getElementById('editCoverMeta').style.display='none';
@@ -1960,7 +2000,7 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent=currentId?'💾 Sauvegarde...':'💾 Création...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     updates.university_id=document.getElementById('edit-university_id').value||null;
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
