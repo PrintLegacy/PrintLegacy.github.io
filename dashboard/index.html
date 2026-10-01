@@ -534,7 +534,7 @@ tr:hover td{background:var(--cream)}
         <button type="button" class="edit-tab active" data-tab="identite" onclick="switchEditTab('identite')">🪪 Identité</button>
         <button type="button" class="edit-tab" data-tab="contact" onclick="switchEditTab('contact')">📞 Contact</button>
         <button type="button" class="edit-tab" data-tab="reseaux" onclick="switchEditTab('reseaux')">🔗 Réseaux</button>
-        <button type="button" class="edit-tab" data-tab="parcours" onclick="switchEditTab('parcours')">🎓 Parcours</button>
+        <button type="button" class="edit-tab" data-tab="parcours" onclick="switchEditTab('parcours')">💼 Portfolio</button>
         <button type="button" class="edit-tab" data-tab="apparence" onclick="switchEditTab('apparence')">🎨 Apparence</button>
         <button type="button" class="edit-tab" data-tab="statut" onclick="switchEditTab('statut')">🚦 Statut</button>
       </div>
@@ -632,7 +632,6 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">Email</div><input class="edit-input" id="edit-email" placeholder="email@..."></div>
         <div class="edit-field"><div class="edit-label">Site web</div><input class="edit-input" id="edit-website" placeholder="https://..."></div>
-        <div class="edit-field"><div class="edit-label">🔗 Portfolio</div><input class="edit-input" id="edit-portfolio" placeholder="https://..."></div>
       </div>
 
       <div class="edit-tab-panel edit-grid" data-tab="reseaux">
@@ -643,6 +642,8 @@ tr:hover td{background:var(--cream)}
       </div>
 
       <div class="edit-tab-panel edit-grid" data-tab="parcours">
+        <div class="edit-sec-title">Lien portfolio</div>
+        <div class="edit-field full"><div class="edit-label">🔗 Portfolio (site, Behance, Notion…)</div><input class="edit-input" id="edit-portfolio" placeholder="https://..."></div>
         <div class="edit-sec-title">Expériences</div>
         <div class="edit-field full">
           <div id="expList"></div>
