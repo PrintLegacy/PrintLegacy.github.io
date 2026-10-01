@@ -2,2205 +2,736 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Print Legacy — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Profil — Print Legacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--ink:#0A0A0A;--ink2:#1C1C1C;--gold:#B8953A;--gold2:#D4AF6A;--gold4:#F5EDD0;--cream:#F9F5EE;--cream2:#EDE5D0;--smoke:#6B6560;--smoke2:#9A948E;--w:#fff;--r:4px;--success:#2e7d32}
-html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);overflow:hidden}
-.app{display:flex;height:100vh}
-.sidebar{width:220px;min-width:220px;background:var(--ink);display:flex;flex-direction:column}
-.sb-logo{padding:24px 22px 20px;border-bottom:1px solid rgba(255,255,255,.05)}
-.sb-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;letter-spacing:.03em}
-.sb-brand em{color:var(--gold2);font-style:italic}
-.sb-tag{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);margin-top:4px}
-.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
-.sb-sec{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:14px 22px 6px}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 22px;font-size:12.5px;color:rgba(255,255,255,.4);cursor:pointer;transition:.15s;border-left:2px solid transparent}
-.sb-item:hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.03)}
-.sb-item.active{color:var(--gold2);background:rgba(184,149,58,.09);border-left-color:var(--gold)}
-.sb-item span.ico{font-size:15px}
-.sb-foot{padding:14px 20px;border-top:1px solid rgba(255,255,255,.05)}
-.sb-user{display:flex;align-items:center;gap:10px}
-.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;color:var(--ink)}
-.sb-uname{font-size:12px;color:rgba(255,255,255,.7);font-weight:500}
-.sb-urole{font-size:9.5px;color:rgba(255,255,255,.22)}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.topbar{height:58px;min-height:58px;background:var(--w);border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
-.tb-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink)}
-.tb-title span{color:var(--smoke2);font-style:italic;font-size:13px;font-family:'Jost',sans-serif;margin-left:8px;font-weight:300}
-.tb-right{display:flex;align-items:center;gap:10px}
-.tb-search{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);padding:7px 14px;font-size:12px;color:var(--smoke2);min-width:200px;outline:none;font-family:'Jost',sans-serif}
-.tb-btn{width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--smoke);font-size:15px}
-.tb-cta{display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--gold2);padding:8px 16px;border-radius:var(--r);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:none;font-family:'Jost',sans-serif;text-decoration:none}
-.order-menu-wrap{position:relative}
-.order-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);box-shadow:0 12px 34px rgba(0,0,0,.14);z-index:600;min-width:210px;overflow:hidden;display:none}
-.order-menu.open{display:block}
-.order-menu-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:12px;color:var(--ink);cursor:pointer;text-decoration:none;transition:.12s}
-.order-menu-item:hover{background:var(--cream)}
-.order-menu-item .om-ico{font-size:14px;width:16px;text-align:center}
-.order-menu-item .om-price{margin-left:auto;font-size:10px;color:var(--smoke2)}
-.sb-item.order-menu-wrap{padding:0}
-.sb-item.order-menu-wrap>.order-trigger{display:flex;align-items:center;gap:10px;padding:9px 22px;width:100%}
-.sb-item.order-menu-wrap .order-menu{top:0;left:calc(100% + 6px);right:auto;min-width:220px}
-.content{flex:1;overflow-y:auto;padding:24px 28px}
-.page{display:none}.page.active{display:block}
-body:not(.authed) .app{display:none}
-.auth-loader{display:flex;align-items:center;justify-content:center;height:100vh;font-family:'Jost',sans-serif;color:var(--smoke2);font-size:13px}
-body.authed .auth-loader{display:none}
-.admin-badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase}
-.admin-badge.pending{background:rgba(184,149,58,.14);color:var(--gold)}
-.admin-badge.approved{background:rgba(46,125,50,.12);color:var(--success)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.sc{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
-.sc:hover{border-color:var(--gold2)}
-.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cream2)}
-.sc.feat::before{background:linear-gradient(90deg,var(--gold),#EDD89A)}
-.sc-lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke2);margin-bottom:8px}
-.sc-num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--ink);line-height:1;margin-bottom:4px}
-.sc-money{font-size:22px}
-.sc-sub{font-size:10px;color:var(--smoke2)}
-.sc-ico{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:13px}
-.card{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
-.card-h{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--cream2)}
-.card-t{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;color:var(--ink)}
-.card-a{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);cursor:pointer;font-weight:500;border:none;background:none;font-family:'Jost',sans-serif}
-table{width:100%;border-collapse:collapse}
-th{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--smoke2);padding:9px 20px;text-align:left;border-bottom:1px solid var(--cream2);background:var(--cream);font-weight:500}
-td{padding:12px 20px;font-size:12px;color:#2E2E2E;border-bottom:1px solid var(--cream2)}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--cream)}
-.av{width:38px;height:38px;border-radius:50%;background:var(--gold4);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--ink);font-family:'Cormorant Garamond',serif;flex-shrink:0;overflow:hidden}
-.av img{width:100%;height:100%;object-fit:cover}
-.av.is-logo{background:var(--w);border:1px solid var(--cream2)}
-.av.is-logo img{object-fit:contain;padding:4px}
-.av img{width:100%;height:100%;object-fit:cover}
-.cl{display:flex;align-items:center;gap:10px}
-.cn{font-size:12px;font-weight:500;color:var(--ink)}
-.cs{font-size:10px;color:var(--smoke2)}
-.badge{display:inline-block;padding:3px 9px;border-radius:2px;font-size:9.5px;font-weight:500}
-.b-p{background:var(--gold4);color:var(--gold)}
-.status{display:inline-flex;align-items:center;gap:5px;font-size:11px}
-.sd{width:5px;height:5px;border-radius:50%}
-.st-p .sd{background:var(--gold)}.st-p{color:var(--gold)}
-.st-a .sd{background:#4caf50}.st-a{color:#2e7d32}
-.st-d .sd{background:var(--smoke2)}.st-d{color:var(--smoke2)}
-.loading{text-align:center;padding:3rem;color:var(--smoke2);font-size:.9rem}
-.spin{display:inline-block;width:20px;height:20px;border:2px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:sp .6s linear infinite;margin-right:8px}
+:root{--gold:#C9A84C;--gold2:#E8C97A;--gold-bg:rgba(201,168,76,0.1);--gold-15:rgba(201,168,76,0.15);--gold-20:rgba(201,168,76,0.2);--gold-25:rgba(201,168,76,0.25);--gold-40:rgba(201,168,76,0.4);--gold-45:rgba(201,168,76,0.45);--ink:#0D0D0D;--ink2:#2A1E0E;--white:#FFFFFF;--cream:#F5F0E8;--cream2:#EDE5D5;--muted:#8A8070;--border:rgba(0,0,0,0.07)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:#EDEAE3;font-family:"DM Sans",sans-serif}
+body{display:flex;justify-content:center;padding-bottom:90px}
+.card{width:100%;max-width:420px;background:var(--white);min-height:100vh;position:relative}
+.hero{position:relative;width:100%;height:420px;overflow:hidden;background:#1A1510;flex-shrink:0}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-placeholder{width:100%;height:100%;background:linear-gradient(160deg,var(--ink),var(--ink2));display:flex;align-items:center;justify-content:center}
+.hero-initials-big{font-family:"Playfair Display",serif;font-size:6rem;font-weight:700;color:var(--gold-20)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0.05) 25%,rgba(0,0,0,0.6) 65%,rgba(0,0,0,0.88) 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:0 1.4rem 1.7rem}
+.hero-badge{display:inline-flex;align-items:center;border:1px solid var(--gold-45);border-radius:100px;padding:.28rem .9rem;font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:.85rem}
+.hero-name{font-family:"Playfair Display",serif;font-size:2rem;font-weight:700;color:var(--white);line-height:1.15;margin-bottom:.15rem}
+.hero-role{font-size:.82rem;color:rgba(255,255,255,.55);font-weight:400}
+.hero-role em{color:var(--gold);font-style:normal;font-weight:600}
+.company-card-wrap{margin:1rem 1.2rem}
+.company-card{background:var(--cream);border-radius:14px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--cream2);transition:border-color .15s}
+.company-card[onclick]:hover{border-color:var(--gold-40)}
+.co-left{display:flex;align-items:center;gap:.75rem}
+.co-logo{width:44px;height:44px;border-radius:10px;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;color:var(--muted)}
+.co-logo img{width:30px;height:30px;object-fit:contain}
+.co-logo svg{width:22px;height:22px}
+.co-logo-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.co-logo-fallback svg{width:22px;height:22px}
+.co-name{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+.co-badge{display:inline-block;background:var(--gold-bg);border:1px solid var(--gold-20);border-radius:3px;padding:.15rem .55rem;font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.co-arr{width:26px;height:26px;border-radius:50%;background:var(--white);border:1px solid var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:transform .2s}
+.co-arr svg{width:12px;height:12px}
+.co-arr.open{transform:rotate(90deg)}
+.co-details{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--white);border:1px solid var(--cream2);border-top:none;border-radius:0 0 14px 14px;margin-top:-1px}
+.co-details>*{border-top:1px solid var(--cream2)}
+.co-details>*:first-child{border-top:none}
+.co-detail-row{display:flex;align-items:center;gap:.6rem;padding:.65rem 1rem;text-decoration:none;color:var(--ink);font-size:.78rem}
+.co-detail-about{padding:.8rem 1rem;font-size:.78rem;color:var(--muted);line-height:1.7}
+.co-detail-ico{width:18px;height:18px;color:var(--gold);flex-shrink:0;display:flex}
+.co-detail-ico svg{width:100%;height:100%}
+.sec{padding:0 1.2rem 1.1rem}
+.sec-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--cream2)}
+.sec-ico{width:32px;height:32px;border-radius:8px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.sec-ico svg{width:16px;height:16px}
+.sec-lbl{font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.divider{display:flex;align-items:center;justify-content:center;padding:.3rem 1.2rem 1.1rem}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--cream2)}
+.divider span{width:5px;height:5px;border-radius:50%;background:var(--gold);margin:0 .5rem}
+.about-txt{font-size:.8rem;color:var(--muted);line-height:1.8}
+.contact-list{display:flex;flex-direction:column;gap:.45rem}
+.clink{display:flex;align-items:center;gap:.8rem;padding:.8rem .9rem;border-radius:12px;background:var(--cream);text-decoration:none;border:1px solid transparent;transition:all .18s}
+.clink:hover{border-color:var(--gold);background:var(--white)}
+.clink-ico{width:36px;height:36px;border-radius:9px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.clink-ico svg{width:18px;height:18px}
+.clink-body{flex:1;min-width:0}
+.clink-lbl{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block}
+.clink-val{font-size:.84rem;font-weight:500;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clink-arr{font-size:.72rem;color:var(--muted);flex-shrink:0}
+.soc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.soc-btn{display:flex;flex-direction:column;align-items:center;padding:.85rem .3rem .7rem;border-radius:12px;background:var(--cream);border:1px solid var(--cream2);text-decoration:none;gap:5px;transition:all .18s}
+.soc-btn:hover{border-color:var(--gold);background:var(--white);transform:translateY(-2px)}
+.soc-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.soc-ico svg{width:19px;height:19px}
+.soc-name{font-size:.58rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-align:center}
+ 
+/* ── CATALOGUE ── */
+.cat-scroll{display:flex;gap:.85rem;overflow-x:auto;padding:.2rem .05rem .8rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-card{flex:0 0 148px;scroll-snap-align:start;border-radius:14px;overflow:hidden;background:var(--cream);border:1px solid var(--cream2);display:flex;flex-direction:column;cursor:pointer;transition:transform .18s,border-color .18s}
+.cat-card:active{transform:scale(.97)}
+.cat-card:hover{transform:translateY(-3px);border-color:var(--gold-40)}
+.cat-img-wrap{width:100%;height:130px;background:var(--cream2);overflow:hidden;flex-shrink:0}
+.cat-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.cat-card:hover .cat-img-wrap img{transform:scale(1.05)}
+.cat-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);opacity:.4}
+.cat-img-placeholder svg{width:34px;height:34px}
+.cat-body{padding:.65rem .8rem .8rem;flex:1;display:flex;flex-direction:column;gap:.2rem}
+.cat-name{font-size:.8rem;font-weight:700;color:var(--ink);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cat-desc{font-size:.68rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.cat-price{font-family:"Playfair Display",serif;font-size:.95rem;font-weight:700;color:var(--gold);margin-top:.25rem}
+ 
+/* ── LIGHTBOX (bottom sheet) ── */
+.lb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:flex-end;justify-content:center;padding:0}
+.lb-ov.open{display:flex}
+.lb-sheet{background:var(--white);border-radius:22px 22px 0 0;width:100%;max-width:420px;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.3);animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+/* FIX : image complète sans recadrage */
+.lb-img{width:100%;max-height:360px;object-fit:contain;display:block;background:var(--cream2)}
+.lb-img-placeholder{width:100%;height:160px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);opacity:.45}
+.lb-img-placeholder svg{width:48px;height:48px}
+.lb-body{padding:1.2rem 1.3rem 2rem}
+.lb-name{font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.lb-desc{font-size:.82rem;color:var(--muted);line-height:1.75;margin-bottom:.8rem}
+.lb-price{font-family:"Playfair Display",serif;font-size:1.4rem;font-weight:700;color:var(--gold)}
+.lb-order-btn{display:block;width:100%;margin-top:1rem;padding:.85rem;border-radius:12px;background:var(--ink);color:#fff;text-align:center;font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;font-family:"DM Sans",sans-serif}
+.lb-close{position:absolute;top:.9rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px)}
+.lb-close svg{width:15px;height:15px}
+.lb-counter{position:absolute;top:.7rem;left:.7rem;z-index:10;color:#fff;font-size:.68rem;letter-spacing:.05em;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:100px;backdrop-filter:blur(4px)}
+.lb-img-stage{position:relative}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(4px);transition:background .15s;user-select:none}
+.lb-nav:hover{background:rgba(0,0,0,.55)}
+.lb-nav.disabled{opacity:.25;pointer-events:none}
+.lb-nav-prev{left:.7rem}
+.lb-nav-next{right:.7rem}
+.lb-handle{width:36px;height:4px;background:var(--cream2);border-radius:2px;margin:10px auto 0;cursor:pointer}
+ 
+.save-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--ink);padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
+.sb-left{display:flex;align-items:center;gap:.7rem}
+.sb-av{width:36px;height:36px;border-radius:50%;background:var(--gold-15);border:1px solid var(--gold-25);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--gold);overflow:hidden;flex-shrink:0}
+.sb-av img{width:100%;height:100%;object-fit:cover}
+.sb-txt{display:flex;flex-direction:column}
+.sb-sublbl{font-size:.57rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.sb-title{font-size:.84rem;font-weight:600;color:var(--white)}
+.sb-btn{width:38px;height:38px;border-radius:10px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--ink);transition:all .2s;flex-shrink:0}
+.sb-btn:hover{background:var(--gold2);transform:scale(1.06)}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;color:var(--muted);background:var(--white)}
+.spin{width:30px;height:30px;border:2.5px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:3rem;color:var(--smoke2)}
-.empty-ico{font-size:2rem;margin-bottom:.5rem}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:var(--cream2)}
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center}
-.ov.open{display:flex}
-.nfc-box{background:var(--w);border-radius:8px;width:420px;max-width:90vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-hd{background:var(--ink);padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
-.modal-hd-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff;font-weight:400}
-.modal-hd-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.nfc-body{padding:22px}
-.nfc-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:6px}
-.nfc-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:16px}
-.nfc-url-box{display:flex;align-items:center;gap:8px;background:var(--cream);border:1px solid var(--cream2);border-radius:4px;padding:10px 14px;margin-bottom:6px}
-.nfc-url-text{font-size:11.5px;color:var(--ink);flex:1;word-break:break-all;font-weight:500}
-.nfc-copy-btn{background:var(--ink);color:var(--gold2);border:none;border-radius:4px;padding:6px 12px;font-size:10px;font-weight:600;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif}
-.nfc-copy-btn:hover{background:var(--gold);color:var(--ink)}
-.nfc-copied{display:none;font-size:10px;color:var(--success);font-weight:600;margin-bottom:14px}
-.nfc-steps{background:var(--cream);border-radius:6px;padding:14px;margin-bottom:14px}
-.nfc-steps-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2);margin-bottom:10px}
-.nfc-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:11.5px;color:var(--smoke)}
-.nfc-step:last-child{margin-bottom:0}
-.nfc-step-num{width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--gold2);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.nfc-apps{display:flex;gap:8px;flex-wrap:wrap}
-.nfc-app{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--cream);border:1px solid var(--cream2);border-radius:6px;text-decoration:none;font-size:11px;font-weight:500;color:var(--ink);transition:.15s}
-.nfc-app:hover{border-color:var(--gold);background:var(--gold4)}
-.edit-box{background:var(--w);border-radius:8px;width:640px;max-width:95vw;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.edit-body{flex:1;overflow-y:auto;padding:22px}
-.edit-body::-webkit-scrollbar{width:3px}
-.edit-body::-webkit-scrollbar-thumb{background:var(--cream2)}
-.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.edit-field{display:flex;flex-direction:column;gap:5px}
-.edit-field.full{grid-column:1/-1}
-.edit-label{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2)}
-.edit-input{padding:8px 12px;border:1px solid var(--cream2);border-radius:var(--r);font-size:12.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
-.edit-input:focus{border-color:var(--gold);background:#FFFDF7}
-.edit-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--smoke2);padding:10px 0 8px;border-bottom:1px solid var(--cream2);margin-top:6px;grid-column:1/-1}
-#clientEditBox{--edit-accent:var(--gold);--edit-accent-soft:var(--gold4);--edit-accent-text:var(--ink);--edit-accent-ink:var(--gold)}
-.edit-tabs{display:flex;gap:4px;padding:4px;background:var(--cream);border:1px solid var(--cream2);border-radius:10px;margin-bottom:20px;transition:background .25s}
-.edit-tab{flex:1;text-align:center;padding:10px 4px;border-radius:7px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--smoke2);cursor:pointer;transition:.18s;background:transparent;border:none;font-family:'Jost',sans-serif;white-space:nowrap}
-.edit-tab:hover{color:var(--ink);background:rgba(0,0,0,.04)}
-.edit-tab.active{background:var(--edit-accent);color:var(--edit-accent-text);box-shadow:0 3px 10px rgba(0,0,0,.12)}
-.edit-tab-panel{display:none}
-.edit-tab-panel.active{display:grid}
-.edit-uni-banner{display:none;grid-column:1/-1;align-items:center;gap:10px;background:var(--edit-accent-soft);border:1px solid var(--edit-accent);border-radius:8px;padding:9px 14px;font-size:11.5px;color:var(--edit-accent-ink);font-weight:600}
-.edit-uni-banner.show{display:flex}
-.edit-uni-banner img{height:20px;width:auto;max-width:60px;object-fit:contain;background:#fff;border-radius:3px;padding:2px}
-.edit-field-highlight{grid-column:1/-1;background:var(--edit-accent-soft);border:1px solid var(--edit-accent);border-radius:8px;padding:12px 14px;transition:background .25s,border-color .25s}
-.edit-field-highlight .edit-label{color:var(--edit-accent-ink);font-weight:700}
-.edit-field-highlight .edit-input{background:#fff;font-weight:600;letter-spacing:.02em;border-color:var(--edit-accent)}
-.edit-theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;grid-column:1/-1}
-.edit-theme{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
-.edit-theme.sel{border-color:var(--gold)}
-.edit-theme-top{height:28px}
-.edit-theme-bot{height:16px;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:600;text-transform:uppercase}
-.edit-status{display:flex;gap:8px;grid-column:1/-1}
-.edit-status-opt{flex:1;padding:8px;border:1px solid var(--cream2);border-radius:var(--r);text-align:center;cursor:pointer;font-size:11px;font-weight:500;transition:.15s}
-.edit-status-opt:hover{border-color:var(--gold)}
-.edit-status-opt.sel{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
-.edit-foot{padding:14px 22px;border-top:1px solid var(--cream2);display:flex;gap:8px;background:var(--w)}
-.edit-save{flex:1;background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:10px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:.15s}
-.edit-save:hover{background:var(--gold);color:var(--ink)}
-.edit-cancel{background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);padding:10px 18px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;color:var(--smoke)}
-.edit-cancel:hover{border-color:var(--smoke)}
-.edit-delete{background:#FFEBEE;border:1px solid #FFCDD2;border-radius:var(--r);padding:10px 18px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;color:#C62828}
-.edit-delete:hover{background:#FFCDD2}
-.cover-zone{width:100%;height:90px;border-radius:6px;border:2px dashed var(--cream2);cursor:pointer;position:relative;background:var(--cream);display:flex;align-items:center;justify-content:center;transition:.2s;overflow:hidden}
-.cover-zone:hover{border-color:var(--gold);background:var(--gold4)}
-.cover-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
-.cover-zone .cz-hint{font-size:11px;color:var(--smoke2);text-align:center;pointer-events:none}
-.cover-zone .cz-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600}
-.cover-zone:hover .cz-overlay{display:flex}
-.save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
-.save-toast.show{display:block}
+.err{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:.8rem;text-align:center;padding:2rem;background:var(--white)}
+.err h2{font-family:"Playfair Display",serif;font-size:1.4rem;color:var(--ink)}
+.err svg{width:100%;height:100%}
+.err p{color:var(--muted);font-size:.875rem;line-height:1.7}
+.err a{color:var(--gold);font-weight:600;text-decoration:none}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--white);padding:.65rem 1.4rem;border-radius:100px;font-size:.78rem;font-weight:600;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.spacer{height:1rem}
 
-/* ── PROFIL ÉTUDIANT (Dauphine) ── */
-.edit-sec-title{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--edit-accent-ink);padding:2px 0 7px;border-bottom:1px solid var(--cream2);margin-top:4px}
-.exp-row{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid var(--cream2);border-radius:8px;margin-bottom:8px;background:var(--cream)}
-.exp-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.exp-grid .exp-periode{grid-column:1/-1}
-.exp-del{background:none;border:none;color:#C62828;cursor:pointer;font-size:13px;padding:6px}
-.exp-add{width:100%;padding:9px;border:1px dashed var(--edit-accent);border-radius:8px;background:transparent;color:var(--edit-accent-ink);font-weight:600;font-size:11px;letter-spacing:.04em;cursor:pointer;font-family:'Jost',sans-serif}
-.exp-add:hover{background:var(--edit-accent-soft)}
-.chip-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:500;background:color-mix(in srgb,var(--edit-accent) 9%,#fff);color:var(--edit-accent)}
-@media (max-width:860px){.exp-grid{grid-template-columns:1fr}}
-
-/* ── CRÉATIONS ── */
-.creation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:20px}
-.creation-card{border:1px solid var(--cream2);border-radius:8px;overflow:hidden;background:var(--w);position:relative;transition:.15s}
-.creation-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(184,149,58,.1)}
-.creation-img{width:100%;height:140px;object-fit:cover;display:block;background:var(--cream)}
-.creation-pdf{width:100%;height:140px;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer}
-.creation-body{padding:10px 12px}
-.creation-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.creation-client{font-size:10px;color:var(--smoke2)}
-.creation-del{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:.15s}
-.creation-card:hover .creation-del{opacity:1}
-.creation-del:hover{background:#C62828}
-.upload-zone{border:2px dashed var(--cream2);border-radius:8px;padding:2rem;text-align:center;cursor:pointer;transition:.2s;position:relative;margin:20px}
-.upload-zone:hover{border-color:var(--gold);background:var(--gold4)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-prog{height:3px;background:var(--cream2);border-radius:2px;margin:0 20px 20px;display:none}
-.upload-prog-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;width:0;transition:width .3s}
-
-/* ── IMPRESSIONS ── */
-.imp-table th,.imp-table td{padding:10px 16px}
-.imp-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:100px}
-.imp-st-encours{background:#FFF8E1;color:#F57F17}
-.imp-st-pret{background:#E8F5E9;color:#2e7d32}
-.imp-st-livre{background:var(--cream);color:var(--smoke2)}
-.imp-form{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.imp-field{display:flex;flex-direction:column;gap:5px}
-.imp-field.full{grid-column:1/-1}
-.imp-label{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke2)}
-.imp-input{padding:8px 12px;border:1px solid var(--cream2);border-radius:var(--r);font-size:12.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
-.imp-input:focus{border-color:var(--gold)}
-.imp-btn{background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:10px 20px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:.15s}
-.imp-btn:hover{background:var(--gold);color:var(--ink)}
-.imp-btn-fact{background:var(--gold);color:var(--ink)}
-.imp-btn-fact:hover{background:var(--ink);color:var(--gold2)}
-.imp-fact-badge{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:var(--smoke2)}
-
-/* ── DB OFFLINE BANNER ── */
-.db-banner{display:none;align-items:center;gap:12px;background:#FFF8E1;border:1px solid #F5D97A;border-radius:var(--r);padding:12px 18px;margin-bottom:16px;font-size:12.5px;color:#7A5C00}
-.db-banner.show{display:flex}
-.db-banner-ico{font-size:18px;flex-shrink:0}
-.db-banner-text{flex:1;line-height:1.4}
-.db-banner-text strong{display:block;font-size:13px;margin-bottom:2px}
-.db-banner-retry{background:var(--ink);color:var(--gold2);border:none;border-radius:var(--r);padding:7px 14px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;white-space:nowrap}
-.db-banner-retry:hover{background:var(--gold);color:var(--ink)}
-
-/* ── STATS CARTES NFC ── */
-.card-stats-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-.csm{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);padding:16px 18px}
-.csm-lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke2);margin-bottom:8px}
-.csm-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--ink);line-height:1}
-.csm-sub{font-size:10px;color:var(--smoke2);margin-top:4px}
-.bar-mini{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--cream);margin-top:6px;width:80px}
-.bar-mini-nfc{background:var(--gold)}
-.bar-mini-link{background:var(--smoke2)}
-
-/* ── UNIVERSITÉS / PARTENARIATS ── */
-.uni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:20px}
-.uni-card{border:1px solid var(--cream2);border-radius:8px;overflow:hidden;background:var(--w);transition:.15s;cursor:pointer}
-.uni-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(184,149,58,.1)}
-.uni-card-top{height:78px;display:flex;align-items:center;justify-content:center;padding:14px;position:relative}
-.uni-card-logo{max-width:100%;max-height:100%;object-fit:contain}
-.uni-card-logo-fallback{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600}
-.uni-card-body{padding:12px 14px;border-top:1px solid var(--cream2)}
-.uni-card-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.uni-card-sub{font-size:10.5px;color:var(--smoke2);display:flex;align-items:center;justify-content:space-between}
-.uni-card-swatches{display:flex;gap:4px}
-.uni-swatch{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.08)}
-.uni-card-actions{display:flex;gap:6px;padding:0 14px 12px}
-.uni-mini-btn{flex:1;text-align:center;padding:6px 8px;font-size:10px;font-weight:600;border-radius:var(--r);cursor:pointer;border:1px solid var(--cream2);background:var(--cream);color:var(--ink);letter-spacing:.03em}
-.uni-mini-btn:hover{border-color:var(--gold);color:var(--gold)}
-.uni-mini-btn.primary{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
-.uni-mini-btn.primary:hover{background:var(--gold);color:var(--ink)}
-.uni-add-card{border:2px dashed var(--cream2);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:172px;cursor:pointer;color:var(--smoke2);transition:.15s}
-.uni-add-card:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
-.color-field{display:flex;align-items:center;gap:8px}
-.color-field input[type=color]{width:38px;height:34px;border:1px solid var(--cream2);border-radius:var(--r);padding:2px;background:var(--w);cursor:pointer}
-.color-field input[type=text]{flex:1}
-
-/* ── MOBILE / RESPONSIVE ── */
-.hamburger{display:none;width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998}
-.sidebar-overlay.show{display:block}
-
-@media (max-width: 860px){
-  html,body{overflow:auto}
-  .app{flex-direction:column;height:auto;min-height:100vh}
-  .sidebar{
-    position:fixed;top:0;left:0;bottom:0;z-index:999;
-    transform:translateX(-100%);transition:transform .25s ease;
-    box-shadow:4px 0 24px rgba(0,0,0,.25);
-  }
-  .sidebar.open{transform:translateX(0)}
-  .hamburger{display:flex}
-  .main{width:100%;min-width:0}
-  .topbar{padding:0 14px;gap:8px}
-  .tb-title{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tb-title span{display:none}
-  .tb-search{min-width:0;flex:1}
-  .tb-cta{padding:8px 10px;font-size:0}
-  .tb-cta::before{content:'+';font-size:16px}
-  .content{padding:16px 12px;overflow-y:visible}
-  .stats{grid-template-columns:repeat(2,1fr);gap:8px}
-  .sc{padding:12px 14px}
-  .sc-num{font-size:24px}
-  .card-h{padding:12px 14px;flex-wrap:wrap;gap:6px}
-  table{display:block;overflow-x:auto;white-space:nowrap}
-  .imp-form{grid-template-columns:1fr}
-  .edit-grid{grid-template-columns:1fr}
-  .edit-box,.nfc-box{width:94vw;max-height:88vh}
-  .edit-theme-grid{grid-template-columns:repeat(3,1fr)}
-  .creation-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:12px}
-  .card-stats-mini{grid-template-columns:1fr}
-  .uni-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}
-}
+/* ── PROFIL ÉTUDIANT (aux couleurs de l'université, ex. Dauphine Dakar) ── */
+.st-uni{margin:1rem 1.2rem 1.3rem;border-radius:14px;padding:.9rem 1rem;background:var(--gold-bg);border:1px solid var(--gold-20);display:flex;align-items:center;gap:.85rem}
+.st-uni-logo{width:46px;height:46px;border-radius:10px;background:#fff;border:1px solid var(--gold-20);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;color:var(--gold)}
+.st-uni-logo img{width:100%;height:100%;object-fit:contain;padding:5px}
+.st-uni-logo svg{width:22px;height:22px}
+.st-uni-name{font-size:.88rem;font-weight:600;color:var(--ink);line-height:1.3}
+.st-uni-tag{font-family:"Playfair Display",serif;font-style:italic;font-size:.76rem;color:var(--muted);margin-top:3px}
+.st-uni-logo.dark{width:116px;height:46px;background:#2F4486;border-color:#2F4486}
+.st-uni-logo.dark img{padding:7px 9px;object-fit:contain}
+.st-link-wide{grid-column:1/-1;position:relative}
+.st-chev{position:absolute;right:1rem;display:flex}
+.st-chev svg{width:14px;height:14px;transition:transform .2s}
+.st-link-wide.open .st-chev svg{transform:rotate(90deg)}
+.st-contact{display:none;flex-direction:column;gap:.45rem;margin-top:.6rem}
+.st-contact.open{display:flex}
+.st-sec{padding:0 1.2rem 1.5rem}
+.st-title{font-size:.98rem;font-weight:600;color:var(--ink);padding-bottom:.6rem;border-bottom:1px solid var(--cream2);margin-bottom:.9rem}
+.st-about{font-size:.86rem;line-height:1.85;color:#2E2E2E}
+.st-cv{display:flex;align-items:center;justify-content:center;gap:.55rem;width:100%;padding:.95rem;border-radius:6px;background:var(--gold);color:#fff;font-weight:600;font-size:.85rem;letter-spacing:.02em;text-decoration:none;margin-bottom:.7rem}
+.st-cv svg{width:17px;height:17px}
+.st-links{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.st-link{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.9rem .6rem;border:1px solid var(--cream2);border-radius:6px;background:#fff;color:var(--ink);font-weight:600;font-size:.8rem;text-decoration:none;cursor:pointer;font-family:inherit}
+.st-link:hover{border-color:var(--gold)}
+.st-link svg{width:16px;height:16px;flex-shrink:0}
+.st-exp{display:flex;gap:.75rem;margin-bottom:1rem}
+.st-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--gold);margin-top:.3rem;flex-shrink:0}
+.st-exp-t{font-size:.9rem;font-weight:600;color:var(--ink)}
+.st-exp-o{font-size:.78rem;color:var(--muted);margin-top:1px}
+.st-exp-p{font-size:.72rem;color:var(--gold);margin-top:2px}
+.st-chips{display:flex;flex-wrap:wrap;gap:.55rem}
+.st-chip{padding:.45rem .95rem;border-radius:999px;background:var(--gold-bg);color:var(--gold);font-size:.76rem;font-weight:500}
+.hero-role em.st-em{color:var(--gold2)}
+.sb-av.st{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22)}
 </style>
 </head>
 <body>
-<div class="auth-loader">Vérification de la session…</div>
-<div class="app">
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
-  <div class="sidebar" id="sidebar">
-    <div class="sb-logo">
-      <div class="sb-brand">Print <em>Legacy</em></div>
-      <div class="sb-tag">Studio & NFC · Dakar</div>
-    </div>
-    <div class="sb-nav">
-      <div class="sb-sec">Principal</div>
-      <div class="sb-item active" id="nav-dashboard" onclick="setPage('dashboard')"><span class="ico">📊</span> Tableau de bord</div>
-      <div class="sb-item order-menu-wrap" id="sbOrderWrap">
-        <div class="order-trigger" onclick="toggleOrderMenu('sbOrderMenu',event)"><span class="ico">➕</span> Nouvelle commande</div>
-        <div class="order-menu" id="sbOrderMenu"></div>
-      </div>
-      <div class="sb-sec">Clients</div>
-      <div class="sb-item" id="nav-all" onclick="setPage('dashboard');setView('all')"><span class="ico">👥</span> Tous les clients</div>
-      <div class="sb-item" id="nav-pending" onclick="setPage('dashboard');setView('pending')"><span class="ico">⏳</span> En attente <span id="sb-pending" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
-      <div class="sb-item" id="nav-active" onclick="setPage('dashboard');setView('active')"><span class="ico">✅</span> Actifs</div>
-      <div class="sb-sec">Partenariats</div>
-      <div class="sb-item" id="nav-universities" onclick="setPage('universities')"><span class="ico">🎓</span> Universités</div>
-      <div class="sb-sec">Studio</div>
-      <div class="sb-item" id="nav-creations" onclick="setPage('creations')"><span class="ico">🎨</span> Créations</div>
-      <div class="sb-item" id="nav-impressions" onclick="setPage('impressions')"><span class="ico">🖨️</span> Impressions</div>
-      <div class="sb-item" id="nav-stats" onclick="setPage('stats')"><span class="ico">📈</span> Statistiques</div>
-      <div class="sb-sec">Compte</div>
-      <div class="sb-item" id="nav-admins" onclick="setPage('admins')"><span class="ico">🛡️</span> Administrateurs <span id="sb-pending-admins" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
-      <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io'"><span class="ico">🌐</span> Voir le site</div>
-      <div class="sb-item" onclick="logout()"><span class="ico">🔒</span> Déconnexion</div>
-    </div>
-    <div class="sb-foot">
-      <div class="sb-user">
-        <div class="sb-av">PL</div>
-        <div><div class="sb-uname">Print Legacy</div><div class="sb-urole">Administrateur</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0">
-        <div class="hamburger" onclick="toggleSidebar()">☰</div>
-        <div class="tb-title" id="pageTitle">Tableau de bord <span id="dateLabel"></span></div>
-      </div>
-      <div class="tb-right">
-        <input id="searchInput" class="tb-search" placeholder="🔍 Rechercher..." oninput="searchQuery=this.value;renderTable()" style="cursor:text">
-        <div class="tb-btn" onclick="refreshPage()" title="Actualiser">🔄</div>
-        <div class="order-menu-wrap" id="tbOrderWrap">
-          <button class="tb-cta" onclick="toggleOrderMenu('tbOrderMenu',event)" style="cursor:pointer">+ Nouvelle commande</button>
-          <div class="order-menu" id="tbOrderMenu"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="content">
-
-      <div class="db-banner" id="dbBanner">
-        <div class="db-banner-ico">🔧</div>
-        <div class="db-banner-text">
-          <strong>Maintenance en cours</strong>
-          La connexion à la base de données est temporairement indisponible. Vos données sont en sécurité — revenez dans quelques instants.
-        </div>
-        <button class="db-banner-retry" onclick="refreshPage()">Réessayer</button>
-      </div>
-
-      <!-- PAGE: DASHBOARD -->
-      <div class="page active" id="page-dashboard">
-        <div class="stats">
-          <div class="sc feat" onclick="setView('all')"><div class="sc-ico">👥</div><div class="sc-lbl">Total clients</div><div class="sc-num" id="stat-total">—</div><div class="sc-sub">Dans Supabase</div></div>
-          <div class="sc" onclick="setView('pending')"><div class="sc-ico">⏳</div><div class="sc-lbl">En attente</div><div class="sc-num" id="stat-pending">—</div><div class="sc-sub">Cliquer pour filtrer</div></div>
-          <div class="sc" onclick="setView('active')"><div class="sc-ico">✅</div><div class="sc-lbl">Actifs</div><div class="sc-num" id="stat-active">—</div><div class="sc-sub">Cliquer pour filtrer</div></div>
-          <div class="sc"><div class="sc-ico">💳</div><div class="sc-lbl">Cartes NFC</div><div class="sc-num" id="stat-nfc">—</div><div class="sc-sub">Pro NFC commandées</div></div>
-        </div>
-        <div class="card">
-          <div class="card-h">
-            <div class="card-t" id="card-title">Tous les clients</div>
-            <button class="card-a" onclick="setView('all')">Tous →</button>
-          </div>
-          <div id="tableWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
-      <!-- PAGE: UNIVERSITÉS -->
-      <div class="page" id="page-universities">
-        <div class="card-stats-mini">
-          <div class="csm"><div class="csm-lbl">Universités partenaires</div><div class="csm-num" id="uni-stat-total">—</div><div class="csm-sub">Établissements actifs</div></div>
-          <div class="csm"><div class="csm-lbl">🎓 Cartes étudiantes</div><div class="csm-num" id="uni-stat-cards">—</div><div class="csm-sub">Toutes universités confondues</div></div>
-          <div class="csm"><div class="csm-lbl">⏳ En attente</div><div class="csm-num" id="uni-stat-pending">—</div><div class="csm-sub">Cartes étudiantes non actives</div></div>
-        </div>
-        <div class="card">
-          <div class="card-h">
-            <div class="card-t">🎓 Universités partenaires</div>
-            <button class="card-a" onclick="openUniModal()">+ Nouveau partenariat</button>
-          </div>
-          <div class="uni-grid" id="uniGrid"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-        <div class="card" id="uniStudentsCard" style="display:none">
-          <div class="card-h">
-            <div class="card-t" id="uniStudentsTitle">Étudiants</div>
-            <div style="display:flex;gap:8px">
-              <button class="card-a" onclick="closeUniStudents()">Fermer</button>
-            </div>
-          </div>
-          <div id="uniStudentsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
-      <!-- PAGE: CRÉATIONS -->
-      <div class="page" id="page-creations">
-        <div class="card">
-          <div class="card-h">
-            <div class="card-t">🎨 Galerie des créations</div>
-            <button class="card-a" onclick="document.getElementById('creationFileInput').click()">+ Ajouter</button>
-          </div>
-          <div class="upload-zone" onclick="document.getElementById('creationFileInput').click()">
-            <input type="file" id="creationFileInput" accept="image/*,.pdf" multiple onchange="uploadCreations(event)">
-            <div style="font-size:2rem;margin-bottom:8px">📁</div>
-            <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px">Glissez vos fichiers ici</div>
-            <div style="font-size:11px;color:var(--smoke2)">Images (JPG, PNG, WEBP) ou PDF — plusieurs fichiers acceptés</div>
-          </div>
-          <div class="upload-prog" id="uploadProg"><div class="upload-prog-bar" id="uploadProgBar"></div></div>
-          <!-- Mini form pour nom/client -->
-          <div id="creationMeta" style="display:none;padding:0 20px 16px;display:none">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div><div class="imp-label" style="margin-bottom:4px">Titre</div><input class="imp-input" id="creationTitle" placeholder="Nom du design" style="width:100%"></div>
-              <div><div class="imp-label" style="margin-bottom:4px">Client</div><input class="imp-input" id="creationClient" placeholder="Nom du client" style="width:100%"></div>
-            </div>
-          </div>
-          <div class="creation-grid" id="creationGrid"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
-      <!-- PAGE: IMPRESSIONS -->
-      <div class="page" id="page-impressions">
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-h"><div class="card-t">➕ Nouvelle impression</div></div>
-          <div class="imp-form">
-            <div class="imp-field"><div class="imp-label">Client *</div>
-              <select class="imp-input" id="imp-client">
-                <option value="">— Sélectionner un client —</option>
-              </select>
-            </div>
-            <div class="imp-field"><div class="imp-label">Quantité</div><input class="imp-input" id="imp-qty" type="number" placeholder="1" min="1" value="1" oninput="updateImpTotalPreview()"></div>
-            <div class="imp-field"><div class="imp-label">Prix unitaire (FCFA)</div><input class="imp-input" id="imp-prix" type="number" placeholder="0" min="0" oninput="updateImpTotalPreview()"></div>
-            <div class="imp-field"><div class="imp-label">Description</div><input class="imp-input" id="imp-desc" placeholder="Type de carte, format..."></div>
-            <div class="imp-field"><div class="imp-label">Date de livraison</div><input class="imp-input" id="imp-date" type="date"></div>
-            <div class="imp-field"><div class="imp-label">Total estimé</div><input class="imp-input" id="imp-total-preview" value="0 FCFA" disabled style="font-weight:600;color:var(--gold);background:var(--cream)"></div>
-            <div class="imp-field full"><div class="imp-label">Notes</div><input class="imp-input" id="imp-notes" placeholder="Remarques supplémentaires..."></div>
-            <div class="imp-field full" style="display:flex;justify-content:flex-end">
-              <button class="imp-btn" onclick="addImpression()">💾 Enregistrer</button>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-h"><div class="card-t">🖨️ Suivi des impressions</div><button class="card-a" onclick="loadImpressions()">Actualiser →</button></div>
-          <div id="impWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
-      <!-- PAGE: STATISTIQUES -->
-      <div class="page" id="page-stats">
-        <div class="stats">
-          <div class="sc feat"><div class="sc-ico">💰</div><div class="sc-lbl">CA facturé (total)</div><div class="sc-num sc-money" id="stat-ca-total">—</div><div class="sc-sub">Toutes factures émises</div></div>
-          <div class="sc"><div class="sc-ico">📅</div><div class="sc-lbl">CA ce mois-ci</div><div class="sc-num sc-money" id="stat-ca-month">—</div><div class="sc-sub" id="stat-ca-month-label"></div></div>
-          <div class="sc"><div class="sc-ico">🧾</div><div class="sc-lbl">Factures émises</div><div class="sc-num" id="stat-ca-count">—</div><div class="sc-sub">Nombre total</div></div>
-          <div class="sc"><div class="sc-ico">📦</div><div class="sc-lbl">Panier moyen</div><div class="sc-num sc-money" id="stat-ca-avg">—</div><div class="sc-sub">Par facture</div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-h"><div class="card-t">📊 Évolution du chiffre d'affaires (12 derniers mois)</div><button class="card-a" onclick="loadStats()">Actualiser →</button></div>
-          <div id="statsChart" style="padding:20px 24px"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-h"><div class="card-t">🏆 Chiffre d'affaires par client</div></div>
-          <div id="statsClientsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-h"><div class="card-t">⏳ En attente de facturation</div></div>
-          <div id="statsPendingWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-h"><div class="card-t">📶 Performance des cartes NFC</div><button class="card-a" onclick="loadCardStats()">Actualiser →</button></div>
-          <div style="padding:20px 24px 4px">
-            <div class="card-stats-mini">
-              <div class="csm"><div class="csm-lbl">Vues totales</div><div class="csm-num" id="cs-total">—</div><div class="csm-sub">Toutes cartes confondues</div></div>
-              <div class="csm"><div class="csm-lbl">📶 Scans NFC</div><div class="csm-num" id="cs-nfc">—</div><div class="csm-sub">Carte physique approchée</div></div>
-              <div class="csm"><div class="csm-lbl">🔗 Clics lien</div><div class="csm-num" id="cs-link">—</div><div class="csm-sub">Lien partagé (bio, sms...)</div></div>
-            </div>
-          </div>
-          <div id="statsCardsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
-      <!-- PAGE: ADMINISTRATEURS -->
-      <div class="page" id="page-admins">
-        <div class="card">
-          <div class="card-h"><div class="card-t">🛡️ Comptes administrateurs</div><button class="card-a" onclick="loadAdmins()">Actualiser →</button></div>
-          <div id="adminsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
+ 
+<div id="app" class="card">
+  <div class="loading"><div class="spin"></div><p>Chargement...</p></div>
 </div>
-
-<!-- NFC MODAL -->
-<div class="ov" id="nfcOv" onclick="if(event.target===this)closeNFC()">
-  <div class="nfc-box">
-    <div class="modal-hd"><div class="modal-hd-title">📶 Encoder la carte NFC</div><button class="modal-hd-close" onclick="closeNFC()">✕</button></div>
-    <div class="nfc-body">
-      <div class="nfc-lbl">Client</div><div class="nfc-name" id="nfcClientName">—</div>
-      <div class="nfc-lbl">URL à encoder</div>
-      <div class="nfc-url-box"><div class="nfc-url-text" id="nfcUrl">—</div><button class="nfc-copy-btn" onclick="copyNFC()">Copier</button></div>
-      <div class="nfc-copied" id="nfcCopied">✓ Copié !</div>
-      <div class="nfc-steps">
-        <div class="nfc-steps-title">Comment encoder</div>
-        <div class="nfc-step"><div class="nfc-step-num">1</div><span>Ouvrez <strong>NFC Tools</strong></span></div>
-        <div class="nfc-step"><div class="nfc-step-num">2</div><span>Écrire → URL → collez</span></div>
-        <div class="nfc-step"><div class="nfc-step-num">3</div><span>Approchez la carte</span></div>
+ 
+<!-- LIGHTBOX produit (bottom sheet) -->
+<div class="lb-ov" id="lbOv" onclick="if(event.target===this)closeLb()">
+  <div style="position:relative;width:100%;max-width:420px">
+    <button class="lb-close" onclick="closeLb()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    <div class="lb-sheet">
+      <div class="lb-handle" onclick="closeLb()"></div>
+      <div class="lb-img-stage">
+        <div id="lbImgWrap"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+        <button class="lb-nav lb-nav-prev" id="lbPrev" onclick="navLb(-1)">‹</button>
+        <button class="lb-nav lb-nav-next" id="lbNext" onclick="navLb(1)">›</button>
       </div>
-      <div class="nfc-apps">
-        <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" class="nfc-app">🤖 Android</a>
-        <a href="https://apps.apple.com/app/nfc-tools/id1252962749" target="_blank" class="nfc-app">🍎 iPhone</a>
+      <div class="lb-body">
+        <div class="lb-name" id="lbName"></div>
+        <div class="lb-desc" id="lbDesc"></div>
+        <div class="lb-price" id="lbPrice"></div>
+        <div id="lbOrderBtnWrap"></div>
       </div>
     </div>
   </div>
 </div>
-
-<!-- EDIT MODAL -->
-<div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
-  <div class="edit-box" id="clientEditBox">
-    <div class="modal-hd"><div class="modal-hd-title" id="editModalTitle">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
-    <div class="edit-body">
-      <div class="edit-tabs" id="editTabs">
-        <button type="button" class="edit-tab active" data-tab="identite" onclick="switchEditTab('identite')">🪪 Identité</button>
-        <button type="button" class="edit-tab" data-tab="contact" onclick="switchEditTab('contact')">📞 Contact</button>
-        <button type="button" class="edit-tab" data-tab="reseaux" onclick="switchEditTab('reseaux')">🔗 Réseaux</button>
-        <button type="button" class="edit-tab" data-tab="parcours" onclick="switchEditTab('parcours')">💼 Portfolio</button>
-        <button type="button" class="edit-tab" data-tab="apparence" onclick="switchEditTab('apparence')">🎨 Apparence</button>
-        <button type="button" class="edit-tab" data-tab="statut" onclick="switchEditTab('statut')">🚦 Statut</button>
-      </div>
-
-      <div class="edit-tab-panel edit-grid active" data-tab="identite">
-        <div class="edit-field full">
-          <div class="edit-label">🖼️ Photo de couverture</div>
-          <div class="cover-zone" id="editCoverZone" onclick="document.getElementById('editCoverInput').click()">
-            <input type="file" id="editCoverInput" accept="image/*" style="display:none" onchange="onEditCoverChange(event)">
-            <img id="editCoverImg">
-            <div class="cz-hint" id="editCoverHint"><div style="font-size:1.4rem">🖼️</div><div>Cliquer pour changer</div></div>
-            <div class="cz-overlay">📷 Changer</div>
-          </div>
-          <div id="editCoverMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
-            <span id="editCoverMetaName"></span>
-            <button onclick="clearEditCover(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-          </div>
-        </div>
-        <div class="edit-field"><div class="edit-label">Prénom</div><input class="edit-input" id="edit-firstname" placeholder="Prénom"></div>
-        <div class="edit-field"><div class="edit-label">Nom</div><input class="edit-input" id="edit-lastname" placeholder="Nom"></div>
-        <div class="edit-field"><div class="edit-label">Type de produit</div>
-          <select class="edit-input" id="edit-produit" onchange="toggleStudentMode()">
-            <option value="">— Non défini —</option>
-            <option value="student">🎓 Carte NFC Student</option>
-            <option value="pro">💼 Carte NFC Pro</option>
-            <option value="plaque">🪧 Plaque NFC</option>
-            <option value="bracelet">⌚ Bracelet NFC</option>
-            <option value="porteclefs">🔑 Porte-clés NFC</option>
-          </select>
-        </div>
-        <div class="edit-field">
-          <div class="edit-label">🎓 Université</div>
-          <select class="edit-input" id="edit-university_id" onchange="onEditUniversityChange()">
-            <option value="">— Aucune —</option>
-          </select>
-        </div>
-        <div class="edit-uni-banner" id="editUniBanner">
-          <img id="editUniBannerLogo" style="display:none">
-          <span id="editUniBannerText"></span>
-        </div>
-        <div class="edit-field full">
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="cover-zone" id="editPhotoZone" style="width:100px;height:100px;flex-shrink:0;border-radius:50%" onclick="document.getElementById('editPhotoInput').click()">
-              <input type="file" id="editPhotoInput" accept="image/*" style="display:none" onchange="onEditPhotoChange(event)">
-              <img id="editPhotoImg" style="border-radius:50%">
-              <div class="cz-hint" id="editPhotoHint" style="font-size:1.4rem">👤</div>
-              <div class="cz-overlay">📷</div>
-            </div>
-            <div style="flex:1">
-              <div class="edit-label" style="margin-bottom:6px">👤 Photo de profil</div>
-              <div id="editPhotoMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2)">
-                <span id="editPhotoMetaName"></span>
-                <button onclick="clearEditPhoto(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="edit-field-highlight" id="editStudentIdWrap" style="display:none">
-          <div class="edit-label">🎓 Numéro étudiant</div>
-          <input class="edit-input" id="edit-student_id" placeholder="ex: 22012345">
-        </div>
-        <div class="edit-field" id="editCompanyWrap"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
-        <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
-        <div class="edit-field full"><div class="edit-label" id="editBioLabel">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
-        <div class="edit-field full" id="editCompanyLogoWrap">
-          <div class="edit-label">🏢 Logo de l'entreprise</div>
-          <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
-            <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
-            <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
-            <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
-            <div class="cz-overlay">📷 Changer</div>
-          </div>
-          <div id="editCompanyLogoMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
-            <span id="editCompanyLogoMetaName"></span>
-            <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-          </div>
-        </div>
-        <div class="edit-field full">
-          <!-- Champ CV/Portfolio : uploadé en base à l'origine sur order.html, -->
-          <!-- mais jamais rajouté ici dans le modal d'édition admin -->
-          <div class="edit-label">📄 CV / Portfolio (PDF, DOC)</div>
-          <div class="cover-zone" id="editCvZone" style="height:56px;flex-direction:row;gap:8px" onclick="document.getElementById('editCvInput').click()">
-            <input type="file" id="editCvInput" accept=".pdf,.doc,.docx" style="display:none" onchange="onEditCvChange(event)">
-            <div class="cz-hint" id="editCvHint" style="display:flex;align-items:center;gap:6px;font-size:12px">📄 <span>Cliquer pour ajouter un fichier</span></div>
-          </div>
-          <div id="editCvMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2);margin-top:4px">
-            <span>📄</span><span id="editCvMetaName"></span>
-            <button onclick="clearEditCv(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="contact">
-        <div class="edit-field"><div class="edit-label">Téléphone</div><input class="edit-input" id="edit-phone" placeholder="+221 78..."></div>
-        <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
-        <div class="edit-field"><div class="edit-label">Email</div><input class="edit-input" id="edit-email" placeholder="email@..."></div>
-        <div class="edit-field"><div class="edit-label">Site web</div><input class="edit-input" id="edit-website" placeholder="https://..."></div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="reseaux">
-        <div class="edit-field"><div class="edit-label">📸 Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
-        <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
-        <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
-        <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="parcours">
-        <div class="edit-sec-title">Lien portfolio</div>
-        <div class="edit-field full"><div class="edit-label">🔗 Portfolio (site, Behance, Notion…)</div><input class="edit-input" id="edit-portfolio" placeholder="https://..."></div>
-        <div class="edit-sec-title">Expériences</div>
-        <div class="edit-field full">
-          <div id="expList"></div>
-          <button type="button" class="exp-add" onclick="addExpRow()">+ Ajouter une expérience</button>
-        </div>
-        <div class="edit-sec-title">Compétences</div>
-        <div class="edit-field full">
-          <div class="edit-label">Compétences (séparées par des virgules)</div>
-          <input class="edit-input" id="edit-skills" placeholder="Finance de marché, Python, Excel, Analyse financière" oninput="updateSkillsPreview()">
-          <div class="chip-wrap" id="skillsPreview"></div>
-        </div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="apparence">
-        <div class="edit-theme-grid" id="editThemeGrid"></div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="statut">
-        <div class="edit-status">
-          <div class="edit-status-opt" id="st-pending" onclick="selStatus('pending')">⏳ En attente</div>
-          <div class="edit-status-opt" id="st-active" onclick="selStatus('active')">✅ Actif</div>
-          <div class="edit-status-opt" id="st-delivered" onclick="selStatus('delivered')">📦 Livré</div>
-        </div>
-      </div>
-    </div>
-    <div class="edit-foot">
-      <button class="edit-delete" id="editDeleteBtn" onclick="deleteClient()">🗑 Supprimer</button>
-      <button class="edit-cancel" onclick="closeEdit()">Annuler</button>
-      <button class="edit-save" id="editSaveBtn" onclick="saveEdit()">💾 Sauvegarder</button>
-    </div>
-  </div>
-</div>
-
-<!-- UNIVERSITY MODAL -->
-<div class="ov" id="uniOv" onclick="if(event.target===this)closeUniModal()">
-  <div class="edit-box" style="width:460px">
-    <div class="modal-hd"><div class="modal-hd-title" id="uniModalTitle">🎓 Nouveau partenariat</div><button class="modal-hd-close" onclick="closeUniModal()">✕</button></div>
-    <div class="edit-body">
-      <div class="edit-grid">
-        <div class="edit-field full">
-          <div class="edit-label">🖼️ Logo de l'université</div>
-          <div class="cover-zone" id="uniLogoZone" style="height:100px" onclick="document.getElementById('uniLogoInput').click()">
-            <input type="file" id="uniLogoInput" accept="image/*" style="display:none" onchange="onUniLogoChange(event)">
-            <img id="uniLogoImg" style="object-fit:contain;padding:10px">
-            <div class="cz-hint" id="uniLogoHint"><div style="font-size:1.4rem">🏫</div><div>Cliquer pour ajouter le logo</div></div>
-            <div class="cz-overlay">📷 Changer</div>
-          </div>
-        </div>
-        <div class="edit-field full"><div class="edit-label">Nom de l'université</div><input class="edit-input" id="uni-name" placeholder="Université Paris Dauphine - PSL"></div>
-        <div class="edit-field full"><div class="edit-label">Slogan (affiché sous le logo)</div><input class="edit-input" id="uni-tagline" placeholder="Université de recherche et de décision"></div>
-        <div class="edit-field">
-          <div class="edit-label">Couleur principale</div>
-          <div class="color-field"><input type="color" id="uni-primary" value="#2F4486"><input type="text" id="uni-primary-hex" class="edit-input" value="#2F4486"></div>
-        </div>
-        <div class="edit-field">
-          <div class="edit-label">Couleur secondaire</div>
-          <div class="color-field"><input type="color" id="uni-secondary" value="#FFFFFF"><input type="text" id="uni-secondary-hex" class="edit-input" value="#FFFFFF"></div>
-        </div>
-        <div class="edit-field full" style="background:var(--cream);border-radius:var(--r);padding:12px 14px">
-          <div class="edit-label" style="margin-bottom:6px">Aperçu du thème</div>
-          <div id="uniPreviewSwatch" style="height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;letter-spacing:.05em">CARTE ÉTUDIANTE</div>
-        </div>
-      </div>
-    </div>
-    <div class="edit-foot">
-      <button class="edit-delete" id="uniDeleteBtn" onclick="deleteUniversity()" style="display:none">🗑 Supprimer</button>
-      <button class="edit-cancel" onclick="closeUniModal()">Annuler</button>
-      <button class="edit-save" id="uniSaveBtn" onclick="saveUniversity()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<!-- INVOICE PREVIEW/EDIT MODAL -->
-<div class="ov" id="invoiceOv" onclick="if(event.target===this)closeInvoiceModal()">
-  <div class="edit-box" style="width:480px">
-    <div class="modal-hd"><div class="modal-hd-title">🧾 Aperçu de la facture</div><button class="modal-hd-close" onclick="closeInvoiceModal()">✕</button></div>
-    <div class="edit-body">
-      <div class="edit-grid">
-        <div class="edit-field full"><div class="edit-label">Client</div><input class="edit-input" id="inv-client"></div>
-        <div class="edit-field full"><div class="edit-label">Description</div><input class="edit-input" id="inv-desc" placeholder="Type de carte, format..."></div>
-        <div class="edit-field"><div class="edit-label">Quantité</div><input class="edit-input" id="inv-qty" type="number" min="1" oninput="updateInvoiceTotal()"></div>
-        <div class="edit-field"><div class="edit-label">Prix unitaire (FCFA)</div><input class="edit-input" id="inv-prix" type="number" min="0" oninput="updateInvoiceTotal()"></div>
-        <div class="edit-field full"><div class="edit-label">Notes (apparaissent sur la facture)</div><textarea class="edit-input" id="inv-notes" rows="2" style="resize:vertical"></textarea></div>
-        <div class="edit-field full" style="background:var(--cream);padding:12px 14px;border-radius:var(--r);display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:10px;color:var(--smoke2);text-transform:uppercase;letter-spacing:.1em;font-weight:600">Total</span>
-          <span id="inv-total-display" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold)">0 FCFA</span>
-        </div>
-      </div>
-    </div>
-    <div class="edit-foot">
-      <button class="edit-cancel" onclick="closeInvoiceModal()">Annuler</button>
-      <button class="edit-save" id="invConfirmBtn" onclick="confirmAndDownloadInvoice()">⬇️ Télécharger la facture PDF</button>
-    </div>
-  </div>
-</div>
-
-<div class="save-toast" id="saveToast"></div>
-
+ 
+<div class="toast" id="toast"></div>
+ 
 <script>
 const {createClient}=supabase;
 const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
-  'sb_publishable_NuZqQ3yjdULy5THdoXJpeQ_F2Il1rEu'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
-
-document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-
-// ── ÉTAT GLOBAL ──
-let currentTheme='noir', currentStatus='pending', currentId=null;
-let allData=[], currentView='all', searchQuery='';
-let newCoverFile=null, coverDeleted=false;
-let newCompanyLogoFile=null, companyLogoDeleted=false;
-let newPhotoFile=null, photoDeleted=false;
-let newCvFile=null, cvDeleted=false;
-let currentPage='dashboard';
-let allUniversities=[];
-
-let currentUniId=null, newUniLogoFile=null;
-let pendingUniversityId=null;
-let activeUniFilter=null;
-
-// ── DÉTECTION PANNE RÉSEAU / DB EN PAUSE ──
-function isNetworkFailure(err){
-  if(!err) return false;
-  const msg=(err.message||String(err)||'').toLowerCase();
-  return msg.includes('failed to fetch')||msg.includes('networkerror')||msg.includes('load failed')||msg.includes('network request failed');
-}
-function showDbBanner(){document.getElementById('dbBanner').classList.add('show');}
-function hideDbBanner(){document.getElementById('dbBanner').classList.remove('show');}
-function friendlyEmptyState(){
-  return '<div class="empty"><div class="empty-ico">🔧</div>Connexion à la base de données indisponible pour le moment.<br><span style="font-size:11px">Vos données sont en sécurité — réessayez dans quelques instants.</span></div>';
+ 
+function getSlug(){
+  const p=new URLSearchParams(location.search);
+  const parts=location.pathname.split('/').filter(Boolean);
+  return p.get('carte')||p.get('slug')||(parts.length>=2&&parts[0]==='profile'?parts[1]:null);
 }
 
-// ── THEMES ──
-const THEMES=[
-  {id:'noir',name:'Noir & Or',h1:'#0A0A0A',ac:'#D4AF6A',tc:'#0A0A0A'},
-  {id:'emerald',name:'Émeraude',h1:'#0D3B2E',ac:'#4CAF50',tc:'#fff'},
-  {id:'navy',name:'Navy',h1:'#0A1628',ac:'#4A90D9',tc:'#fff'},
-  {id:'crimson',name:'Cramoisi',h1:'#1A0808',ac:'#C62828',tc:'#fff'},
-  {id:'ivory',name:'Ivoire',h1:'#1C160A',ac:'#C9A84C',tc:'#fff'},
-  {id:'violet',name:'Violet',h1:'#1A0A2E',ac:'#9C27B0',tc:'#fff'},
-  {id:'bordeaux',name:'Bordeaux',h1:'#1A0812',ac:'#C2185B',tc:'#fff'},
-  {id:'sable',name:'Sable',h1:'#1C1208',ac:'#CD853F',tc:'#fff'},
-  {id:'slate',name:'Ardoise',h1:'#0D1B2A',ac:'#607D8B',tc:'#fff'},
-  {id:'rosegold',name:'Rose Gold',h1:'#1A0F0F',ac:'#E8A0B0',tc:'#4a2030'},
-  {id:'tropical',name:'Tropical',h1:'#051F0D',ac:'#26A69A',tc:'#fff'},
-  {id:'midnight',name:'Minuit',h1:'#05051A',ac:'#5C6BC0',tc:'#fff'},
-  {id:'coffee',name:'Café',h1:'#1A1008',ac:'#8D6E63',tc:'#fff'},
-  {id:'forest',name:'Forêt',h1:'#0A1A0A',ac:'#388E3C',tc:'#fff'},
-  {id:'ocean',name:'Océan',h1:'#00101A',ac:'#0277BD',tc:'#fff'},
-  {id:'sand',name:'Désert',h1:'#1A1510',ac:'#D4A853',tc:'#fff'},
-  {id:'plum',name:'Prune',h1:'#140A1A',ac:'#6A1B9A',tc:'#fff'},
-  {id:'coral',name:'Corail',h1:'#1A0A08',ac:'#E64A19',tc:'#fff'},
-  {id:'arctic',name:'Arctique',h1:'#0A1018',ac:'#80CBC4',tc:'#004D40'},
-  {id:'bronze',name:'Bronze',h1:'#120E08',ac:'#A0744C',tc:'#fff'},
-];
-function renderThemeGrid(){
-  const tg=document.getElementById('editThemeGrid');
-  tg.innerHTML='';
-  THEMES.forEach(t=>{
-    tg.innerHTML+=`<div class="edit-theme" id="et-${t.id}" onclick="selTheme('${t.id}')">
-      <div class="edit-theme-top" style="background:${t.h1}"></div>
-      <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
-    </div>`;
-  });
-}
-renderThemeGrid();
-
-// Enregistre dynamiquement une université comme thème sélectionnable
-// (id préfixé "uni-" pour ne jamais entrer en collision avec les thèmes standards)
-function registerUniversityTheme(u){
-  const themeId='uni-'+u.id;
-  const existingIdx=THEMES.findIndex(t=>t.id===themeId);
-  const entry={id:themeId,name:'🎓 '+u.name,h1:u.primary_color||'#0A0A0A',ac:u.secondary_color||'#D4AF6A',tc:isLightColor(u.secondary_color)?'#0A0A0A':'#fff'};
-  if(existingIdx>-1) THEMES[existingIdx]=entry; else THEMES.push(entry);
-}
-function isLightColor(hex){
-  if(!hex) return false;
-  const c=hex.replace('#','');
-  if(c.length!==6) return false;
-  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
-  return (0.299*r+0.587*g+0.114*b)>170;
+// ── SOURCE DE LA VISITE (nfc = carte physique, admin = aperçu dashboard, link = tout le reste) ──
+function getSource(){
+  const p=new URLSearchParams(location.search);
+  const src=(p.get('src')||'').toLowerCase();
+  if(src==='nfc'||src==='admin') return src;
+  return 'link';
 }
 
-// ── NAVIGATION ──
-function setPage(page){
-  currentPage=page;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.sb-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
-  document.getElementById('nav-'+page)?.classList.add('active');
-  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques',admins:'🛡️ Administrateurs',universities:'🎓 Universités'};
-  document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
-  if(page==='creations') loadCreations();
-  if(page==='impressions'){loadImpressions();loadClientsForImpressions();}
-  if(page==='stats'){loadStats();loadCardStats();}
-  if(page==='admins') loadAdmins();
-  if(page==='universities') loadUniversities();
-}
-
-let currentUserId=null;
-
-async function loadAdmins(){
-  const wrap=document.getElementById('adminsWrap');
-  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+// ── ENREGISTREMENT DE LA VUE (scan / clic) ──
+// N'échoue jamais bruyamment : si la table card_views n'existe pas encore
+// ou si le réseau est indisponible, on ignore silencieusement (n'affecte pas l'affichage de la carte).
+async function trackView(clientId){
   try{
-    const {data,error}=await sb.from('admins').select('*').order('created_at',{ascending:true});
-    if(error)throw error;
-    const pending=(data||[]).filter(a=>!a.approved).length;
-    const badge=document.getElementById('sb-pending-admins');
-    badge.textContent=pending>0?pending:'';
-    badge.style.display=pending>0?'inline-block':'none';
-    if(!data||!data.length){wrap.innerHTML=friendlyEmptyState();return;}
-    wrap.innerHTML=data.map(a=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--cream2)">
-        <div>
-          <div style="font-size:13px;font-weight:500">${a.email}${a.id===currentUserId?' <span style="color:var(--smoke2);font-size:11px">(vous)</span>':''}</div>
-          <div style="font-size:10.5px;color:var(--smoke2);margin-top:2px">Inscrit le ${new Date(a.created_at).toLocaleDateString('fr-FR')}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span class="admin-badge ${a.approved?'approved':'pending'}">${a.approved?'Validé':'En attente'}</span>
-          ${!a.approved?`<button class="imp-btn" onclick="approveAdmin('${a.id}')">Approuver</button>`:''}
-          ${a.approved&&a.id!==currentUserId?`<button class="imp-btn" style="background:var(--w);color:#c62828;border:1px solid #c62828" onclick="revokeAdmin('${a.id}')">Révoquer</button>`:''}
-        </div>
-      </div>`).join('');
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();wrap.innerHTML=friendlyEmptyState();}
-    else{wrap.innerHTML='<div class="empty">Erreur: '+(err.message||'')+'</div>';}
-  }
-}
-
-async function approveAdmin(id){
-  try{
-    await sb.from('admins').update({approved:true}).eq('id',id);
-    showToast('Administrateur validé');
-    loadAdmins();
-  }catch(err){showToast('Erreur: '+(err.message||''));}
-}
-
-async function revokeAdmin(id){
-  if(!confirm('Révoquer l\'accès de cet administrateur ?'))return;
-  try{
-    await sb.from('admins').update({approved:false}).eq('id',id);
-    showToast('Accès révoqué');
-    loadAdmins();
-  }catch(err){showToast('Erreur: '+(err.message||''));}
-}
-
-function setView(view){
-  currentView=view;
-  if(currentPage!=='dashboard') setPage('dashboard');
-  document.querySelectorAll('.sb-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
-  document.getElementById('nav-dashboard')?.classList.add('active');
-  const labels={all:'Tous les clients',pending:'En attente',active:'Clients actifs'};
-  document.getElementById('card-title').textContent=labels[view]||'Clients';
-  renderTable();
-}
-
-function refreshPage(){
-  if(currentPage==='dashboard') loadData();
-  else if(currentPage==='creations') loadCreations();
-  else if(currentPage==='impressions') loadImpressions();
-  else if(currentPage==='stats'){loadStats();loadCardStats();}
-  else if(currentPage==='universities') loadUniversities();
-}
-
-// ── SIDEBAR MOBILE ──
-function toggleSidebar(force){
-  const sb=document.getElementById('sidebar');
-  const ov=document.getElementById('sidebarOverlay');
-  const open=(typeof force==='boolean')?force:!sb.classList.contains('open');
-  sb.classList.toggle('open',open);
-  ov.classList.toggle('show',open);
-}
-// Ferme le menu automatiquement après un tap sur mobile (sauf sur le déclencheur du menu "Nouvelle commande")
-document.querySelectorAll('.sb-item').forEach(el=>{
-  el.addEventListener('click',(e)=>{ if(e.target.closest('.order-trigger')) return; if(window.innerWidth<=860) toggleSidebar(false); });
-});
-
-// ── HELPERS ──
-async function copyEditLink(slug,token){
-  if(!token){
-    showToast('⚠️ Ce client n\'a pas encore de jeton — exécutez la migration SQL puis rechargez');
-    return;
-  }
-  const link=`https://printlegacy-platform.vercel.app/modifier.html?slug=${slug}&token=${token}`;
-  try{
-    await navigator.clipboard.writeText(link);
-    showToast('🔗 Lien d\'édition copié !');
+    const source=getSource();
+    await sb.from('card_views').insert({client_id:clientId,source});
   }catch(e){
-    prompt('Copiez ce lien manuellement :',link);
+    // silencieux — le suivi des stats ne doit jamais bloquer l'affichage de la carte
   }
 }
+ 
+function ini(fn,ln){return((fn||'')[0]+(ln||'')[0]).toUpperCase()||'?'}
 
-function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-// For values interpolated inside a single-quoted JS string literal within an
-// onclick="..." attribute (e.g. onclick="fn('${escAttr(c.slug)}')") — escapes
-// backslash/quote for the JS layer first, then HTML-escapes the result so it
-// also survives as an HTML attribute value.
-function escAttr(s){return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));}
-
-function slugify(s){
-  return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+// Remplace une image cassée par le pictogramme approprié (appelé depuis onerror="...")
+function imgFallback(el,iconKey,placeholderClass){
+  el.parentElement.innerHTML=`<div class="${placeholderClass}">${UI_ICONS[iconKey]}</div>`;
 }
 
-// ── Menu déroulant "Nouvelle commande" ──
-const ORDER_PRODUCTS=[
-  {key:'student',   icon:'🎓', label:'Carte NFC Student',  price:'12 000 FCFA'},
-  {key:'pro',       icon:'💼', label:'Carte NFC Pro',       price:'16 000 FCFA'},
-  {key:'porteclefs',icon:'🔑', label:'Porte-clés NFC',      price:'8 000 FCFA'},
-  {key:'plaque',    icon:'🏢', label:'Plaque NFC',          price:'Sur devis'},
-  {key:'bracelet',  icon:'🎫', label:'Bracelet NFC',        price:'Sur devis'},
-];
-function buildOrderMenuHtml(){
-  return ORDER_PRODUCTS.map(p=>`<a class="order-menu-item" href="https://printlegacy.github.io/order.html?produit=${p.key}"><span class="om-ico">${p.icon}</span>${p.label}<span class="om-price">${p.price}</span></a>`).join('');
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  const sbMenu=document.getElementById('sbOrderMenu');
-  const tbMenu=document.getElementById('tbOrderMenu');
-  if(sbMenu) sbMenu.innerHTML=buildOrderMenuHtml();
-  if(tbMenu) tbMenu.innerHTML=buildOrderMenuHtml();
-});
-function toggleOrderMenu(id,ev){
-  if(ev){ev.stopPropagation();}
-  const menu=document.getElementById(id);
-  const wasOpen=menu.classList.contains('open');
-  document.querySelectorAll('.order-menu.open').forEach(m=>m.classList.remove('open'));
-  if(!wasOpen) menu.classList.add('open');
-}
-document.addEventListener('click',(e)=>{
-  if(!e.target.closest('.order-menu-wrap')){
-    document.querySelectorAll('.order-menu.open').forEach(m=>m.classList.remove('open'));
-  }
-});
-function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
-function avatarHTML(c){
-  const raw=initials(c.firstname,c.lastname);
-  const iniAttr=escAttr(raw);
-  if(c.photo) return `<img src="${esc(c.photo)}" onerror="this.outerHTML='${iniAttr}'">`;
-  if(c.company_logo_url) return `<img src="${esc(c.company_logo_url)}" onerror="this.outerHTML='${iniAttr}'">`;
-  return esc(raw);
-}
-function statusBadge(s){
-  if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
-  if(s==='active') return '<span class="status st-a"><span class="sd"></span>Actif</span>';
-  return '<span class="status st-d"><span class="sd"></span>'+s+'</span>';
-}
-function fmtMoney(n){return (n||0).toLocaleString('fr-FR')+' FCFA';}
-function fmtNum(n){return Math.round(n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
-
-// ── CLIENTS TABLE ──
-const PRODUIT_META={
-  student:{label:'🎓 Student',bg:'#E8EDF8',fg:'#2F4486'},
-  pro:{label:'💼 Pro',bg:'var(--gold4)',fg:'var(--gold)'},
-  plaque:{label:'🪧 Plaque',bg:'#FDEFE0',fg:'#B26A00'},
-  bracelet:{label:'⌚ Bracelet',bg:'#F3E8FF',fg:'#7C3AED'},
-  porteclefs:{label:'🔑 Porte-clés',bg:'#E6F7EE',fg:'#0F9D58'},
+// ── VRAIS LOGOS DES RÉSEAUX SOCIAUX (glyphes blancs sur badge à la couleur officielle de la marque) ──
+const SOCIAL_ICONS={
+  instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.4" cy="6.6" r="1.1" fill="#fff" stroke="none"/></svg>',
+  tiktok:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M16.6 2.2c.4 2.1 1.7 3.5 3.8 3.7v3.1c-1.4.1-2.7-.3-3.8-1.1v6.4c0 3.3-2.7 5.7-5.8 5.5-2.8-.2-5-2.5-5.1-5.3-.1-3.1 2.3-5.7 5.4-5.8.3 0 .6 0 .9.1v3.2a2.7 2.7 0 0 0-3.1 2.9 2.7 2.7 0 0 0 5.4-.2V2.2h2.3z"/></svg>',
+  linkedin:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M6.94 5.1a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0zM3.16 8.6h3.55V21H3.16V8.6zm6.35 0h3.4v1.7h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.26 2.36 4.26 5.43V21h-3.55v-6.4c0-1.53-.03-3.5-2.13-3.5-2.14 0-2.47 1.67-2.47 3.39V21H9.5V8.6z"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M22 12s0-3.1-.4-4.6a2.8 2.8 0 0 0-2-2C18.1 5 12 5 12 5s-6.1 0-7.6.4a2.8 2.8 0 0 0-2 2C2 8.9 2 12 2 12s0 3.1.4 4.6a2.8 2.8 0 0 0 2 1.9c1.5.4 7.6.4 7.6.4s6.1 0 7.6-.4a2.8 2.8 0 0 0 2-1.9C22 15.1 22 12 22 12zM9.9 15.3V8.7l5.5 3.3-5.5 3.3z"/></svg>',
+  facebook:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M13.5 21.5v-8.2h2.75l.4-3.2h-3.15V8.1c0-.93.26-1.56 1.6-1.56h1.7V3.68c-.3-.04-1.3-.13-2.46-.13-2.44 0-4.1 1.49-4.1 4.22v2.36H7.5v3.2h2.74v8.2h3.26z"/></svg>',
+  snapchat:'<svg viewBox="0 0 24 24" fill="#000"><path d="M12 2.5c2.9 0 4.4 2.15 4.5 4.1.05 1 0 1.85-.05 2.55.55.15 1.05-.3 1.35-.55.3-.05.85.1.9.6.05.4-.25.75-1.15 1.15-.15.05-.35.15-.35.35 0 .4.65 1.6 2.4 1.9.2.05.35.25.25.5-.2.6-1.35.85-2.05.95-.1.15-.05.5-.15.75-.1.25-.4.25-.75.2-.55-.1-1.05-.2-1.75.15-.65.35-1.3 1.2-2.9 1.2s-2.25-.85-2.9-1.2c-.7-.35-1.2-.25-1.75-.15-.35.05-.65.05-.75-.2-.1-.25-.05-.6-.15-.75-.7-.1-1.85-.35-2.05-.95-.1-.25.05-.45.25-.5 1.75-.3 2.4-1.5 2.4-1.9 0-.2-.2-.3-.35-.35-.9-.4-1.2-.75-1.15-1.15.05-.5.6-.65.9-.6.3.25.8.7 1.35.55-.05-.7-.1-1.55-.05-2.55.1-1.95 1.6-4.1 4.5-4.1z"/></svg>',
+  link:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M9 15l6-6"/><path d="M10.5 6.5l.7-.7a4 4 0 0 1 5.66 5.66l-1.4 1.4"/><path d="M13.5 17.5l-.7.7a4 4 0 0 1-5.66-5.66l1.4-1.4"/></svg>'
 };
-function produitBadge(p){
-  const m=PRODUIT_META[p];
-  if(!m) return '<span class="badge" style="background:var(--cream2);color:var(--smoke2)">—</span>';
-  return `<span class="badge" style="background:${m.bg};color:${m.fg}">${m.label}</span>`;
+
+// Couleur (ou dégradé) officielle de chaque réseau, appliquée en fond du badge
+const SOCIAL_BG={
+  instagram:'radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)',
+  tiktok:'#010101',
+  linkedin:'#0A66C2',
+  youtube:'#FF0000',
+  facebook:'#1877F2',
+  snapchat:'#FFFC00',
+  link:'#6B6560'
+};
+
+// ── THÈMES DE COULEUR (mêmes options que dans le dashboard) ──
+const THEMES={
+  noir:{ink:'#0A0A0A',gold:'#D4AF6A'},
+  emerald:{ink:'#0D3B2E',gold:'#4CAF50'},
+  navy:{ink:'#0A1628',gold:'#4A90D9'},
+  crimson:{ink:'#1A0808',gold:'#C62828'},
+  ivory:{ink:'#1C160A',gold:'#C9A84C'},
+  violet:{ink:'#1A0A2E',gold:'#9C27B0'},
+  bordeaux:{ink:'#1A0812',gold:'#C2185B'},
+  sable:{ink:'#1C1208',gold:'#CD853F'},
+  slate:{ink:'#0D1B2A',gold:'#607D8B'},
+  rosegold:{ink:'#1A0F0F',gold:'#E8A0B0'},
+  tropical:{ink:'#051F0D',gold:'#26A69A'},
+  midnight:{ink:'#05051A',gold:'#5C6BC0'},
+  coffee:{ink:'#1A1008',gold:'#8D6E63'},
+  forest:{ink:'#0A1A0A',gold:'#388E3C'},
+  ocean:{ink:'#00101A',gold:'#0277BD'},
+  sand:{ink:'#1A1510',gold:'#D4A853'},
+  plum:{ink:'#140A1A',gold:'#6A1B9A'},
+  coral:{ink:'#1A0A08',gold:'#E64A19'},
+  arctic:{ink:'#0A1018',gold:'#80CBC4'},
+  bronze:{ink:'#120E08',gold:'#A0744C'}
+};
+
+function hexToRgb(hex){
+  const h=hex.replace('#','');
+  const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16);
+  return {r:(n>>16)&255,g:(n>>8)&255,b:n&255};
 }
-function universityById(id){return allUniversities.find(u=>u.id===id);}
-function renderTable(){
-  let data=allData;
-  if(currentView==='pending') data=data.filter(c=>!c.status||c.status==='pending');
-  else if(currentView==='active') data=data.filter(c=>c.status==='active');
-  if(searchQuery){
-    const q=searchQuery.toLowerCase();
-    data=data.filter(c=>(c.firstname||'').toLowerCase().includes(q)||(c.lastname||'').toLowerCase().includes(q)||(c.company||'').toLowerCase().includes(q)||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q));
+function lighten(hex,amt){
+  const {r,g,b}=hexToRgb(hex);
+  const l=v=>Math.min(255,Math.round(v+(255-v)*amt));
+  return '#'+[l(r),l(g),l(b)].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+
+// Applique la couleur du thème choisi (dans le dashboard) à toute la carte
+function applyTheme(themeId){
+  const t=THEMES[themeId]||THEMES.noir;
+  const root=document.documentElement.style;
+  const {r,g,b}=hexToRgb(t.gold);
+  root.setProperty('--gold',t.gold);
+  root.setProperty('--gold2',lighten(t.gold,0.35));
+  root.setProperty('--gold-bg',`rgba(${r},${g},${b},0.1)`);
+  root.setProperty('--gold-15',`rgba(${r},${g},${b},0.15)`);
+  root.setProperty('--gold-20',`rgba(${r},${g},${b},0.2)`);
+  root.setProperty('--gold-25',`rgba(${r},${g},${b},0.25)`);
+  root.setProperty('--gold-40',`rgba(${r},${g},${b},0.4)`);
+  root.setProperty('--gold-45',`rgba(${r},${g},${b},0.45)`);
+  root.setProperty('--ink',t.ink);
+  root.setProperty('--ink2',lighten(t.ink,0.25));
+}
+ 
+// ── AUTRES ICÔNES DE L'INTERFACE (contact, sections, divers) ──
+const UI_ICONS={
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  idcard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.3"/><circle cx="8" cy="12" r="2"/><path d="M6 16.2c.3-1.3 1.1-2 2-2s1.7.7 2 2"/><path d="M13.5 9.7h5"/><path d="M13.5 13.2h5"/></svg>',
+  bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8h11l1 12.3a1.5 1.5 0 0 1-1.5 1.7H7a1.5 1.5 0 0 1-1.5-1.7L6.5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.7l7.4-4.2"/><path d="M8.3 13.3l7.4 4.2"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4h3.4l1.4 4.2-2 1.6a12.5 12.5 0 0 0 5.9 5.9l1.6-2 4.2 1.4v3.4a1.6 1.6 0 0 1-1.7 1.6A16 16 0 0 1 3 6.7 1.6 1.6 0 0 1 4.5 4z"/></svg>',
+  whatsapp:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.4 2 11.8c0 1.9.5 3.6 1.5 5.2L2 22l5.2-1.4a10 10 0 0 0 4.8 1.2c5.5 0 10-4.4 10-9.8S17.5 2 12 2zm0 17.8a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3a7.8 7.8 0 0 1-1.2-4.3C4 7.6 7.6 4 12 4s8 3.6 8 7.8-3.6 8-8 8zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1s-.6.8-.7.9c-.1.1-.3.2-.5.1a6.5 6.5 0 0 1-1.9-1.2 7 7 0 0 1-1.3-1.6c-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.3.2-.4.1-.1 0-.3 0-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.1 1.6 2.5 4 3.5.6.2 1 .4 1.3.5.6.2 1.1.1 1.5-.1.5-.2 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.3-.2-.5-.3z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.3"/><path d="M3 6.2l9 6.3 9-6.3"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8a14 14 0 0 1 4.2 9.2A14 14 0 0 1 12 21.2 14 14 0 0 1 7.8 12 14 14 0 0 1 12 2.8z"/></svg>',
+  mapPin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 10.5c0 6-7 11.5-7 11.5s-7-5.5-7-11.5a7 7 0 1 1 14 0z"/><circle cx="12" cy="10.5" r="2.6"/></svg>',
+  fileText:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.8h8.2L19 7.6v13.6a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1z"/><path d="M13.8 2.8V7.6H19"/><path d="M8.2 12.6h7.2"/><path d="M8.2 16h7.2"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>',
+  sparkle:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.6L20.5 10l-6.6 1.9L12 18.5l-1.9-6.6L3.5 10l6.6-1.4L12 2z"/></svg>',
+  frown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.3"/><path d="M8.2 15.8a4.6 4.6 0 0 1 7.6 0"/><circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.4"/><path d="M9 8h.01"/><path d="M14 8h.01"/><path d="M9 12h.01"/><path d="M14 12h.01"/><path d="M9 16h.01"/><path d="M14 16h.01"/><path d="M10 21v-4h4v4"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.3"/><path d="M12 7v5.3l3.3 2"/></svg>'
+};
+
+function buildContacts(c){
+  const l=[];
+  if(c.phone)l.push({href:'tel:'+c.phone,ico:UI_ICONS.phone,lbl:'Téléphone',val:c.phone});
+  const wa=c.whatsapp||c.phone;
+  if(wa)l.push({href:'https://wa.me/'+wa.replace(/\D/g,''),ico:UI_ICONS.whatsapp,color:'#25D366',lbl:'WhatsApp',val:'Message direct',t:1});
+  if(c.email)l.push({href:'mailto:'+c.email,ico:UI_ICONS.mail,lbl:'E-mail',val:c.email});
+  if(c.website)l.push({href:c.website,ico:UI_ICONS.globe,lbl:'Site web',val:c.website.replace(/https?:\/\//,''),t:1});
+  if(c.location){
+    const href=c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location);
+    l.push({href,ico:UI_ICONS.mapPin,lbl:'Adresse',val:c.location.startsWith('http')?'Voir sur la carte':c.location,t:1});
   }
-  if(!data.length){
-    document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">📭</div>Aucun client.</div>';
-    return;
+  if(c.cv_url)l.push({href:c.cv_url,ico:UI_ICONS.fileText,lbl:'CV / Portfolio',val:'Télécharger',t:1});
+  return l;
+}
+ 
+function buildSocials(c){
+  const s=[];
+  if(c.instagram)s.push({href:'https://'+c.instagram,ico:SOCIAL_ICONS.instagram,bg:SOCIAL_BG.instagram,name:'Instagram'});
+  if(c.tiktok)s.push({href:'https://'+c.tiktok,ico:SOCIAL_ICONS.tiktok,bg:SOCIAL_BG.tiktok,name:'TikTok'});
+  if(c.linkedin)s.push({href:'https://'+c.linkedin,ico:SOCIAL_ICONS.linkedin,bg:SOCIAL_BG.linkedin,name:'LinkedIn'});
+  if(c.behance)s.push({href:'https://'+c.behance,ico:SOCIAL_ICONS.behance,bg:SOCIAL_BG.behance,name:'Behance'});
+  if(c.youtube)s.push({href:'https://'+c.youtube,ico:SOCIAL_ICONS.youtube,bg:SOCIAL_BG.youtube,name:'YouTube'});
+  if(c.facebook)s.push({href:'https://'+c.facebook,ico:SOCIAL_ICONS.facebook,bg:SOCIAL_BG.facebook,name:'Facebook'});
+  if(c.snapchat){
+    const sc=c.snapchat.trim();
+    const scHref=sc.startsWith('http')?sc:'https://www.snapchat.com/add/'+sc.replace(/^@/,'');
+    s.push({href:scHref,ico:SOCIAL_ICONS.snapchat,bg:SOCIAL_BG.snapchat,name:'Snapchat'});
   }
-  const rows=data.map(c=>{
-    const uni=c.university_id?universityById(c.university_id):null;
-    return `<tr>
-      <td><div class="cl">
-        <div class="av${(!c.photo&&c.company_logo_url)?' is-logo':''}">${avatarHTML(c)}</div>
-        <div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.company||c.jobtitle||'')}${uni?' · 🎓 '+esc(uni.name):''}</div></div>
-      </div></td>
-      <td>${produitBadge(c.produit)}</td>
-      <td>${esc(c.jobtitle||'—')}</td>
-      <td>${esc(c.phone||'—')}</td>
-      <td>${esc(c.email||'—')}</td>
-      <td><span class="badge b-p">${esc(c.theme||'noir')}</span></td>
-      <td>${statusBadge(c.status)}</td>
-      <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
-      <td><div style="display:flex;gap:6px;align-items:center">
-        ${c.cv_url?`<a href="${esc(c.cv_url)}" target="_blank" style="font-size:14px;text-decoration:none">📄</a>`:''}
-        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${escAttr(c.slug)}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
-        <span onclick="openNFC('${escAttr(c.slug)}','${escAttr(c.firstname||'')} ${escAttr(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
-        <span onclick="openEdit('${escAttr(c.id)}')" style="cursor:pointer;font-size:14px">✏️</span>
-        <span onclick="copyEditLink('${escAttr(c.slug)}','${escAttr(c.edit_token||'')}')" title="Copier le lien d'édition client" style="cursor:pointer;font-size:14px">🔗</span>
-        <span onclick="toggleStatus('${escAttr(c.id)}','${escAttr(c.status||'pending')}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
-      </div></td>
-    </tr>`;
+  try{
+    (typeof c.custom_links==='string'?JSON.parse(c.custom_links):c.custom_links||[])
+      .forEach(l=>s.push({href:l.url,ico:SOCIAL_ICONS.link,bg:SOCIAL_BG.link,name:l.label}));
+  }catch(e){}
+  return s;
+}
+ 
+function buildCatalogue(c){
+  let items=[];
+  try{
+    if(Array.isArray(c.catalogue)) items=c.catalogue;
+    else if(typeof c.catalogue==='string'&&c.catalogue) items=JSON.parse(c.catalogue);
+  }catch(e){}
+  if(!items||!items.length) return '';
+  window.catalogueItems=items;
+  window.catalogueMeta={waBase:(c.whatsapp||c.phone||'').replace(/\D/g,''),company:c.company||''};
+ 
+  const cards=items.map((item,idx)=>{
+    const name=item.title||item.name||'';
+    const desc=item.desc||item.description||'';
+    const price=item.price;
+    const img=item.image_url;
+    const imgHTML=img
+      ?`<img src="${img}" alt="${name}" onerror="imgFallback(this,'bag','cat-img-placeholder')">`
+      :`<div class="cat-img-placeholder">${UI_ICONS.bag}</div>`;
+    const priceHTML=price?`<div class="cat-price">${Number(price).toLocaleString('fr-FR')} FCFA</div>`:'';
+    const descHTML=desc?`<div class="cat-desc">${desc}</div>`:'';
+    return `<div class="cat-card" onclick="openLb(${idx})">
+      <div class="cat-img-wrap">${imgHTML}</div>
+      <div class="cat-body">
+        <div class="cat-name">${name}</div>
+        ${descHTML}
+        ${priceHTML}
+      </div>
+    </div>`;
   }).join('');
-  document.getElementById('tableWrap').innerHTML=`<table><thead><tr>
-    <th>Client</th><th>Produit</th><th>Poste</th><th>Téléphone</th><th>Email</th>
-    <th>Thème</th><th>Statut</th><th>Date</th><th>Actions</th>
-  </tr></thead><tbody>${rows}</tbody></table>`;
+ 
+  return `<div class="sec">
+    <div class="sec-header">
+      <div class="sec-ico">${UI_ICONS.bag}</div>
+      <span class="sec-lbl">Catalogue produits</span>
+    </div>
+    <div class="cat-scroll">${cards}</div>
+  </div>
+  <div class="divider"><span></span></div>`;
 }
-
-async function loadData(){
-  document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    if(!allUniversities.length) await loadUniversitiesQuiet();
-    const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
-    if(error){document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+error.message+'</div>';return;}
-    hideDbBanner();
-    if(!data||!data.length){document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">📭</div>Aucun client.</div>';return;}
-    document.getElementById('stat-total').textContent=data.length;
-    document.getElementById('stat-pending').textContent=data.filter(c=>!c.status||c.status==='pending').length;
-    document.getElementById('stat-active').textContent=data.filter(c=>c.status==='active').length;
-    document.getElementById('stat-nfc').textContent=data.length;
-    document.getElementById('sb-pending').textContent=data.filter(c=>!c.status||c.status==='pending').length;
-    allData=data;
-    renderTable();
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      document.getElementById('tableWrap').innerHTML=friendlyEmptyState();
-      ['stat-total','stat-pending','stat-active','stat-nfc'].forEach(id=>document.getElementById(id).textContent='—');
-    }else{
-      document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
-    }
-  }
+ 
+let lbIndex=0;
+function renderLb(){
+  const items=window.catalogueItems||[];
+  const meta=window.catalogueMeta||{};
+  const item=items[lbIndex];
+  if(!item) return;
+  const img=item.image_url;
+  const imgHTML=img
+    ?`<img class="lb-img" src="${img}" alt="${item.title||''}" onerror="imgFallback(this,'bag','lb-img-placeholder')">`
+    :`<div class="lb-img-placeholder">${UI_ICONS.bag}</div>`;
+  document.getElementById('lbImgWrap').innerHTML=imgHTML;
+  document.getElementById('lbName').textContent=item.title||item.name||'';
+  document.getElementById('lbDesc').textContent=item.desc||item.description||'';
+  const price=item.price;
+  document.getElementById('lbPrice').textContent=price?Number(price).toLocaleString('fr-FR')+' FCFA':'';
+  const name=item.title||item.name||'cet article';
+  const orderMsg=encodeURIComponent(`Bonjour${meta.company?' '+meta.company:''}, je suis intéressé(e) par : ${name}`);
+  document.getElementById('lbOrderBtnWrap').innerHTML=meta.waBase
+    ?`<a href="https://wa.me/${meta.waBase}?text=${orderMsg}" target="_blank" class="lb-order-btn">Commander sur WhatsApp</a>`
+    :'';
+  document.getElementById('lbCounter').textContent=items.length>1?`${lbIndex+1} / ${items.length}`:'';
+  const single=items.length<=1;
+  document.getElementById('lbPrev').classList.toggle('disabled',single);
+  document.getElementById('lbNext').classList.toggle('disabled',single);
 }
-
-async function toggleStatus(id,current){
-  const next=current==='active'?'pending':'active';
-  try{
-    const {data,error}=await sb.from('clients').update({status:next}).eq('id',id).select();
-    if(error)throw error;
-    if(!data||data.length===0){showToast('⚠️ Changement non appliqué — vérifiez les permissions (RLS)');return;}
-    loadData();
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
+function openLb(idx){
+  lbIndex=idx;
+  renderLb();
+  document.getElementById('lbOv').classList.add('open');
+  document.body.style.overflow='hidden';
 }
-
-// ── UNIVERSITÉS / PARTENARIATS ──
-async function loadUniversitiesQuiet(){
-  try{
-    const {data,error}=await sb.from('universities').select('*').order('created_at',{ascending:true});
-    if(!error&&data){allUniversities=data;allUniversities.forEach(registerUniversityTheme);renderThemeGrid();}
-  }catch(e){/* silencieux : chargé aussi via loadUniversities() */}
+function navLb(dir){
+  const items=window.catalogueItems||[];
+  if(items.length<2) return;
+  lbIndex=(lbIndex+dir+items.length)%items.length;
+  renderLb();
 }
-
-async function loadUniversities(){
-  const grid=document.getElementById('uniGrid');
-  grid.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    const [{data:unis,error:uErr},{data:clients,error:cErr}]=await Promise.all([
-      sb.from('universities').select('*').order('created_at',{ascending:true}),
-      sb.from('clients').select('id,university_id,status')
-    ]);
-    if(uErr){
-      if((uErr.message||'').toLowerCase().includes('does not exist')||(uErr.message||'').toLowerCase().includes('relation')){
-        grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🎓</div>La table <strong>universities</strong> n'existe pas encore dans Supabase.<br><span style="font-size:11px">Exécutez le script SQL fourni pour activer les partenariats universitaires.</span></div>`;
-        ['uni-stat-total','uni-stat-cards','uni-stat-pending'].forEach(id=>document.getElementById(id).textContent='—');
-        return;
-      }
-      throw uErr;
-    }
-    hideDbBanner();
-    allUniversities=unis||[];
-    allUniversities.forEach(registerUniversityTheme);
-    renderThemeGrid();
-
-    const allClients=clients||[];
-    const studentClients=allClients.filter(c=>c.university_id);
-    document.getElementById('uni-stat-total').textContent=allUniversities.length;
-    document.getElementById('uni-stat-cards').textContent=studentClients.length;
-    document.getElementById('uni-stat-pending').textContent=studentClients.filter(c=>!c.status||c.status==='pending').length;
-
-    populateUniversitySelect();
-
-    if(!allUniversities.length){
-      grid.innerHTML=`<div class="uni-add-card" onclick="openUniModal()">
-        <div style="font-size:1.8rem">🎓</div>
-        <div style="font-size:12px;font-weight:600">Ajouter votre premier partenariat</div>
-      </div>`;
-      return;
-    }
-
-    const cardsHtml=allUniversities.map(u=>{
-      const count=allClients.filter(c=>c.university_id===u.id).length;
-      const logo=u.logo_url?`<img class="uni-card-logo" src="${esc(u.logo_url)}">`:`<div class="uni-card-logo-fallback" style="color:${u.primary_color||'#0A0A0A'}">${esc((u.name||'?').slice(0,2).toUpperCase())}</div>`;
-      return `<div class="uni-card">
-        <div class="uni-card-top" style="background:${u.secondary_color||'#F5F5F5'}" onclick="openUniStudents('${escAttr(u.id)}')">${logo}</div>
-        <div class="uni-card-body" onclick="openUniStudents('${escAttr(u.id)}')">
-          <div class="uni-card-name">${esc(u.name)}</div>
-          <div class="uni-card-sub"><span>${count} carte(s) étudiante(s)</span>
-            <span class="uni-card-swatches"><span class="uni-swatch" style="background:${u.primary_color||'#0A0A0A'}"></span><span class="uni-swatch" style="background:${u.secondary_color||'#fff'}"></span></span>
-          </div>
-        </div>
-        <div class="uni-card-actions">
-          <div class="uni-mini-btn primary" onclick="event.stopPropagation();createStudentFor('${escAttr(u.id)}')">+ Étudiant</div>
-          <div class="uni-mini-btn" onclick="event.stopPropagation();openUniModal('${escAttr(u.id)}')">✏️ Éditer</div>
-        </div>
-      </div>`;
-    }).join('');
-
-    grid.innerHTML=cardsHtml+`<div class="uni-add-card" onclick="openUniModal()">
-      <div style="font-size:1.8rem">＋</div>
-      <div style="font-size:12px;font-weight:600">Nouveau partenariat</div>
-    </div>`;
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      grid.innerHTML='<div style="grid-column:1/-1">'+friendlyEmptyState()+'</div>';
-    }else{
-      grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
-    }
-  }
+function closeLb(){
+  document.getElementById('lbOv').classList.remove('open');
+  document.body.style.overflow='';
 }
-
-function populateUniversitySelect(){
-  const sel=document.getElementById('edit-university_id');
-  const keep=sel.value;
-  sel.innerHTML='<option value="">— Aucune —</option>'+allUniversities.map(u=>`<option value="${escAttr(u.id)}">${esc(u.name)}</option>`).join('');
-  if(keep) sel.value=keep;
-}
-
-function openUniModal(id){
-  currentUniId=id||null;
-  newUniLogoFile=null;
-  document.getElementById('uniModalTitle').textContent=id?'✏️ Modifier le partenariat':'🎓 Nouveau partenariat';
-  document.getElementById('uniDeleteBtn').style.display=id?'inline-block':'none';
-  const img=document.getElementById('uniLogoImg');
-  img.style.display='none';img.src='';
-  document.getElementById('uniLogoHint').style.display='block';
-  document.getElementById('uni-name').value='';document.getElementById('uni-tagline').value='';
-  document.getElementById('uni-primary').value='#2F4486';
-  document.getElementById('uni-primary-hex').value='#2F4486';
-  document.getElementById('uni-secondary').value='#FFFFFF';
-  document.getElementById('uni-secondary-hex').value='#FFFFFF';
-  if(id){
-    const u=universityById(id);
-    if(u){
-      document.getElementById('uni-name').value=u.name||'';document.getElementById('uni-tagline').value=u.tagline||'';
-      const pc=u.primary_color||'#2F4486', sc=u.secondary_color||'#FFFFFF';
-      document.getElementById('uni-primary').value=pc;document.getElementById('uni-primary-hex').value=pc;
-      document.getElementById('uni-secondary').value=sc;document.getElementById('uni-secondary-hex').value=sc;
-      if(u.logo_url){img.src=u.logo_url;img.style.display='block';document.getElementById('uniLogoHint').style.display='none';}
-    }
-  }
-  updateUniPreview();
-  document.getElementById('uniOv').classList.add('open');
-}
-function closeUniModal(){document.getElementById('uniOv').classList.remove('open');}
-
-function onUniLogoChange(e){
-  const f=e.target.files[0];if(!f)return;
-  newUniLogoFile=f;
-  const r=new FileReader();
-  r.onload=x=>{const img=document.getElementById('uniLogoImg');img.src=x.target.result;img.style.display='block';document.getElementById('uniLogoHint').style.display='none';};
-  r.readAsDataURL(f);
-}
-
-function updateUniPreview(){
-  const pc=document.getElementById('uni-primary-hex').value||'#2F4486';
-  const sc=document.getElementById('uni-secondary-hex').value||'#FFFFFF';
-  const sw=document.getElementById('uniPreviewSwatch');
-  sw.style.background=pc;
-  sw.style.color=isLightColor(sc)?pc:sc;
-  sw.style.border=isLightColor(pc)?'1px solid rgba(0,0,0,.1)':'none';
-}
-['uni-primary','uni-secondary'].forEach(id=>{
+(function(){
+  let touchStartX=0;
   document.addEventListener('DOMContentLoaded',()=>{
-    const colorInp=document.getElementById(id);
-    const hexInp=document.getElementById(id+'-hex');
-    if(!colorInp||!hexInp) return;
-    colorInp.addEventListener('input',()=>{hexInp.value=colorInp.value;updateUniPreview();});
-    hexInp.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(hexInp.value)){colorInp.value=hexInp.value;}updateUniPreview();});
+    const ov=document.getElementById('lbOv');
+    if(!ov) return;
+    ov.addEventListener('touchstart',(e)=>{ touchStartX=e.touches[0].clientX; },{passive:true});
+    ov.addEventListener('touchend',(e)=>{
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      if(Math.abs(dx)>50) navLb(dx>0?-1:1);
+    },{passive:true});
   });
-});
-
-async function saveUniversity(){
-  const name=document.getElementById('uni-name').value.trim();
-  if(!name){showToast('Le nom de l\'université est obligatoire');return;}
-  const btn=document.getElementById('uniSaveBtn');
-  btn.disabled=true;btn.textContent='💾 Enregistrement...';
-  try{
-    const updates={
-      name,
-      primary_color:document.getElementById('uni-primary-hex').value||'#0A0A0A',
-      secondary_color:document.getElementById('uni-secondary-hex').value||'#D4AF6A'
-    };
-    updates.tagline=document.getElementById('uni-tagline').value.trim()||null;
-    if(newUniLogoFile){
-      const url=await upFile(newUniLogoFile,'universities');
-      if(url) updates.logo_url=url;
-    }
-    let error;
-    if(currentUniId){
-      ({error}=await sb.from('universities').update(updates).eq('id',currentUniId));
-    }else{
-      ({error}=await sb.from('universities').insert(updates));
-    }
-    if(error) throw error;
-    closeUniModal();
-    showToast('✓ Partenariat enregistré !');
-    loadUniversities();
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }finally{
-    btn.disabled=false;btn.textContent='💾 Enregistrer';
-  }
-}
-
-async function deleteUniversity(){
-  if(!currentUniId)return;
-  if(!confirm('Supprimer ce partenariat ? Les cartes étudiantes déjà créées ne seront pas supprimées, mais perdront leur rattachement.'))return;
-  try{
-    await sb.from('universities').delete().eq('id',currentUniId);
-    closeUniModal();
-    showToast('Partenariat supprimé');
-    loadUniversities();
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-async function openUniStudents(uniId){
-  activeUniFilter=uniId;
-  const u=universityById(uniId);
-  const card=document.getElementById('uniStudentsCard');
-  const wrap=document.getElementById('uniStudentsWrap');
-  document.getElementById('uniStudentsTitle').textContent='🎓 Étudiants · '+(u?u.name:'');
-  card.style.display='block';
-  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  card.scrollIntoView({behavior:'smooth',block:'start'});
-  try{
-    const {data,error}=await sb.from('clients').select('*').eq('university_id',uniId).order('created_at',{ascending:false});
-    if(error) throw error;
-    if(!data||!data.length){
-      wrap.innerHTML=`<div class="empty"><div class="empty-ico">🎓</div>Aucune carte étudiante pour cette université pour le moment.<br><button class="imp-btn" style="margin-top:12px" onclick="createStudentFor('${escAttr(uniId)}')">+ Ajouter le premier·ère étudiant·e</button></div>`;
-      return;
-    }
-    const rows=data.map(c=>`<tr>
-      <td><div class="cl"><div class="av">${avatarHTML(c)}</div><div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.student_id||'')}</div></div></div></td>
-      <td>${esc(c.phone||'—')}</td>
-      <td>${esc(c.email||'—')}</td>
-      <td>${statusBadge(c.status)}</td>
-      <td><div style="display:flex;gap:6px">
-        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${escAttr(c.slug)}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
-        <span onclick="openNFC('${escAttr(c.slug)}','${escAttr(c.firstname||'')} ${escAttr(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
-        <span onclick="openEdit('${escAttr(c.id)}')" style="cursor:pointer;font-size:14px">✏️</span>
-      </div></td>
-    </tr>`).join('');
-    wrap.innerHTML=`<table><thead><tr><th>Étudiant</th><th>Téléphone</th><th>Email</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();wrap.innerHTML=friendlyEmptyState();}
-    else{wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';}
-  }
-}
-function closeUniStudents(){
-  document.getElementById('uniStudentsCard').style.display='none';
-  activeUniFilter=null;
-}
-function createStudentFor(uniId){
-  openEdit(null, uniId);
-}
-
-// ── CRÉATIONS ──
-async function loadCreations(){
-  document.getElementById('creationGrid').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    const {data,error}=await sb.from('creations').select('*').order('created_at',{ascending:false});
-    if(error||!data||!data.length){
-      document.getElementById('creationGrid').innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🎨</div>Aucune création. Uploadez votre premier fichier.</div>';
-      return;
-    }
-    hideDbBanner();
-    document.getElementById('creationGrid').innerHTML=data.map(c=>`
-      <div class="creation-card">
-        ${c.file_type==='pdf'
-          ?`<div class="creation-pdf" onclick="window.open('${c.file_url}','_blank')"><div style="font-size:2.5rem">📄</div><div style="font-size:11px;color:var(--smoke2)">Ouvrir PDF</div></div>`
-          :`<img class="creation-img" src="${c.file_url}" alt="${c.title||''}" onclick="window.open('${c.file_url}','_blank')" style="cursor:pointer">`
-        }
-        <button class="creation-del" onclick="deleteCreation('${c.id}')">✕</button>
-        <div class="creation-body">
-          <div class="creation-title">${c.title||'Sans titre'}</div>
-          <div class="creation-client">${c.client_name||''}</div>
-        </div>
-      </div>
-    `).join('');
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      document.getElementById('creationGrid').innerHTML='<div style="grid-column:1/-1">'+friendlyEmptyState()+'</div>';
-    }else{
-      document.getElementById('creationGrid').innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
-    }
-  }
-}
-
-async function uploadCreations(e){
-  const files=Array.from(e.target.files);
-  if(!files.length) return;
-  const prog=document.getElementById('uploadProg');
-  const bar=document.getElementById('uploadProgBar');
-  prog.style.display='block';
-  try{
-    for(let i=0;i<files.length;i++){
-      const file=files[i];
-      bar.style.width=((i/files.length)*100)+'%';
-      const ext=file.name.split('.').pop().toLowerCase();
-      const path=`creations/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-      const {error:upErr}=await sb.storage.from('printlegacy').upload(path,file,{upsert:true});
-      if(upErr){showToast('Erreur: '+upErr.message);continue;}
-      const url=sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
-      const fileType=file.type.startsWith('image')?'image':'pdf';
-      const title=file.name.replace(/\.[^.]+$/,'');
-      await sb.from('creations').insert({file_url:url,file_type:fileType,title});
-    }
-    bar.style.width='100%';
-    setTimeout(()=>{prog.style.display='none';bar.style.width='0';},600);
-    e.target.value='';
-    loadCreations();
-    showToast('✓ '+files.length+' fichier(s) uploadé(s) !');
-  }catch(err){
-    prog.style.display='none';bar.style.width='0';
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-async function deleteCreation(id){
-  if(!confirm('Supprimer cette création ?'))return;
-  try{
-    await sb.from('creations').delete().eq('id',id);
-    loadCreations();
-    showToast('Création supprimée');
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-// ── IMPRESSIONS ──
-async function loadClientsForImpressions(){
-  const sel=document.getElementById('imp-client');
-  const keepVal=sel.value;
-  try{
-    const {data,error}=await sb.from('clients').select('firstname,lastname,company,produit').order('firstname');
-    if(error||!data){sel.innerHTML='<option value="">— Aucun client trouvé —</option>';return;}
-    if(!data.length){sel.innerHTML='<option value="">— Aucun client pour le moment —</option>';return;}
-    sel.innerHTML='<option value="">— Sélectionner un client —</option>'+data.map(c=>{
-      const name=`${c.firstname||''} ${c.lastname||''}`.trim();
-      const m=PRODUIT_META[c.produit];
-      const tag=m?' ['+m.label.replace(/^\S+\s/,'')+']':'';
-      return `<option value="${esc(name)}">${esc(name)}${c.company?' — '+esc(c.company):''}${tag}</option>`;
-    }).join('');
-    if(keepVal) sel.value=keepVal;
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();}
-  }
-}
-
-function updateImpTotalPreview(){
-  const qty=parseFloat(document.getElementById('imp-qty').value)||0;
-  const prix=parseFloat(document.getElementById('imp-prix').value)||0;
-  document.getElementById('imp-total-preview').value=fmtMoney(qty*prix);
-}
-
-async function loadImpressions(){
-  document.getElementById('impWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    const {data,error}=await sb.from('impressions').select('*').order('created_at',{ascending:false});
-    if(error||!data||!data.length){
-      document.getElementById('impWrap').innerHTML='<div class="empty"><div class="empty-ico">🖨️</div>Aucune impression enregistrée.</div>';
-      return;
-    }
-    hideDbBanner();
-    const stLabel={en_cours:'En cours',pret:'Prêt',livre:'Livré'};
-    const stClass={en_cours:'imp-st-encours',pret:'imp-st-pret',livre:'imp-st-livre'};
-    const rows=data.map(imp=>{
-      const qty=imp.quantite||1;
-      const prixUnitaire=imp.prix_unitaire||0;
-      const total=(imp.montant_total!=null)?imp.montant_total:(qty*prixUnitaire);
-      return `<tr>
-      <td><strong>${imp.client_name}</strong>${imp.numero_facture?`<div class="imp-fact-badge">🧾 ${imp.numero_facture}</div>`:''}</td>
-      <td>${imp.description||'—'}</td>
-      <td>${qty} carte(s)</td>
-      <td>${fmtMoney(total)}</td>
-      <td>${imp.date_livraison?new Date(imp.date_livraison).toLocaleDateString('fr-FR'):'—'}</td>
-      <td><span class="imp-status ${stClass[imp.statut]||'imp-st-encours'}">${stLabel[imp.statut]||imp.statut}</span></td>
-      <td style="white-space:nowrap">
-        <select onchange="updateImpStatus('${imp.id}',this.value)" style="padding:4px 8px;border:1px solid var(--cream2);border-radius:var(--r);font-size:11px;font-family:'Jost',sans-serif;cursor:pointer">
-          <option value="en_cours" ${imp.statut==='en_cours'?'selected':''}>En cours</option>
-          <option value="pret" ${imp.statut==='pret'?'selected':''}>Prêt</option>
-          <option value="livre" ${imp.statut==='livre'?'selected':''}>Livré</option>
-        </select>
-        <button class="imp-btn imp-btn-fact" onclick="openInvoiceModal('${imp.id}')" style="margin-left:6px;padding:5px 10px;font-size:10px">${imp.facture?'📄 Revoir / modifier':'🖨️ Facturer'}</button>
-        <button onclick="deleteImpression('${imp.id}')" style="margin-left:6px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:var(--r);color:#C62828;cursor:pointer;padding:5px 8px;font-size:11px">✕</button>
-      </td>
-    </tr>`;
-    }).join('');
-    document.getElementById('impWrap').innerHTML=`<table class="imp-table"><thead><tr>
-      <th>Client</th><th>Description</th><th>Quantité</th><th>Montant</th><th>Livraison</th><th>Statut</th><th>Actions</th>
-    </tr></thead><tbody>${rows}</tbody></table>`;
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      document.getElementById('impWrap').innerHTML=friendlyEmptyState();
-    }else{
-      document.getElementById('impWrap').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
-    }
-  }
-}
-
-async function addImpression(){
-  const client=document.getElementById('imp-client').value.trim();
-  if(!client){showToast('Le nom du client est obligatoire');return;}
-  const qty=parseInt(document.getElementById('imp-qty').value)||1;
-  const prixUnitaire=parseFloat(document.getElementById('imp-prix').value)||0;
-  const payload={
-    client_name:client,
-    description:document.getElementById('imp-desc').value.trim()||null,
-    quantite:qty,
-    prix_unitaire:prixUnitaire,
-    montant_total:qty*prixUnitaire,
-    date_livraison:document.getElementById('imp-date').value||null,
-    notes:document.getElementById('imp-notes').value.trim()||null,
-    statut:'en_cours',
-    facture:false
-  };
-  try{
-    const {error}=await sb.from('impressions').insert(payload);
-    if(error){showToast('Erreur: '+error.message);return;}
-    document.getElementById('imp-client').value='';
-    document.getElementById('imp-desc').value='';
-    document.getElementById('imp-qty').value='1';
-    document.getElementById('imp-prix').value='';
-    document.getElementById('imp-date').value='';
-    document.getElementById('imp-notes').value='';
-    updateImpTotalPreview();
-    loadImpressions();
-    showToast('✓ Impression enregistrée !');
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-async function updateImpStatus(id,statut){
-  try{
-    await sb.from('impressions').update({statut}).eq('id',id);
-    showToast('✓ Statut mis à jour');
-    loadImpressions();
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-async function deleteImpression(id){
-  if(!confirm('Supprimer cette impression ?'))return;
-  try{
-    await sb.from('impressions').delete().eq('id',id);
-    loadImpressions();
-    showToast('Impression supprimée');
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-// ── STATISTIQUES / CHIFFRE D'AFFAIRES ──
-async function loadStats(){
-  try{
-    const {data,error}=await sb.from('impressions').select('*');
-    if(error){
-      ['statsChart','statsClientsWrap','statsPendingWrap'].forEach(id=>{
-        document.getElementById(id).innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+error.message+'</div>';
-      });
-      return;
-    }
-    hideDbBanner();
-    const all=data||[];
-    const montant=d=>(d.montant_total!=null)?d.montant_total:((d.quantite||1)*(d.prix_unitaire||0));
-    const invoiced=all.filter(d=>d.facture);
-    const pending=all.filter(d=>!d.facture);
-
-    const caTotal=invoiced.reduce((s,d)=>s+montant(d),0);
-    const caPending=pending.reduce((s,d)=>s+montant(d),0);
-
-    const now=new Date();
-    const curKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    const caMonth=invoiced.filter(d=>{
-      const dt=new Date(d.date_facture||d.created_at);
-      return (dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'))===curKey;
-    }).reduce((s,d)=>s+montant(d),0);
-
-    document.getElementById('stat-ca-total').textContent=fmtMoney(caTotal);
-    document.getElementById('stat-ca-month').textContent=fmtMoney(caMonth);
-    document.getElementById('stat-ca-month-label').textContent=now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-    document.getElementById('stat-ca-count').textContent=invoiced.length;
-    document.getElementById('stat-ca-avg').textContent=invoiced.length?fmtMoney(caTotal/invoiced.length):'0 FCFA';
-
-    // Évolution sur 12 mois
-    const months=[];
-    for(let i=11;i>=0;i--){
-      const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-      months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}),total:0});
-    }
-    invoiced.forEach(d=>{
-      const dt=new Date(d.date_facture||d.created_at);
-      const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
-      const m=months.find(x=>x.key===key);
-      if(m) m.total+=montant(d);
-    });
-    const maxTotal=Math.max(...months.map(m=>m.total),1);
-    document.getElementById('statsChart').innerHTML=months.map(m=>`
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px">
-        <div style="width:55px;font-size:11px;color:var(--smoke2);text-transform:capitalize;flex-shrink:0">${m.label}</div>
-        <div style="flex:1;background:var(--cream);border-radius:4px;overflow:hidden;height:16px">
-          <div style="height:100%;width:${(m.total/maxTotal*100).toFixed(1)}%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;transition:width .4s"></div>
-        </div>
-        <div style="width:120px;text-align:right;font-size:11px;font-weight:600;color:var(--ink);flex-shrink:0">${fmtMoney(m.total)}</div>
-      </div>
-    `).join('');
-
-    // Par client
-    const byClient={};
-    invoiced.forEach(d=>{
-      const key=d.client_name||'—';
-      if(!byClient[key]) byClient[key]={count:0,total:0};
-      byClient[key].count++;
-      byClient[key].total+=montant(d);
-    });
-    const clientsArr=Object.entries(byClient).map(([name,v])=>({name,...v})).sort((a,b)=>b.total-a.total);
-    if(!clientsArr.length){
-      document.getElementById('statsClientsWrap').innerHTML='<div class="empty"><div class="empty-ico">🏆</div>Aucune facture émise pour le moment.</div>';
-    }else{
-      const rows=clientsArr.map(c=>`<tr>
-        <td><strong>${c.name}</strong></td>
-        <td>${c.count} facture(s)</td>
-        <td>${fmtMoney(c.total)}</td>
-        <td>${caTotal?((c.total/caTotal)*100).toFixed(1):'0'}%</td>
-      </tr>`).join('');
-      document.getElementById('statsClientsWrap').innerHTML=`<table><thead><tr><th>Client</th><th>Commandes</th><th>Chiffre d'affaires</th><th>Part du CA</th></tr></thead><tbody>${rows}</tbody></table>`;
-    }
-
-    // En attente de facturation
-    if(!pending.length){
-      document.getElementById('statsPendingWrap').innerHTML='<div class="empty"><div class="empty-ico">✅</div>Tout est facturé.</div>';
-    }else{
-      const rows=pending.map(d=>`<tr>
-        <td><strong>${d.client_name}</strong></td>
-        <td>${d.description||'—'}</td>
-        <td>${fmtMoney(montant(d))}</td>
-      </tr>`).join('');
-      document.getElementById('statsPendingWrap').innerHTML=`<table><thead><tr><th>Client</th><th>Description</th><th>Montant estimé</th></tr></thead><tbody>${rows}</tbody></table>
-      <div style="padding:12px 20px;font-size:11.5px;color:var(--smoke2);border-top:1px solid var(--cream2)">Total en attente de facturation : <strong style="color:var(--ink)">${fmtMoney(caPending)}</strong></div>`;
-    }
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      ['statsChart','statsClientsWrap','statsPendingWrap'].forEach(id=>{document.getElementById(id).innerHTML=friendlyEmptyState();});
-      ['stat-ca-total','stat-ca-month','stat-ca-count','stat-ca-avg'].forEach(id=>document.getElementById(id).textContent='—');
-    }else{
-      ['statsChart','statsClientsWrap','statsPendingWrap'].forEach(id=>{document.getElementById(id).innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';});
-    }
-  }
-}
-
-// ── STATISTIQUES DES CARTES NFC (vues / scans / clics) ──
-async function loadCardStats(){
-  const wrap=document.getElementById('statsCardsWrap');
-  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    // On a besoin des clients (pour le nom + slug) et des vues enregistrées
-    const [{data:clients,error:cErr},{data:views,error:vErr}]=await Promise.all([
-      sb.from('clients').select('id,firstname,lastname,slug'),
-      sb.from('card_views').select('client_id,source,created_at')
-    ]);
-    if(cErr||vErr){
-      const msg=(cErr||vErr).message||'';
-      // Si la table card_views n'existe pas encore, on l'indique clairement
-      if(msg.toLowerCase().includes('card_views')||msg.toLowerCase().includes('does not exist')||msg.toLowerCase().includes('relation')){
-        wrap.innerHTML='<div class="empty"><div class="empty-ico">📶</div>La table <strong>card_views</strong> n\'existe pas encore dans Supabase.<br><span style="font-size:11px">Crée-la avec le script SQL fourni pour activer le suivi des scans et clics.</span></div>';
-        ['cs-total','cs-nfc','cs-link'].forEach(id=>document.getElementById(id).textContent='—');
-        return;
-      }
-      wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+msg+'</div>';
-      return;
-    }
-    hideDbBanner();
-    const allViews=(views||[]).filter(v=>v.source!=='admin'); // on exclut les prévisualisations internes
-    const totalNfc=allViews.filter(v=>v.source==='nfc').length;
-    const totalLink=allViews.filter(v=>v.source!=='nfc').length;
-    document.getElementById('cs-total').textContent=fmtNum(allViews.length);
-    document.getElementById('cs-nfc').textContent=fmtNum(totalNfc);
-    document.getElementById('cs-link').textContent=fmtNum(totalLink);
-
-    if(!clients||!clients.length){
-      wrap.innerHTML='<div class="empty"><div class="empty-ico">📭</div>Aucun client.</div>';
-      return;
-    }
-
-    const byClient={};
-    clients.forEach(c=>{byClient[c.id]={name:(c.firstname||'')+' '+(c.lastname||''),slug:c.slug,nfc:0,link:0,last:null};});
-    allViews.forEach(v=>{
-      const row=byClient[v.client_id];
-      if(!row) return;
-      if(v.source==='nfc') row.nfc++; else row.link++;
-      const d=new Date(v.created_at);
-      if(!row.last||d>row.last) row.last=d;
-    });
-    const arr=Object.values(byClient).sort((a,b)=>(b.nfc+b.link)-(a.nfc+a.link));
-
-    const rows=arr.map(c=>{
-      const total=c.nfc+c.link;
-      const pctNfc=total?Math.round((c.nfc/total)*100):0;
-      return `<tr>
-        <td><strong>${esc(c.name.trim()||'—')}</strong></td>
-        <td>${fmtNum(total)}</td>
-        <td>📶 ${fmtNum(c.nfc)}</td>
-        <td>🔗 ${fmtNum(c.link)}</td>
-        <td><div class="bar-mini"><div class="bar-mini-nfc" style="width:${pctNfc}%"></div><div class="bar-mini-link" style="width:${100-pctNfc}%"></div></div></td>
-        <td style="font-size:10px;color:var(--smoke2)">${c.last?c.last.toLocaleDateString('fr-FR'):'—'}</td>
-      </tr>`;
-    }).join('');
-
-    wrap.innerHTML=`<table><thead><tr>
-      <th>Client</th><th>Vues totales</th><th>Scans NFC</th><th>Clics lien</th><th>Répartition</th><th>Dernière vue</th>
-    </tr></thead><tbody>${rows}</tbody></table>
-    <div style="padding:12px 20px;font-size:11px;color:var(--smoke2);border-top:1px solid var(--cream2)">
-      💡 "Scans NFC" = carte physique approchée. "Clics lien" = lien partagé ouvert (bio, SMS, WhatsApp...). Les prévisualisations depuis ce dashboard ne sont pas comptées.
-    </div>`;
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      wrap.innerHTML=friendlyEmptyState();
-      ['cs-total','cs-nfc','cs-link'].forEach(id=>document.getElementById(id).textContent='—');
-    }else{
-      wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
-    }
-  }
-}
-
-// ── FACTURATION / PDF ──
-let currentInvoiceId=null;
-
-async function openInvoiceModal(id){
-  if(typeof window.jspdf==='undefined'){showToast('Erreur: bibliothèque PDF non chargée');return;}
-  currentInvoiceId=id;
-  try{
-    const {data:imp,error}=await sb.from('impressions').select('*').eq('id',id).single();
-    if(error||!imp){showToast('Erreur: impression introuvable');return;}
-    document.getElementById('inv-client').value=imp.client_name||'';
-    document.getElementById('inv-desc').value=imp.description||'';
-    document.getElementById('inv-qty').value=imp.quantite||1;
-    document.getElementById('inv-prix').value=imp.prix_unitaire||0;
-    document.getElementById('inv-notes').value=imp.notes||'';
-    updateInvoiceTotal();
-    document.getElementById('invoiceOv').classList.add('open');
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-function closeInvoiceModal(){
-  document.getElementById('invoiceOv').classList.remove('open');
-  currentInvoiceId=null;
-}
-
-function updateInvoiceTotal(){
-  const qty=parseFloat(document.getElementById('inv-qty').value)||0;
-  const prix=parseFloat(document.getElementById('inv-prix').value)||0;
-  document.getElementById('inv-total-display').textContent=fmtMoney(qty*prix);
-}
-
-async function confirmAndDownloadInvoice(){
-  if(!currentInvoiceId)return;
-  const client=document.getElementById('inv-client').value.trim();
-  if(!client){showToast('Le nom du client est obligatoire');return;}
-  const desc=document.getElementById('inv-desc').value.trim();
-  const qty=parseFloat(document.getElementById('inv-qty').value)||1;
-  const prixUnitaire=parseFloat(document.getElementById('inv-prix').value)||0;
-  const notes=document.getElementById('inv-notes').value.trim();
-  const total=qty*prixUnitaire;
-
-  const btn=document.getElementById('invConfirmBtn');
-  btn.disabled=true;btn.textContent='⏳ Génération...';
-
-  try{
-    const {data:existing}=await sb.from('impressions').select('numero_facture').eq('id',currentInvoiceId).single();
-    let numeroFacture=existing?.numero_facture;
-    if(!numeroFacture){
-      const today=new Date();
-      const datePart=today.getFullYear().toString()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
-      numeroFacture=`PL-${datePart}-${String(Math.floor(Math.random()*9000)+1000)}`;
-    }
-
-    const updates={client_name:client,description:desc||null,quantite:qty,prix_unitaire:prixUnitaire,montant_total:total,notes:notes||null,facture:true,numero_facture:numeroFacture,date_facture:new Date().toISOString()};
-    const {error}=await sb.from('impressions').update(updates).eq('id',currentInvoiceId);
-    if(error){showToast('Erreur: '+error.message);btn.disabled=false;btn.textContent='⬇️ Télécharger la facture PDF';return;}
-
-    buildInvoicePDF({client_name:client,description:desc,quantite:qty,prix_unitaire:prixUnitaire,total,notes,numero_facture:numeroFacture});
-
-    btn.disabled=false;btn.textContent='⬇️ Télécharger la facture PDF';
-    showToast('✓ Facture générée et téléchargée !');
-    closeInvoiceModal();
-    loadImpressions();
-  }catch(err){
-    btn.disabled=false;btn.textContent='⬇️ Télécharger la facture PDF';
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-function buildInvoicePDF(imp){
-  const qty=imp.quantite||1;
-  const prixUnitaire=imp.prix_unitaire||0;
-  const total=(imp.total!=null)?imp.total:(qty*prixUnitaire);
-  const numeroFacture=imp.numero_facture;
-
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF();
-
-  // En-tête
-  doc.setFillColor(10,10,10);
-  doc.rect(0,0,210,32,'F');
-  doc.setTextColor(212,175,106);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(20);
-  doc.text('PRINT LEGACY',15,17);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.setTextColor(230,230,230);
-  doc.text('Studio graphique & Cartes NFC — Dakar, Sénégal',15,24);
-
-  // Titre facture
-  doc.setTextColor(10,10,10);
-  doc.setFontSize(18);
-  doc.setFont('helvetica','bold');
-  doc.text('FACTURE',195,45,{align:'right'});
-  doc.setFontSize(10);
-  doc.setFont('helvetica','normal');
-  doc.setTextColor(80,80,80);
-  doc.text(`N° ${numeroFacture}`,195,52,{align:'right'});
-  doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`,195,58,{align:'right'});
-
-  // Client
-  doc.setTextColor(10,10,10);
-  doc.setFontSize(10);
-  doc.setFont('helvetica','bold');
-  doc.text('Facturé à :',15,50);
-  doc.setFont('helvetica','normal');
-  doc.text(imp.client_name||'',15,56);
-
-  // Tableau (via autoTable pour éviter tout débordement)
-  doc.autoTable({
-    startY:70,
-    margin:{left:15,right:15},
-    head:[['Description','Qté','Prix unitaire','Total']],
-    body:[[
-      imp.description||'Impression carte NFC',
-      String(qty),
-      fmtNum(prixUnitaire)+' FCFA',
-      fmtNum(total)+' FCFA'
-    ]],
-    theme:'grid',
-    styles:{font:'helvetica',fontSize:9.5,cellPadding:4,textColor:[30,30,30],lineColor:[230,230,230]},
-    headStyles:{fillColor:[10,10,10],textColor:[212,175,106],fontStyle:'bold',fontSize:9},
-    columnStyles:{
-      0:{cellWidth:80},
-      1:{cellWidth:20,halign:'center'},
-      2:{cellWidth:38,halign:'right'},
-      3:{cellWidth:42,halign:'right'}
-    }
+  document.addEventListener('keydown',(e)=>{
+    const ov=document.getElementById('lbOv');
+    if(!ov||!ov.classList.contains('open')) return;
+    if(e.key==='Escape') closeLb();
+    if(e.key==='ArrowLeft') navLb(-1);
+    if(e.key==='ArrowRight') navLb(1);
   });
+})();
 
-  // Total
-  const totalY=doc.lastAutoTable.finalY+14;
-  doc.setDrawColor(220,220,220);
-  doc.line(120,totalY-8,195,totalY-8);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(12);
-  doc.setTextColor(10,10,10);
-  doc.text(`TOTAL : ${fmtNum(total)} FCFA`,195,totalY,{align:'right'});
-
-  if(imp.notes){
-    doc.setFont('helvetica','italic');
-    doc.setFontSize(9);
-    doc.setTextColor(120,120,120);
-    doc.text('Notes : '+imp.notes,15,totalY+14,{maxWidth:120});
+// Déplie / replie le panneau d'infos entreprise (à propos, horaires, localisation) au clic sur la flèche
+function toggleCompanyDetails(){
+  const details=document.getElementById('coDetails');
+  const arr=document.getElementById('coArr');
+  if(!details) return;
+  const isOpen=details.classList.contains('open');
+  if(isOpen){
+    details.style.maxHeight='0px';
+    details.classList.remove('open');
+  }else{
+    details.style.maxHeight=details.scrollHeight+'px';
+    details.classList.add('open');
   }
-
-  // Pied de page
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.setTextColor(140,140,140);
-  doc.text('Merci pour votre confiance.',15,275);
-  doc.text('Print Legacy — Dakar, Sénégal — 78 400 00 66 — leamalou4@gmail.com',15,280);
-
-  doc.save(`Facture_${numeroFacture}_${(imp.client_name||'client').replace(/\s+/g,'_')}.pdf`);
+  if(arr) arr.classList.toggle('open',!isOpen);
 }
-
-// ── NFC ──
-function openNFC(slug,name){
-  document.getElementById('nfcClientName').textContent=name.trim();
-  document.getElementById('nfcUrl').textContent=`https://printlegacy-platform.vercel.app/?carte=${slug}&src=nfc`;
-  document.getElementById('nfcCopied').style.display='none';
-  document.getElementById('nfcOv').classList.add('open');
+ 
+function saveVCard(c){
+  const lines=['BEGIN:VCARD','VERSION:3.0',
+    'FN:'+(c.firstname||'')+' '+(c.lastname||''),
+    'N:'+(c.lastname||'')+';'+(c.firstname||'')+';;;'];
+  if(c.jobtitle)lines.push('TITLE:'+c.jobtitle);
+  if(c.company)lines.push('ORG:'+c.company);
+  if(c.phone)lines.push('TEL;TYPE=CELL:'+c.phone);
+  if(c.email)lines.push('EMAIL:'+c.email);
+  if(c.website)lines.push('URL:'+c.website);
+  if(c.location&&!c.location.startsWith('http'))lines.push('ADR:;;'+c.location+';;;;');
+  lines.push('END:VCARD');
+  const blob=new Blob([lines.join('\n')],{type:'text/vcard'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=(c.firstname||'contact')+'_'+(c.lastname||'')+'.vcf';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Contact enregistré !');
 }
-function closeNFC(){document.getElementById('nfcOv').classList.remove('open')}
-function copyNFC(){
-  navigator.clipboard.writeText(document.getElementById('nfcUrl').textContent).catch(()=>{});
-  document.getElementById('nfcCopied').style.display='block';
-  document.querySelector('.nfc-copy-btn').textContent='✓ Copié';
-  setTimeout(()=>{document.getElementById('nfcCopied').style.display='none';document.querySelector('.nfc-copy-btn').textContent='Copier'},2000);
-}
-
-// ── EDIT ──
-function switchEditTab(name){
-  document.querySelectorAll('.edit-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
-  document.querySelectorAll('.edit-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.tab===name));
-}
-// ── PARCOURS ÉTUDIANT : expériences + compétences ──
-function expRowHtml(e){
-  e=e||{};
-  return `<div class="exp-row"><div class="exp-grid">
-    <input class="edit-input exp-poste" placeholder="Poste (ex: Stagiaire analyste)" value="${esc(e.poste)}">
-    <input class="edit-input exp-org" placeholder="Société" value="${esc(e.org)}">
-    <input class="edit-input exp-periode" placeholder="Juin – Août 2025" value="${esc(e.periode)}">
-  </div><button type="button" class="exp-del" title="Supprimer" onclick="this.closest('.exp-row').remove()">✕</button></div>`;
-}
-function setExperiences(list){
-  if(typeof list==='string'){try{list=JSON.parse(list);}catch(e){list=[];}}
-  if(!Array.isArray(list)) list=[];
-  document.getElementById('expList').innerHTML=list.map(expRowHtml).join('');
-}
-function addExpRow(){
-  document.getElementById('expList').insertAdjacentHTML('beforeend',expRowHtml({}));
-}
-function collectExperiences(){
-  return Array.from(document.querySelectorAll('#expList .exp-row')).map(r=>({
-    poste:r.querySelector('.exp-poste').value.trim(),
-    org:r.querySelector('.exp-org').value.trim(),
-    periode:r.querySelector('.exp-periode').value.trim()
-  })).filter(e=>e.poste||e.org||e.periode);
-}
-function updateSkillsPreview(){
-  const v=(document.getElementById('edit-skills').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-  document.getElementById('skillsPreview').innerHTML=v.map(s=>`<span class="chip">${esc(s)}</span>`).join('');
-}
-
-function toggleStudentMode(){
-  const isStudent=document.getElementById('edit-produit').value==='student';
-  document.getElementById('editStudentIdWrap').style.display=isStudent?'block':'none';
-  document.getElementById('editCompanyWrap').style.display=isStudent?'none':'block';
-  document.getElementById('editCompanyLogoWrap').style.display=isStudent?'none':'block';
-  document.getElementById('editBioLabel').textContent=isStudent?'À propos':'Bio';
-}
-function onEditUniversityChange(){
-  setEditUniversityTheme(document.getElementById('edit-university_id').value);
-}
-function setEditUniversityTheme(uniId){
-  const box=document.getElementById('clientEditBox');
-  const banner=document.getElementById('editUniBanner');
-  const logo=document.getElementById('editUniBannerLogo');
-  const text=document.getElementById('editUniBannerText');
-  const u=uniId?universityById(uniId):null;
-  if(!u){
-    box.style.removeProperty('--edit-accent');
-    box.style.removeProperty('--edit-accent-soft');
-    box.style.removeProperty('--edit-accent-text');
-    box.style.removeProperty('--edit-accent-ink');
-    banner.classList.remove('show');
-    return;
-  }
-  const primary=u.primary_color||'#2F4486';
-  const secondary=u.secondary_color||'#FFFFFF';
-  box.style.setProperty('--edit-accent',primary);
-  box.style.setProperty('--edit-accent-soft',isLightColor(secondary)?'color-mix(in srgb,'+primary+' 8%,#ffffff)':secondary);
-  // Texte sur fond primaire (onglet actif) : blanc si primaire foncée, sombre sinon
-  box.style.setProperty('--edit-accent-text',isLightColor(primary)?'#1a1a1a':'#ffffff');
-  // Texte sur fond secondaire clair (bannière, encart) : la couleur primaire elle-même si lisible
-  box.style.setProperty('--edit-accent-ink',isLightColor(secondary)?primary:'#1a1a1a');
-  if(u.logo_url){logo.src=u.logo_url;logo.style.display='block';}else{logo.style.display='none';}
-  text.textContent='Carte aux couleurs de '+u.name;
-  banner.classList.add('show');
-}
-function selTheme(id){
-  document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
-  document.getElementById('et-'+id)?.classList.add('sel');
-  currentTheme=id;
-}
-function selStatus(s){
-  document.querySelectorAll('.edit-status-opt').forEach(o=>o.classList.remove('sel'));
-  document.getElementById('st-'+s).classList.add('sel');
-  currentStatus=s;
-}
-function onEditCoverChange(e){
-  const f=e.target.files[0];if(!f)return;
-  newCoverFile=f;coverDeleted=false;
-  const r=new FileReader();
-  r.onload=x=>{const img=document.getElementById('editCoverImg');img.src=x.target.result;img.style.display='block';document.getElementById('editCoverHint').style.display='none';showCoverMeta(f.name);};
-  r.readAsDataURL(f);
-}
-function showCoverMeta(name){const el=document.getElementById('editCoverMeta');el.style.display='flex';document.getElementById('editCoverMetaName').textContent=name;}
-function clearEditCover(e){
-  e.stopPropagation();coverDeleted=true;newCoverFile=null;
-  const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
-  document.getElementById('editCoverHint').style.display='block';
-  document.getElementById('editCoverMeta').style.display='none';
-  document.getElementById('editCoverInput').value='';
-}
-
-function onEditCompanyLogoChange(e){
-  const f=e.target.files[0];if(!f)return;
-  newCompanyLogoFile=f;companyLogoDeleted=false;
-  const r=new FileReader();
-  r.onload=x=>{const img=document.getElementById('editCompanyLogoImg');img.src=x.target.result;img.style.display='block';document.getElementById('editCompanyLogoHint').style.display='none';showCompanyLogoMeta(f.name);};
-  r.readAsDataURL(f);
-}
-function showCompanyLogoMeta(name){const el=document.getElementById('editCompanyLogoMeta');el.style.display='flex';document.getElementById('editCompanyLogoMetaName').textContent=name;}
-function clearEditCompanyLogo(e){
-  e.stopPropagation();companyLogoDeleted=true;newCompanyLogoFile=null;
-  const img=document.getElementById('editCompanyLogoImg');img.style.display='none';img.src='';
-  document.getElementById('editCompanyLogoHint').style.display='block';
-  document.getElementById('editCompanyLogoMeta').style.display='none';
-  document.getElementById('editCompanyLogoInput').value='';
-}
-
-function onEditPhotoChange(e){
-  const f=e.target.files[0];if(!f)return;
-  newPhotoFile=f;photoDeleted=false;
-  const r=new FileReader();
-  r.onload=x=>{const img=document.getElementById('editPhotoImg');img.src=x.target.result;img.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(f.name);};
-  r.readAsDataURL(f);
-}
-function showPhotoMeta(name){const el=document.getElementById('editPhotoMeta');el.style.display='flex';document.getElementById('editPhotoMetaName').textContent=name;}
-function clearEditPhoto(e){
-  e.stopPropagation();photoDeleted=true;newPhotoFile=null;
-  const img=document.getElementById('editPhotoImg');img.style.display='none';img.src='';
-  document.getElementById('editPhotoHint').style.display='block';
-  document.getElementById('editPhotoMeta').style.display='none';
-  document.getElementById('editPhotoInput').value='';
-}
-
-function onEditCvChange(e){
-  const f=e.target.files[0];if(!f)return;
-  newCvFile=f;cvDeleted=false;
-  document.getElementById('editCvHint').innerHTML=`📄 <span>${f.name}</span>`;
-  showEditCvMeta(f.name);
-}
-function showEditCvMeta(name){const el=document.getElementById('editCvMeta');el.style.display='flex';document.getElementById('editCvMetaName').textContent=name;}
-function clearEditCv(e){
-  e.stopPropagation();cvDeleted=true;newCvFile=null;
-  document.getElementById('editCvHint').innerHTML=`📄 <span>Cliquer pour ajouter un fichier</span>`;
-  document.getElementById('editCvMeta').style.display='none';
-  document.getElementById('editCvInput').value='';
-}
-
-// openEdit(clientId) → mode édition d'un profil existant.
-// openEdit(null, universityId) → mode création d'une nouvelle carte étudiante
-// pré-rattachée à l'université universityId (utilisé depuis la page Universités).
-async function openEdit(clientId, presetUniversityId){
-  currentId=clientId||null;
-  pendingUniversityId=presetUniversityId||null;
-  newCoverFile=null;coverDeleted=false;
-  newCompanyLogoFile=null;companyLogoDeleted=false;
-  newPhotoFile=null;photoDeleted=false;
-  newCvFile=null;cvDeleted=false;
-  document.getElementById('editCvHint').innerHTML=`📄 <span>Cliquer pour ajouter un fichier</span>`;
-  document.getElementById('editCvMeta').style.display='none';
-  document.getElementById('editOv').classList.add('open');
-  document.getElementById('editDeleteBtn').style.display=clientId?'inline-block':'none';
-  switchEditTab('identite');
-  populateUniversitySelect();
-
-  if(!clientId){
-    // ── MODE CRÉATION ──
-    document.getElementById('editModalTitle').textContent=presetUniversityId?'🎓 Nouvelle carte étudiante':'➕ Nouveau profil';
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
-    document.getElementById('edit-produit').value=presetUniversityId?'student':'';
-    document.getElementById('edit-university_id').value=presetUniversityId||'';
-    setEditUniversityTheme(presetUniversityId||'');setExperiences([]);updateSkillsPreview();
-    if(presetUniversityId){
-      document.getElementById('edit-company').value=(universityById(presetUniversityId)||{}).name||'';
-    }
-    ['editCoverImg','editCompanyLogoImg','editPhotoImg'].forEach(id=>{const img=document.getElementById(id);img.style.display='none';img.src='';});
-    ['editCoverHint','editCompanyLogoHint','editPhotoHint'].forEach(id=>document.getElementById(id).style.display='block');
-    ['editCoverMeta','editCompanyLogoMeta','editPhotoMeta'].forEach(id=>document.getElementById(id).style.display='none');
-    const presetTheme=presetUniversityId?('uni-'+presetUniversityId):'noir';
-    selTheme(THEMES.find(t=>t.id===presetTheme)?presetTheme:'noir');
-    selStatus('pending');
-    toggleStudentMode();
-    const btn=document.getElementById('editSaveBtn');
-    btn.disabled=false;btn.textContent='💾 Créer la carte';
-    return;
-  }
-
-  // ── MODE ÉDITION ──
-  const btn=document.getElementById('editSaveBtn');
-  btn.disabled=true;btn.textContent='⏳ Chargement...';
-  document.getElementById('editModalTitle').textContent='✏️ Modifier le profil';
-  try{
-    const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
-    if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
-    document.getElementById('edit-university_id').value=c.university_id||'';
-    setEditUniversityTheme(c.university_id||'');setExperiences(c.experiences);updateSkillsPreview();
-    toggleStudentMode();
-    const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
-    document.getElementById('editCoverHint').style.display='block';
-    document.getElementById('editCoverMeta').style.display='none';
-    if(c.cover_url){img.src=c.cover_url;img.style.display='block';document.getElementById('editCoverHint').style.display='none';showCoverMeta(c.cover_url.split('/').pop().slice(0,40));}
-    const cimg=document.getElementById('editCompanyLogoImg');cimg.style.display='none';cimg.src='';
-    document.getElementById('editCompanyLogoHint').style.display='block';
-    document.getElementById('editCompanyLogoMeta').style.display='none';
-    if(c.company_logo_url){cimg.src=c.company_logo_url;cimg.style.display='block';document.getElementById('editCompanyLogoHint').style.display='none';showCompanyLogoMeta(c.company_logo_url.split('/').pop().slice(0,40));}
-    const pimg=document.getElementById('editPhotoImg');pimg.style.display='none';pimg.src='';
-    document.getElementById('editPhotoHint').style.display='block';
-    document.getElementById('editPhotoMeta').style.display='none';
-    if(c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
-    if(c.cv_url){document.getElementById('editCvHint').innerHTML=`📄 <span>Fichier actuel</span>`;showEditCvMeta(c.cv_url.split('/').pop().slice(0,40));}
-    selTheme(c.theme||'noir');selStatus(c.status||'pending');
-    btn.disabled=false;btn.textContent='💾 Sauvegarder';
-  }catch(err){
-    closeEdit();
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-function closeEdit(){document.getElementById('editOv').classList.remove('open');pendingUniversityId=null;setEditUniversityTheme('');}
-
-async function upFile(file,folder){
-  if(!file)return null;
-  const ext=file.name.split('.').pop();
-  const path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-  const {error}=await sb.storage.from('printlegacy').upload(path,file,{upsert:true});
-  if(error){showToast('Erreur upload: '+error.message);return null;}
-  return sb.storage.from('printlegacy').getPublicUrl(path).data.publicUrl;
-}
-
-async function saveEdit(){
-  const btn=document.getElementById('editSaveBtn');
-  btn.disabled=true;btn.textContent=currentId?'💾 Sauvegarde...':'💾 Création...';
-  try{
-    const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
-    updates.university_id=document.getElementById('edit-university_id').value||null;
-    updates.experiences=collectExperiences();
-    if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
-    else if(coverDeleted){updates.cover_url=null;}
-    if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
-    else if(companyLogoDeleted){updates.company_logo_url=null;}
-    if(newPhotoFile){const url=await upFile(newPhotoFile,'photos');if(url)updates.photo=url;}
-    else if(photoDeleted){updates.photo=null;}
-    if(newCvFile){const url=await upFile(newCvFile,'cvs');if(url)updates.cv_url=url;}
-    else if(cvDeleted){updates.cv_url=null;}
-
-    if(!currentId){
-      // ── CRÉATION ──
-      if(!updates.firstname&&!updates.lastname){showToast('Prénom ou nom requis');btn.disabled=false;btn.textContent='💾 Créer la carte';return;}
-      const base=slugify(`${updates.firstname||''}-${updates.lastname||''}`)||'carte';
-      let inserted=null, lastErr=null;
-      for(let attempt=0;attempt<5&&!inserted;attempt++){
-        const slug=attempt===0?base:`${base}-${Math.floor(1000+Math.random()*9000)}`;
-        const {data,error}=await sb.from('clients').insert({...updates,slug}).select();
-        if(!error&&data&&data.length){inserted=data[0];break;}
-        lastErr=error;
-        // si l'erreur n'est pas un conflit d'unicité de slug, on arrête d'essayer
-        if(error&&!(error.message||'').toLowerCase().includes('duplicate')&&!(error.message||'').toLowerCase().includes('unique')) break;
-      }
-      if(!inserted){throw lastErr||new Error('Création impossible');}
-      closeEdit();showToast('✓ Carte créée !');
-      if(activeUniFilter) openUniStudents(activeUniFilter);
-      loadData();
-      if(currentPage==='universities') loadUniversities();
-      return;
-    }
-
-    // ── ÉDITION ──
-    const {data,error}=await sb.from('clients').update(updates).eq('id',currentId).select();
-    if(error)throw error;
-    if(!data||data.length===0){
-      showToast('⚠️ Aucune ligne modifiée — vérifiez les permissions (RLS) dans Supabase');
-      return;
-    }
-    closeEdit();showToast('✓ Profil mis à jour !');loadData();
-    if(activeUniFilter) openUniStudents(activeUniFilter);
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-  finally{btn.disabled=false;btn.textContent=currentId?'💾 Sauvegarder':'💾 Créer la carte';}
-}
-
-async function deleteClient(){
-  if(!currentId)return;
-  if(!confirm('Supprimer ce client ?'))return;
-  try{
-    await sb.from('clients').delete().eq('id',currentId);
-    closeEdit();loadData();showToast('Client supprimé');
-    if(activeUniFilter) openUniStudents(activeUniFilter);
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
+ 
 function showToast(msg){
-  const t=document.getElementById('saveToast');
+  const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
-async function logout(){
-  await sb.auth.signOut();
-  window.location.href='https://printlegacy.github.io';
+ 
+// ── PROFIL ÉTUDIANT ──
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function normUrl(u){u=String(u||'').trim();return /^https?:\/\//i.test(u)?u:'https://'+u;}
+function darken(hex,amt){
+  const {r,g,b}=hexToRgb(hex);
+  const d=v=>Math.round(v*(1-amt));
+  return '#'+[d(r),d(g),d(b)].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+// Couleur principale de l'université (ex. bleu marine Dauphine #2F4486) appliquée à toute la carte
+function applyUniTheme(primary){
+  const root=document.documentElement.style;
+  const {r,g,b}=hexToRgb(primary);
+  root.setProperty('--gold',primary);
+  root.setProperty('--gold2',lighten(primary,0.35));
+  root.setProperty('--gold-bg',`rgba(${r},${g},${b},0.08)`);
+  root.setProperty('--gold-15',`rgba(${r},${g},${b},0.15)`);
+  root.setProperty('--gold-20',`rgba(${r},${g},${b},0.2)`);
+  root.setProperty('--gold-25',`rgba(${r},${g},${b},0.25)`);
+  root.setProperty('--gold-40',`rgba(${r},${g},${b},0.4)`);
+  root.setProperty('--gold-45',`rgba(${r},${g},${b},0.45)`);
+  root.setProperty('--ink',darken(primary,0.6));
+  root.setProperty('--ink2',darken(primary,0.35));
+}
+function parseExperiences(c){
+  try{
+    const e=typeof c.experiences==='string'?JSON.parse(c.experiences):c.experiences;
+    return Array.isArray(e)?e.filter(x=>x&&(x.poste||x.org||x.periode)):[];
+  }catch(e){return [];}
+}
+function parseSkills(c){return String(c.skills||'').split(',').map(s=>s.trim()).filter(Boolean);}
+function toggleStContact(){
+  const p=document.getElementById('stContact'),b=document.getElementById('stContactBtn');
+  if(!p||!b) return;
+  const open=p.classList.toggle('open');
+  b.classList.toggle('open',open);
+  b.setAttribute('aria-expanded',open?'true':'false');
+}
+function shareProfile(name){
+  const url=location.href.replace(/([?&])src=[^&]*&?/,'$1').replace(/[?&]$/,'');
+  if(navigator.share){navigator.share({title:name,url}).catch(()=>{});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('✓ Lien copié !')).catch(()=>{});}
+}
+const DAUPHINE_LOGO='data:image/png;base64,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';
+const ST_ICONS={
+  linkedin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 5.1a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0zM3.16 8.6h3.55V21H3.16V8.6zm6.35 0h3.4v1.7h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.26 2.36 4.26 5.43V21h-3.55v-6.4c0-1.53-.03-3.5-2.13-3.5-2.14 0-2.47 1.67-2.47 3.39V21H9.5V8.6z"/></svg>',
+  link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 15l6-6"/><path d="M10.5 6.5l.7-.7a4 4 0 0 1 5.66 5.66l-1.4 1.4"/><path d="M13.5 17.5l-.7.7a4 4 0 0 1-5.66-5.66l1.4-1.4"/></svg>'
+};
+
+function renderStudent(c,uni){
+  const primary=(uni&&uni.primary_color)||'#2F4486';
+  applyUniTheme(primary);
+  const name=(c.firstname||'')+' '+(c.lastname||'');
+  document.title=name+' — Print Legacy';
+  const uniName=(uni&&uni.name)||c.company||'';
+  const av=c.photo?`<img src="${esc(c.photo)}" alt="${esc(name)}">`:esc(ini(c.firstname,c.lastname));
+  const heroImg=c.cover_url||c.cover_photo||c.photo;
+  const heroHTML=heroImg
+    ?`<img class="hero-img" src="${esc(heroImg)}" alt="${esc(name)}">`
+    :`<div class="hero-placeholder"><div class="hero-initials-big">${esc(ini(c.firstname,c.lastname))}</div></div>`;
+  const roleHTML=(c.jobtitle?`<em class="st-em">${esc(c.jobtitle)}</em>`:'')+(c.jobtitle&&uniName?' · ':'')+esc(uniName);
+  const studentNo=c.student_id?`<div class="hero-role" style="margin-top:.35rem">N° étudiant · ${esc(c.student_id)}</div>`:'';
+
+  // Carte sous la photo : petit logo à gauche, nom de l'université à droite (sans slogan)
+  const isDauph=/dauphine/i.test(uniName);
+  let logoInner;
+  if(isDauph) logoInner=`<img src="${DAUPHINE_LOGO}" alt="Dauphine Dakar">`;
+  else if(uni&&uni.logo_url) logoInner=`<img src="${esc(uni.logo_url)}" alt="" onerror="imgFallback(this,'building','co-logo-fallback')">`;
+  else logoInner=UI_ICONS.building;
+  const uniCard=uniName
+    ?`<div class="st-uni"><div class="st-uni-logo${isDauph?' dark':''}">${logoInner}</div><div class="st-uni-name">${esc(uniName)}</div></div>`
+    :'<div class="spacer"></div>';
+
+  const aboutHTML=c.bio
+    ?`<div class="st-sec"><div class="st-title">À propos</div><p class="st-about">${esc(c.bio)}</p></div>`
+    :'';
+
+  const links=[];
+  if(c.linkedin)links.push(`<a class="st-link" href="${esc(normUrl(c.linkedin))}" target="_blank" rel="noopener">${ST_ICONS.linkedin}LinkedIn</a>`);
+  if(c.email)links.push(`<a class="st-link" href="mailto:${esc(c.email)}">${UI_ICONS.mail}Email</a>`);
+  if(c.portfolio)links.push(`<a class="st-link" href="${esc(normUrl(c.portfolio))}" target="_blank" rel="noopener">${ST_ICONS.link}Portfolio</a>`);
+  links.push(`<button type="button" class="st-link" onclick="shareProfile(${esc(JSON.stringify(name.trim()))})">${UI_ICONS.share}Partager</button>`);
+  const contactItems=buildContacts(c).filter(l=>l.lbl!=='CV / Portfolio');
+  if(contactItems.length) links.push(`<button type="button" id="stContactBtn" class="st-link st-link-wide" onclick="toggleStContact()" aria-expanded="false">${UI_ICONS.phone}Contact<span class="st-chev">${UI_ICONS.chevron}</span></button>`);
+  const contactPanel=contactItems.length
+    ?`<div class="st-contact" id="stContact">${contactItems.map(l=>`<a href="${esc(l.href)}" class="clink" ${l.t?'target="_blank" rel="noopener"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${esc(l.lbl)}</span><span class="clink-val">${esc(l.val)}</span></div><span class="clink-arr">›</span></a>`).join('')}</div>`
+    :'';
+  const cvBtn=c.cv_url?`<a class="st-cv" href="${esc(c.cv_url)}" target="_blank" rel="noopener">${UI_ICONS.fileText}Consulter le CV</a>`:'';
+  const linksHTML=`<div class="st-sec"><div class="st-title">Liens</div>${cvBtn}<div class="st-links">${links.join('')}</div>${contactPanel}</div>`;
+
+  const exps=parseExperiences(c);
+  const expHTML0=exps.length
+    ?`<div class="st-sec"><div class="st-title">Expériences</div>${exps.map(e=>`<div class="st-exp"><div class="st-dot"></div><div><div class="st-exp-t">${esc(e.poste)}</div>${e.org?`<div class="st-exp-o">${esc(e.org)}</div>`:''}${e.periode?`<div class="st-exp-p">${esc(e.periode)}</div>`:''}</div></div>`).join('')}</div>`
+    :'';
+
+  const skills=parseSkills(c);
+  const skillsHTML0=skills.length
+    ?`<div class="st-sec"><div class="st-title">Compétences</div><div class="st-chips">${skills.map(s=>`<span class="st-chip">${esc(s)}</span>`).join('')}</div></div>`
+    :'';
+
+  // Aperçu depuis le dashboard (src=admin) : on montre aussi les rubriques vides pour rappeler de les remplir
+  const isAdmin=getSource()==='admin';
+  const emptyHint=t=>`<div class="st-sec"><div class="st-title">${t}</div><p class="st-about" style="color:var(--muted);font-style:italic">Non renseigné — à compléter dans le dashboard (onglet 💼 Portfolio). Cette mention n'est visible que par vous.</p></div>`;
+  const expHTML=expHTML0||(isAdmin?emptyHint('Expériences'):'');
+  const skillsHTML=skillsHTML0||(isAdmin?emptyHint('Compétences'):'');
+
+  document.getElementById('app').innerHTML=`
+    <div class="card">
+      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">Carte étudiante</div>
+          <div class="hero-name">${esc(name)}</div>
+          <div class="hero-role">${roleHTML}</div>
+          ${studentNo}
+        </div>
+      </div>
+      ${uniCard}
+      ${aboutHTML}${linksHTML}${expHTML}${skillsHTML}
+      <div style="text-align:center;padding:.4rem 1.2rem 1.5rem">
+        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
+      </div>
+    </div>
+    <div class="save-bar">
+      <div class="sb-left">
+        <div class="sb-av st">${av}</div>
+        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
+      </div>
+      <button class="sb-btn" style="color:#fff" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
+    </div>`;
 }
 
-async function bootDashboard() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    window.location.href = 'https://printlegacy.github.io/';
+function render(c,uni){
+  if(c.produit==='student') return renderStudent(c,uni);
+  applyTheme(c.theme||'noir');
+  const name=(c.firstname||'')+' '+(c.lastname||'');
+  document.title=name+' — Print Legacy';
+  const contacts=buildContacts(c);
+  const socials=buildSocials(c);
+  const catalogueHTML=buildCatalogue(c);
+  const av=c.photo?`<img src="${c.photo}" alt="${name}">`:`${ini(c.firstname,c.lastname)}`;
+  const heroImg=c.cover_url||c.cover_photo||c.photo;
+  const heroHTML=heroImg
+    ?`<img class="hero-img" src="${heroImg}" alt="${name}">`
+    :`<div class="hero-placeholder"><div class="hero-initials-big">${ini(c.firstname,c.lastname)}</div></div>`;
+  const roleHTML=c.jobtitle?`<em>${c.jobtitle}</em>${c.company?' · '+c.company:''}`:(c.company||'');
+  const coLogoHTML=c.company_logo_url
+    ?`<img src="${c.company_logo_url}" alt="${c.company}" onerror="imgFallback(this,'building','co-logo-fallback')">`
+    :UI_ICONS.building;
+  const hasCoDetails=!!(c.company_about||c.company_hours||c.location);
+  const coDetailsHTML=hasCoDetails
+    ?`<div class="co-details" id="coDetails">${c.company_about?`<div class="co-detail-about">${c.company_about}</div>`:''}${c.company_hours?`<div class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.clock}</span><span>${c.company_hours}</span></div>`:''}${c.location?`<a href="${c.location.startsWith('http')?c.location:'https://maps.google.com/?q='+encodeURIComponent(c.location)}" target="_blank" class="co-detail-row"><span class="co-detail-ico">${UI_ICONS.mapPin}</span><span>${c.location.startsWith('http')?'Voir sur la carte':c.location}</span></a>`:''}</div>`
+    :'';
+  const compHTML=c.company
+    ?`<div class="company-card-wrap">
+        <div class="company-card" ${hasCoDetails?'onclick="toggleCompanyDetails()"':''} style="${hasCoDetails?'cursor:pointer':''}">
+          <div class="co-left">
+            <div class="co-logo">${coLogoHTML}</div>
+            <div><div class="co-name">${c.company}</div><span class="co-badge">Entreprise principale</span></div>
+          </div>
+          ${hasCoDetails?`<div class="co-arr" id="coArr">${UI_ICONS.chevron}</div>`:''}
+        </div>
+        ${coDetailsHTML}
+      </div>`
+    :'';
+  const aboutHTML=c.bio
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.user}</div><span class="sec-lbl">À propos</span></div><p class="about-txt">${c.bio}</p></div><div class="divider"><span></span></div>`
+    :'';
+  // cv_url = le PDF/CV uploadé par le client lors de sa commande (order.html)
+  // On l'affiche seulement si le champ existe en base, sinon la section est vide
+  const cvHTML=c.cv_url
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">CV / Portfolio</span></div><a href="${c.cv_url}" target="_blank" class="clink"><div class="clink-ico">📄</div><div class="clink-body"><span class="clink-lbl">Document</span><span class="clink-val">Voir le CV / Portfolio</span></div><span class="clink-arr">›</span></a></div><div class="divider"><span></span></div>`
+    :'';
+  const contactHTML=contacts.length
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.idcard}</div><span class="sec-lbl">Contact</span></div><div class="contact-list">${contacts.map(l=>`<a href="${l.href}" class="clink" ${l.t?'target="_blank"':''}><div class="clink-ico" style="${l.color?'color:'+l.color:''}">${l.ico}</div><div class="clink-body"><span class="clink-lbl">${l.lbl}</span><span class="clink-val">${l.val}</span></div><span class="clink-arr">›</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    :'';
+  const socialHTML=socials.length
+    ?`<div class="sec"><div class="sec-header"><div class="sec-ico">${UI_ICONS.share}</div><span class="sec-lbl">Réseaux sociaux</span></div><div class="soc-grid">${socials.map(s=>`<a href="${s.href}" target="_blank" class="soc-btn"><span class="soc-ico" style="background:${s.bg}">${s.ico}</span><span class="soc-name">${s.name}</span></a>`).join('')}</div></div><div class="divider"><span></span></div>`
+    :'';
+ 
+  document.getElementById('app').innerHTML=`
+    <div class="card">
+      <div class="hero">${heroHTML}<div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">Carte professionnelle</div>
+          <div class="hero-name">${name}</div>
+          <div class="hero-role">${roleHTML}</div>
+        </div>
+      </div>
+      ${compHTML}<div class="spacer"></div>
+      ${aboutHTML}${cvHTML}${contactHTML}${catalogueHTML}${socialHTML}
+      <div style="text-align:center;padding:1rem 1.2rem 1.5rem">
+        <a href="https://printlegacy.github.io" style="font-size:.68rem;color:var(--muted);text-decoration:none">Propulsé par <strong style="color:var(--ink)">Print Legacy</strong></a>
+      </div>
+    </div>
+    <div class="save-bar">
+      <div class="sb-left">
+        <div class="sb-av">${av}</div>
+        <div class="sb-txt"><span class="sb-sublbl">Ajouter à mes contacts</span><span class="sb-title">Enregistrer le contact</span></div>
+      </div>
+      <button class="sb-btn" onclick='saveVCard(${JSON.stringify(c).replace(/'/g,"&#39;")})'>→</button>
+    </div>`;
+}
+ 
+async function init(){
+  const slug=getSlug();
+  if(!slug){
+    document.getElementById('app').innerHTML=`<div class="err"><div style="width:44px;height:44px;color:var(--gold)">${UI_ICONS.sparkle}</div><h2>Print Legacy</h2><p>Plateforme de cartes digitales NFC.</p><a href="https://printlegacy.github.io">← Voir le site</a></div>`;
     return;
   }
-  const { data: adminRow } = await sb.from('admins').select('approved').eq('id', session.user.id).maybeSingle();
-  if (!adminRow || !adminRow.approved) {
-    await sb.auth.signOut();
-    window.location.href = 'https://printlegacy.github.io/';
+  const {data,error}=await sb.from('clients').select('*').eq('slug',slug).eq('status','active').single();
+  if(error||!data){
+    document.getElementById('app').innerHTML=`<div class="err"><div style="width:44px;height:44px;color:var(--muted)">${UI_ICONS.frown}</div><h2>Carte introuvable</h2><p>Le profil "<strong>${slug}</strong>" n'est pas encore activé.</p><a href="https://printlegacy.github.io">← Accueil</a></div>`;
     return;
   }
-  currentUserId = session.user.id;
-  document.body.classList.add('authed');
-  loadUniversitiesQuiet();
-  loadData();
-  loadAdmins();
-  setInterval(loadData, 30000);
-}
-
-sb.auth.onAuthStateChange((event) => {
-  if (event === 'SIGNED_OUT') {
-    window.location.href = 'https://printlegacy.github.io/';
+  // Carte étudiante : on charge l'université (logo, couleurs, slogan). Si la lecture échoue, on garde le bleu Dauphine par défaut.
+  let uni=null;
+  if(data.produit==='student'&&data.university_id){
+    try{const r=await sb.from('universities').select('*').eq('id',data.university_id).single();uni=r.data||null;}catch(e){}
   }
-});
-
-bootDashboard();
+  render(data,uni);
+  trackView(data.id); // on enregistre la vue une fois la carte affichée avec succès
+}
+ 
+init();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
