@@ -127,15 +127,19 @@ tr:hover td{background:var(--cream)}
 .edit-input{padding:8px 12px;border:1px solid var(--cream2);border-radius:var(--r);font-size:12.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
 .edit-input:focus{border-color:var(--gold);background:#FFFDF7}
 .edit-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--smoke2);padding:10px 0 8px;border-bottom:1px solid var(--cream2);margin-top:6px;grid-column:1/-1}
-.edit-tabs{display:flex;gap:4px;padding:4px;background:var(--ink);border-radius:10px;margin-bottom:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
-.edit-tab{flex:1;text-align:center;padding:10px 4px;border-radius:7px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.42);cursor:pointer;transition:.18s;background:transparent;border:none;font-family:'Jost',sans-serif;white-space:nowrap}
-.edit-tab:hover{color:rgba(255,255,255,.8)}
-.edit-tab.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);box-shadow:0 3px 12px rgba(184,149,58,.4)}
+#clientEditBox{--edit-accent:var(--gold);--edit-accent-soft:var(--gold4);--edit-accent-text:var(--ink);--edit-accent-ink:var(--gold)}
+.edit-tabs{display:flex;gap:4px;padding:4px;background:var(--cream);border:1px solid var(--cream2);border-radius:10px;margin-bottom:20px;transition:background .25s}
+.edit-tab{flex:1;text-align:center;padding:10px 4px;border-radius:7px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--smoke2);cursor:pointer;transition:.18s;background:transparent;border:none;font-family:'Jost',sans-serif;white-space:nowrap}
+.edit-tab:hover{color:var(--ink);background:rgba(0,0,0,.04)}
+.edit-tab.active{background:var(--edit-accent);color:var(--edit-accent-text);box-shadow:0 3px 10px rgba(0,0,0,.12)}
 .edit-tab-panel{display:none}
 .edit-tab-panel.active{display:grid}
-.edit-field-highlight{grid-column:1/-1;background:linear-gradient(135deg,var(--gold4),#FFFDF6);border:1px solid rgba(184,149,58,.35);border-radius:8px;padding:12px 14px}
-.edit-field-highlight .edit-label{color:var(--gold);font-weight:700}
-.edit-field-highlight .edit-input{background:#fff;font-weight:600;letter-spacing:.02em;border-color:rgba(184,149,58,.3)}
+.edit-uni-banner{display:none;grid-column:1/-1;align-items:center;gap:10px;background:var(--edit-accent-soft);border:1px solid var(--edit-accent);border-radius:8px;padding:9px 14px;font-size:11.5px;color:var(--edit-accent-ink);font-weight:600}
+.edit-uni-banner.show{display:flex}
+.edit-uni-banner img{height:20px;width:auto;max-width:60px;object-fit:contain;background:#fff;border-radius:3px;padding:2px}
+.edit-field-highlight{grid-column:1/-1;background:var(--edit-accent-soft);border:1px solid var(--edit-accent);border-radius:8px;padding:12px 14px;transition:background .25s,border-color .25s}
+.edit-field-highlight .edit-label{color:var(--edit-accent-ink);font-weight:700}
+.edit-field-highlight .edit-input{background:#fff;font-weight:600;letter-spacing:.02em;border-color:var(--edit-accent)}
 .edit-theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;grid-column:1/-1}
 .edit-theme{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
 .edit-theme.sel{border-color:var(--gold)}
@@ -160,6 +164,18 @@ tr:hover td{background:var(--cream)}
 .cover-zone:hover .cz-overlay{display:flex}
 .save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
 .save-toast.show{display:block}
+
+/* ── PROFIL ÉTUDIANT (Dauphine) ── */
+.edit-sec-title{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--edit-accent-ink);padding:2px 0 7px;border-bottom:1px solid var(--cream2);margin-top:4px}
+.exp-row{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid var(--cream2);border-radius:8px;margin-bottom:8px;background:var(--cream)}
+.exp-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.exp-grid .exp-periode{grid-column:1/-1}
+.exp-del{background:none;border:none;color:#C62828;cursor:pointer;font-size:13px;padding:6px}
+.exp-add{width:100%;padding:9px;border:1px dashed var(--edit-accent);border-radius:8px;background:transparent;color:var(--edit-accent-ink);font-weight:600;font-size:11px;letter-spacing:.04em;cursor:pointer;font-family:'Jost',sans-serif}
+.exp-add:hover{background:var(--edit-accent-soft)}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:500;background:color-mix(in srgb,var(--edit-accent) 9%,#fff);color:var(--edit-accent)}
+@media (max-width:860px){.exp-grid{grid-template-columns:1fr}}
 
 /* ── CRÉATIONS ── */
 .creation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:20px}
@@ -511,13 +527,14 @@ tr:hover td{background:var(--cream)}
 
 <!-- EDIT MODAL -->
 <div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
-  <div class="edit-box">
+  <div class="edit-box" id="clientEditBox">
     <div class="modal-hd"><div class="modal-hd-title" id="editModalTitle">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
     <div class="edit-body">
       <div class="edit-tabs" id="editTabs">
         <button type="button" class="edit-tab active" data-tab="identite" onclick="switchEditTab('identite')">🪪 Identité</button>
         <button type="button" class="edit-tab" data-tab="contact" onclick="switchEditTab('contact')">📞 Contact</button>
         <button type="button" class="edit-tab" data-tab="reseaux" onclick="switchEditTab('reseaux')">🔗 Réseaux</button>
+        <button type="button" class="edit-tab" data-tab="parcours" onclick="switchEditTab('parcours')">🎓 Parcours</button>
         <button type="button" class="edit-tab" data-tab="apparence" onclick="switchEditTab('apparence')">🎨 Apparence</button>
         <button type="button" class="edit-tab" data-tab="statut" onclick="switchEditTab('statut')">🚦 Statut</button>
       </div>
@@ -550,9 +567,13 @@ tr:hover td{background:var(--cream)}
         </div>
         <div class="edit-field">
           <div class="edit-label">🎓 Université</div>
-          <select class="edit-input" id="edit-university_id">
+          <select class="edit-input" id="edit-university_id" onchange="onEditUniversityChange()">
             <option value="">— Aucune —</option>
           </select>
+        </div>
+        <div class="edit-uni-banner" id="editUniBanner">
+          <img id="editUniBannerLogo" style="display:none">
+          <span id="editUniBannerText"></span>
         </div>
         <div class="edit-field full">
           <div style="display:flex;align-items:center;gap:12px">
@@ -577,7 +598,7 @@ tr:hover td{background:var(--cream)}
         </div>
         <div class="edit-field" id="editCompanyWrap"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
-        <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
+        <div class="edit-field full"><div class="edit-label" id="editBioLabel">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
         <div class="edit-field full" id="editCompanyLogoWrap">
           <div class="edit-label">🏢 Logo de l'entreprise</div>
           <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
@@ -611,6 +632,7 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">Email</div><input class="edit-input" id="edit-email" placeholder="email@..."></div>
         <div class="edit-field"><div class="edit-label">Site web</div><input class="edit-input" id="edit-website" placeholder="https://..."></div>
+        <div class="edit-field"><div class="edit-label">🔗 Portfolio</div><input class="edit-input" id="edit-portfolio" placeholder="https://..."></div>
       </div>
 
       <div class="edit-tab-panel edit-grid" data-tab="reseaux">
@@ -618,6 +640,20 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
+      </div>
+
+      <div class="edit-tab-panel edit-grid" data-tab="parcours">
+        <div class="edit-sec-title">Expériences</div>
+        <div class="edit-field full">
+          <div id="expList"></div>
+          <button type="button" class="exp-add" onclick="addExpRow()">+ Ajouter une expérience</button>
+        </div>
+        <div class="edit-sec-title">Compétences</div>
+        <div class="edit-field full">
+          <div class="edit-label">Compétences (séparées par des virgules)</div>
+          <input class="edit-input" id="edit-skills" placeholder="Finance de marché, Python, Excel, Analyse financière" oninput="updateSkillsPreview()">
+          <div class="chip-wrap" id="skillsPreview"></div>
+        </div>
       </div>
 
       <div class="edit-tab-panel edit-grid" data-tab="apparence">
@@ -656,6 +692,7 @@ tr:hover td{background:var(--cream)}
           </div>
         </div>
         <div class="edit-field full"><div class="edit-label">Nom de l'université</div><input class="edit-input" id="uni-name" placeholder="Université Paris Dauphine - PSL"></div>
+        <div class="edit-field full"><div class="edit-label">Slogan (affiché sous le logo)</div><input class="edit-input" id="uni-tagline" placeholder="Université de recherche et de décision"></div>
         <div class="edit-field">
           <div class="edit-label">Couleur principale</div>
           <div class="color-field"><input type="color" id="uni-primary" value="#2F4486"><input type="text" id="uni-primary-hex" class="edit-input" value="#2F4486"></div>
@@ -959,7 +996,7 @@ function fmtNum(n){return Math.round(n||0).toString().replace(/\B(?=(\d{3})+(?!\
 
 // ── CLIENTS TABLE ──
 const PRODUIT_META={
-  student:{label:'🎓 Student',bg:'#EAF2FF',fg:'#2563EB'},
+  student:{label:'🎓 Student',bg:'#E8EDF8',fg:'#2F4486'},
   pro:{label:'💼 Pro',bg:'var(--gold4)',fg:'var(--gold)'},
   plaque:{label:'🪧 Plaque',bg:'#FDEFE0',fg:'#B26A00'},
   bracelet:{label:'⌚ Bracelet',bg:'#F3E8FF',fg:'#7C3AED'},
@@ -1144,7 +1181,7 @@ function openUniModal(id){
   const img=document.getElementById('uniLogoImg');
   img.style.display='none';img.src='';
   document.getElementById('uniLogoHint').style.display='block';
-  document.getElementById('uni-name').value='';
+  document.getElementById('uni-name').value='';document.getElementById('uni-tagline').value='';
   document.getElementById('uni-primary').value='#2F4486';
   document.getElementById('uni-primary-hex').value='#2F4486';
   document.getElementById('uni-secondary').value='#FFFFFF';
@@ -1152,7 +1189,7 @@ function openUniModal(id){
   if(id){
     const u=universityById(id);
     if(u){
-      document.getElementById('uni-name').value=u.name||'';
+      document.getElementById('uni-name').value=u.name||'';document.getElementById('uni-tagline').value=u.tagline||'';
       const pc=u.primary_color||'#2F4486', sc=u.secondary_color||'#FFFFFF';
       document.getElementById('uni-primary').value=pc;document.getElementById('uni-primary-hex').value=pc;
       document.getElementById('uni-secondary').value=sc;document.getElementById('uni-secondary-hex').value=sc;
@@ -1201,6 +1238,7 @@ async function saveUniversity(){
       primary_color:document.getElementById('uni-primary-hex').value||'#0A0A0A',
       secondary_color:document.getElementById('uni-secondary-hex').value||'#D4AF6A'
     };
+    updates.tagline=document.getElementById('uni-tagline').value.trim()||null;
     if(newUniLogoFile){
       const url=await upFile(newUniLogoFile,'universities');
       if(url) updates.logo_url=url;
@@ -1837,11 +1875,70 @@ function switchEditTab(name){
   document.querySelectorAll('.edit-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   document.querySelectorAll('.edit-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.tab===name));
 }
+// ── PARCOURS ÉTUDIANT : expériences + compétences ──
+function expRowHtml(e){
+  e=e||{};
+  return `<div class="exp-row"><div class="exp-grid">
+    <input class="edit-input exp-poste" placeholder="Poste (ex: Stagiaire analyste)" value="${esc(e.poste)}">
+    <input class="edit-input exp-org" placeholder="Société" value="${esc(e.org)}">
+    <input class="edit-input exp-periode" placeholder="Juin – Août 2025" value="${esc(e.periode)}">
+  </div><button type="button" class="exp-del" title="Supprimer" onclick="this.closest('.exp-row').remove()">✕</button></div>`;
+}
+function setExperiences(list){
+  if(typeof list==='string'){try{list=JSON.parse(list);}catch(e){list=[];}}
+  if(!Array.isArray(list)) list=[];
+  document.getElementById('expList').innerHTML=list.map(expRowHtml).join('');
+}
+function addExpRow(){
+  document.getElementById('expList').insertAdjacentHTML('beforeend',expRowHtml({}));
+}
+function collectExperiences(){
+  return Array.from(document.querySelectorAll('#expList .exp-row')).map(r=>({
+    poste:r.querySelector('.exp-poste').value.trim(),
+    org:r.querySelector('.exp-org').value.trim(),
+    periode:r.querySelector('.exp-periode').value.trim()
+  })).filter(e=>e.poste||e.org||e.periode);
+}
+function updateSkillsPreview(){
+  const v=(document.getElementById('edit-skills').value||'').split(',').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('skillsPreview').innerHTML=v.map(s=>`<span class="chip">${esc(s)}</span>`).join('');
+}
+
 function toggleStudentMode(){
   const isStudent=document.getElementById('edit-produit').value==='student';
   document.getElementById('editStudentIdWrap').style.display=isStudent?'block':'none';
   document.getElementById('editCompanyWrap').style.display=isStudent?'none':'block';
   document.getElementById('editCompanyLogoWrap').style.display=isStudent?'none':'block';
+  document.getElementById('editBioLabel').textContent=isStudent?'À propos':'Bio';
+}
+function onEditUniversityChange(){
+  setEditUniversityTheme(document.getElementById('edit-university_id').value);
+}
+function setEditUniversityTheme(uniId){
+  const box=document.getElementById('clientEditBox');
+  const banner=document.getElementById('editUniBanner');
+  const logo=document.getElementById('editUniBannerLogo');
+  const text=document.getElementById('editUniBannerText');
+  const u=uniId?universityById(uniId):null;
+  if(!u){
+    box.style.removeProperty('--edit-accent');
+    box.style.removeProperty('--edit-accent-soft');
+    box.style.removeProperty('--edit-accent-text');
+    box.style.removeProperty('--edit-accent-ink');
+    banner.classList.remove('show');
+    return;
+  }
+  const primary=u.primary_color||'#2F4486';
+  const secondary=u.secondary_color||'#FFFFFF';
+  box.style.setProperty('--edit-accent',primary);
+  box.style.setProperty('--edit-accent-soft',isLightColor(secondary)?'color-mix(in srgb,'+primary+' 8%,#ffffff)':secondary);
+  // Texte sur fond primaire (onglet actif) : blanc si primaire foncée, sombre sinon
+  box.style.setProperty('--edit-accent-text',isLightColor(primary)?'#1a1a1a':'#ffffff');
+  // Texte sur fond secondaire clair (bannière, encart) : la couleur primaire elle-même si lisible
+  box.style.setProperty('--edit-accent-ink',isLightColor(secondary)?primary:'#1a1a1a');
+  if(u.logo_url){logo.src=u.logo_url;logo.style.display='block';}else{logo.style.display='none';}
+  text.textContent='Carte aux couleurs de '+u.name;
+  banner.classList.add('show');
 }
 function selTheme(id){
   document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
@@ -1935,9 +2032,10 @@ async function openEdit(clientId, presetUniversityId){
   if(!clientId){
     // ── MODE CRÉATION ──
     document.getElementById('editModalTitle').textContent=presetUniversityId?'🎓 Nouvelle carte étudiante':'➕ Nouveau profil';
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
+    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
     document.getElementById('edit-produit').value=presetUniversityId?'student':'';
     document.getElementById('edit-university_id').value=presetUniversityId||'';
+    setEditUniversityTheme(presetUniversityId||'');setExperiences([]);updateSkillsPreview();
     if(presetUniversityId){
       document.getElementById('edit-company').value=(universityById(presetUniversityId)||{}).name||'';
     }
@@ -1960,8 +2058,9 @@ async function openEdit(clientId, presetUniversityId){
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
+    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     document.getElementById('edit-university_id').value=c.university_id||'';
+    setEditUniversityTheme(c.university_id||'');setExperiences(c.experiences);updateSkillsPreview();
     toggleStudentMode();
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
@@ -1984,7 +2083,7 @@ async function openEdit(clientId, presetUniversityId){
     else{showToast('Erreur: '+(err.message||''));}
   }
 }
-function closeEdit(){document.getElementById('editOv').classList.remove('open');pendingUniversityId=null;}
+function closeEdit(){document.getElementById('editOv').classList.remove('open');pendingUniversityId=null;setEditUniversityTheme('');}
 
 async function upFile(file,folder){
   if(!file)return null;
@@ -2000,8 +2099,9 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent=currentId?'💾 Sauvegarde...':'💾 Création...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
+    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     updates.university_id=document.getElementById('edit-university_id').value||null;
+    updates.experiences=collectExperiences();
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
