@@ -73,6 +73,9 @@
 .u-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.6rem}
 .u-grid:first-child{margin-top:0}
 .u-grid .u-btn:last-child:nth-child(odd){grid-column:1/-1}
+/* Boutons Kairos / WhatsApp */
+.u-btn.u-wa svg{color:#25a244}
+.u-btn.u-kairos{border-color:color-mix(in srgb,var(--u-primary) 35%,#fff)}
 
 .u-foot{margin:2rem 1.4rem 0;padding-top:1rem;border-top:1px solid var(--u-line);text-align:center;font-size:.72rem;color:var(--u-muted)}
 .u-foot a{text-decoration:none}
@@ -96,22 +99,23 @@ function shareProfile(n){alert('Partage : '+n)} function saveVCard(c){alert('vCa
    Utilisé uniquement si le client est rattaché à une université (table universities).
    Les profils classiques passent toujours par render(c) — inchangé. */
 
-/* ═══════════ PROFIL UNIVERSITAIRE ═══════════
-   Utilisé uniquement si le client est rattaché à une université (table universities).
-   Les profils classiques passent toujours par render(c) — inchangé. */
-
 const UNI_SVG={
   file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
   pin:'<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
   link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/>',
-  user:'<circle cx="10" cy="8" r="4"/><path d="M3 20a7 7 0 0 1 14 0M19 8v6M16 11h6"/>'
+  user:'<circle cx="10" cy="8" r="4"/><path d="M3 20a7 7 0 0 1 14 0M19 8v6M16 11h6"/>',
+  /* NOUVEAU : toque (portail Kairos) et bulle (WhatsApp) */
+  cap:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5M22 9v5"/>',
+  chat:'<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.4A8.4 8.4 0 1 1 21 11.5z"/>'
 };
 function uniIco(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+UNI_SVG[n]+'</svg>';}
 function uniHex(v,fb){return /^#[0-9a-fA-F]{6}$/.test(v||'')?v:fb;}
 function uniIsLight(h){const c=h.slice(1);const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);return(0.299*r+0.587*g+0.114*b)>170;}
 function uniUrl(u){if(!u)return '';u=String(u).trim();return /^(https?:|mailto:|tel:)/i.test(u)?u:'https://'+u.replace(/^\/+/,'');}
+/* NOUVEAU : lien WhatsApp — accepte un numéro (+221…) OU un lien d'invitation de groupe */
+function uniWa(v){v=String(v||'').trim();if(!v)return '';return /[a-z]/i.test(v)?uniUrl(v):'https://wa.me/'+v.replace(/\D/g,'');}
 function uniList(v){
   if(typeof v==='string'){try{v=JSON.parse(v);}catch(e){return [];}}
   return Array.isArray(v)?v:[];
@@ -160,7 +164,7 @@ function renderUniversityProfile(c,uni){
   /* 3. À propos */
   const about=c.bio?uniSection('À propos','<p class="u-about" onclick="this.classList.toggle(\'open\')">'+esc(c.bio)+'</p>'):'';
 
-  /* 4. Liens (juste après À propos) */
+  /* 4. Liens (placés en fin de profil, avant le pied de page) */
   const extras=[];
   if(c.portfolio_url)extras.push({href:uniUrl(c.portfolio_url),label:'Portfolio'});
   if(c.website)extras.push({href:uniUrl(c.website),label:'Site web'});
@@ -169,6 +173,15 @@ function renderUniversityProfile(c,uni){
   const btns=[];
   if(c.linkedin)btns.push(a(uniUrl(c.linkedin),'<span class="u-in">in</span>LinkedIn','u-btn'));
   if(c.email)btns.push('<a class="u-btn" href="mailto:'+esc(c.email)+'">'+uniIco('mail')+'Email</a>');
+
+  /* NOUVEAU — WhatsApp direct (numéro de l'étudiant) */
+  if(c.whatsapp)btns.push(a(uniWa(c.whatsapp),uniIco('chat')+'WhatsApp','u-btn u-wa'));
+
+  /* NOUVEAU — Portail Kairos : le lien est propre à l'université (uni.kairos_url),
+     avec possibilité de le surcharger pour un étudiant (c.kairos_url). */
+  const kairos=c.kairos_url||uni.kairos_url;
+  if(kairos)btns.push(a(uniUrl(kairos),uniIco('cap')+'Portail Kairos','u-btn u-kairos'));
+
   extras.slice(0,3).forEach(e=>btns.push(a(e.href,uniIco('link')+esc(e.label),'u-btn')));
   btns.push('<button class="u-btn" type="button" onclick="uniShare()">'+uniIco('share')+'Partager</button>');
   const cv=c.cv_url?a(uniUrl(c.cv_url),uniIco('file')+'Consulter le CV','u-cta'):'';
@@ -189,18 +202,20 @@ function renderUniversityProfile(c,uni){
     '<span class="u-bar-t"><small>Ajouter à mes contacts</small><b>Enregistrer le contact</b></span>'+
     '<span class="u-bar-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>';
 
-  document.getElementById('app').innerHTML='<div class="wrap uni" style="'+vars+'">'+hero+uniCard+about+links+exps+tags+foot+bar+'</div>';
+  document.getElementById('app').innerHTML='<div class="wrap uni" style="'+vars+'">'+hero+uniCard+about+exps+tags+links+foot+bar+'</div>';
 }
 function uniShare(){const c=window.__client||{};shareProfile(((c.firstname||'')+' '+(c.lastname||'')).trim());}
 function uniSave(){const c=window.__client||{};saveVCard(Object.assign({},c,{company:c.company||(window.__uni&&window.__uni.name)||''}));}
 
 // ——— DONNÉES D'EXEMPLE (à remplacer par les vraies données depuis le dashboard) ———
-const uni={id:'u1',name:'Université Paris Dauphine-PSL (exemple)',primary_color:'#2F4486',secondary_color:'#FFFFFF',accent_color:'#8FB4E3',slogan:'Université de recherche et de décision',logo_url:null,campus_image_url:null};
+const uni={id:'u1',name:'Université Paris Dauphine-PSL (exemple)',primary_color:'#2F4486',secondary_color:'#FFFFFF',accent_color:'#8FB4E3',slogan:'Université de recherche et de décision',logo_url:null,campus_image_url:null,
+  kairos_url:'https://paris-dauphine.kairossuite.com/kairos_paris_dauphine/login/auth',   // lien Kairos de l'université
+  whatsapp_url:'https://chat.whatsapp.com/exemple'};                                      // groupe WhatsApp (exemple)
 const c={university_id:'u1',firstname:'Anna',lastname:'Sakho',photo:null,formation:'Étudiante',location:'Paris, France',
 bio:'Étudiante en finance, intéressée par les marchés et la gestion de portefeuille. Je recherche un stage ou une alternance à partir de 2026.',
 education:[{title:'Master 2 Finance',place:'Université Paris Dauphine-PSL',period:'2025 – 2026'},{title:'Licence Économie-Gestion',place:'Université Paris Dauphine-PSL',period:'2022 – 2025'}],
 experiences:[{title:'Stagiaire analyste',place:'Société exemple',period:'Juin – Août 2025'}],
 skills:['Finance de marché','Python','Excel','Analyse financière'],
-linkedin:'linkedin.com/in/exemple',email:'anna@example.com',cv_url:'https://example.com/cv.pdf',portfolio_url:'https://example.com',slug:'anna-sakho'};
+linkedin:'linkedin.com/in/exemple',email:'anna@example.com',whatsapp:'+221 78 000 00 00',cv_url:'https://example.com/cv.pdf',portfolio_url:'https://example.com',slug:'anna-sakho'};
 renderUniversityProfile(c,uni);
 </script></body></html>
