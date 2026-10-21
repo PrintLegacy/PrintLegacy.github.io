@@ -704,6 +704,8 @@ tr:hover td{background:var(--cream)}
           </div>
         </div>
         <div class="edit-field full"><div class="edit-label">Nom de l'université</div><input class="edit-input" id="uni-name" placeholder="Université Paris Dauphine - PSL"></div>
+        <div class="edit-field full"><div class="edit-label">📍 Adresse du campus</div><input class="edit-input" id="uni-address" placeholder="Ex : Sacré-Cœur 3 Immeuble Bin Abdallah">
+          <div style="font-size:10px;color:var(--smoke2);margin-top:4px">Affichée sur toutes les cartes de cette université (remplace l'adresse saisie sur chaque carte).</div></div>
         <div class="edit-field full"><div class="edit-label">Slogan (facultatif)</div><input class="edit-input" id="uni-slogan" placeholder="Laisser vide pour ne rien afficher"></div>
         <div class="edit-field full"><div class="edit-label">🎓 Lien du portail étudiant (Kairos)</div><input class="edit-input" id="uni-kairos" placeholder="https://...">
           <div style="font-size:10px;color:var(--smoke2);margin-top:4px">Affiche le bouton « Portail Kairos » sur toutes les cartes de cette université (modifiable carte par carte).</div></div>
@@ -1178,6 +1180,7 @@ async function loadUniversities(){
         <div class="uni-card-actions">
           <div class="uni-mini-btn primary" onclick="event.stopPropagation();createStudentFor('${escAttr(u.id)}')">+ Étudiant</div>
           <div class="uni-mini-btn" onclick="event.stopPropagation();openUniModal('${escAttr(u.id)}')">✏️ Éditer</div>
+          <div class="uni-mini-btn" title="Copier le lien à envoyer aux étudiants" onclick="event.stopPropagation();copyUniSignupLink('${escAttr(u.id)}')">🔗 Lien</div>
         </div>
       </div>`;
     }).join('');
@@ -1196,6 +1199,13 @@ async function loadUniversities(){
   }
 }
 
+// Lien à envoyer aux étudiants : formulaire de commande Student avec l'université présélectionnée
+function copyUniSignupLink(uniId){
+  const link='https://printlegacy.github.io/order.html?produit=student&univ='+encodeURIComponent(uniId);
+  const done=()=>showToast('🔗 Lien d\'inscription copié');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(link).then(done).catch(()=>{window.prompt('Copiez ce lien :',link);});}
+  else{window.prompt('Copiez ce lien :',link);}
+}
 function populateUniversitySelect(){
   const sel=document.getElementById('edit-university_id');
   const keep=sel.value;
@@ -1213,6 +1223,7 @@ function openUniModal(id){
   document.getElementById('uniLogoHint').style.display='block';
   document.getElementById('uni-name').value='';
   document.getElementById('uni-slogan').value='';
+  document.getElementById('uni-address').value='';
   document.getElementById('uni-kairos').value='';
   document.getElementById('uni-accent').value='#8FB4E3';
   document.getElementById('uni-accent-hex').value='';
@@ -1228,6 +1239,7 @@ function openUniModal(id){
     if(u){
       document.getElementById('uni-name').value=u.name||'';
       document.getElementById('uni-slogan').value=u.slogan||'';
+      document.getElementById('uni-address').value=u.address||'';
       document.getElementById('uni-kairos').value=u.kairos_url||'';
       if(/^#[0-9a-fA-F]{6}$/.test(u.accent_color||'')){document.getElementById('uni-accent').value=u.accent_color;document.getElementById('uni-accent-hex').value=u.accent_color;}
       if(u.campus_image_url){cimg.src=u.campus_image_url;cimg.style.display='block';document.getElementById('uniCampusHint').style.display='none';document.getElementById('uniCampusMeta').style.display='block';}
@@ -1300,6 +1312,7 @@ async function saveUniversity(){
       primary_color:document.getElementById('uni-primary-hex').value||'#0A0A0A',
       secondary_color:document.getElementById('uni-secondary-hex').value||'#D4AF6A',
       slogan:document.getElementById('uni-slogan').value.trim()||null,
+      address:document.getElementById('uni-address').value.trim()||null,
       kairos_url:document.getElementById('uni-kairos').value.trim()||null,
       accent_color:/^#[0-9a-fA-F]{6}$/.test(document.getElementById('uni-accent-hex').value.trim())?document.getElementById('uni-accent-hex').value.trim():null
     };
@@ -2000,12 +2013,12 @@ function updateSkillsPreview(){
 
 function toggleStudentMode(){
   const isStudent=document.getElementById('edit-produit').value==='student';
-  document.getElementById('editStudentIdWrap').style.display=isStudent?'block':'none';
   document.getElementById('editCompanyWrap').style.display=isStudent?'none':'block';
   document.getElementById('editCompanyLogoWrap').style.display=isStudent?'none':'block';
   document.getElementById('editBioLabel').textContent=isStudent?'À propos':'Bio';
   // Carte étudiante ou rattachée à une université : Formation + onglet Portfolio (parcours)
   const showParcours=isStudent||!!document.getElementById('edit-university_id').value;
+  document.getElementById('editStudentIdWrap').style.display=showParcours?'block':'none';
   document.getElementById('editFormationWrap').style.display=showParcours?'':'none';
   document.getElementById('editJobWrap').style.display=showParcours?'none':'';
   const tab=document.querySelector('.edit-tab[data-tab="parcours"]');
