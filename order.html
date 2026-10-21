@@ -314,6 +314,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     </div>
   </div>
  
+  <!-- PROFIL UNIVERSITAIRE (carte Student uniquement) -->
+  <div class="s-card fmode" data-products="student">
+    <div class="s-header"><div class="s-num">🎓</div><div class="s-title">Profil universitaire</div><div class="s-sub">Optionnel</div></div>
+    <div class="s-body">
+      <div class="field"><label>Université partenaire</label>
+        <select id="f-univ" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none"><option value="">— Aucune / autre établissement —</option></select>
+      </div>
+      <div class="field"><label>Formation</label><input type="text" id="f-formation" placeholder="Ex : Master 2 Finance"></div>
+      <div class="field"><label>💼 Expériences (3 maximum)</label>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:.5rem;margin-bottom:.5rem">
+          <input type="text" id="f-exp-t-1" placeholder="Poste / mission" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+          <input type="text" id="f-exp-p-1" placeholder="Organisation" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+          <input type="text" id="f-exp-d-1" placeholder="Période" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+        </div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:.5rem;margin-bottom:.5rem">
+          <input type="text" id="f-exp-t-2" placeholder="Poste / mission" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+          <input type="text" id="f-exp-p-2" placeholder="Organisation" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+          <input type="text" id="f-exp-d-2" placeholder="Période" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+        </div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:.5rem;margin-bottom:.5rem">
+          <input type="text" id="f-exp-t-3" placeholder="Poste / mission" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+          <input type="text" id="f-exp-p-3" placeholder="Organisation" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+          <input type="text" id="f-exp-d-3" placeholder="Période" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none">
+        </div>
+      </div>
+      <div class="field"><label>🛠️ Compétences <span style="color:var(--smoke2);font-weight:400;font-size:.65rem;text-transform:none;letter-spacing:0">(séparées par des virgules, 6 max)</span></label><input type="text" id="f-skills" placeholder="Python, Excel, Finance de marché"></div>
+      <div class="field"><label>🔗 Portfolio (lien)</label><input type="text" id="f-portfolio" placeholder="https://..."></div>
+    </div>
+  </div>
+
   <!-- 4. FICHIERS -->
   <div class="s-card">
     <div class="s-header"><div class="s-num">4</div><div class="s-title" id="lbl-files-title">CV & Documents</div><div class="s-sub">Optionnel</div></div>
@@ -465,7 +495,7 @@ if(window.emailjs && EMAILJS_PUBLIC_KEY.indexOf('COLLE_')!==0) emailjs.init(EMAI
 const { createClient } = supabase;
 const sb = createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
-  'sb_publishable_NuZqQ3yjdULy5THdoXJpeQ_F2Il1rEu'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
  
 const S = {offre:'',prix:'',qty:'1',theme:'noir',photo:null,cv:null,cover:null,companyLogo:null};
@@ -547,6 +577,17 @@ function applyProduct(){
   const sQtyRow = document.getElementById('s-qty');
   if(P.key==='bracelet' && sQtyRow) sQtyRow.closest('.sum-row').style.display='none';
 }
+
+// ── UNIVERSITÉS PARTENAIRES (menu déroulant de la carte Student) ──
+async function loadUniversitiesOrder(){
+  try{
+    const {data,error}=await sb.from('universities').select('id,name').order('name');
+    if(error||!data)return;
+    const sel=document.getElementById('f-univ');if(!sel)return;
+    sel.innerHTML='<option value="">— Aucune / autre établissement —</option>'+data.map(u=>'<option value="'+u.id+'">'+u.name.replace(/</g,'&lt;')+'</option>').join('');
+  }catch(e){}
+}
+loadUniversitiesOrder();
 
 // ── CATALOGUE STATE ──
 let catItems = []; // [{id, title, desc, price, file, previewUrl}]
@@ -877,6 +918,20 @@ async function submit(){
       status:'pending'
     };
  
+    // Profil universitaire : ajouté seulement pour la carte Student et si renseigné
+    if(P.key==='student'){
+      const uid=document.getElementById('f-univ').value;
+      const formation=document.getElementById('f-formation').value.trim();
+      const skills=document.getElementById('f-skills').value.trim();
+      const portfolio=document.getElementById('f-portfolio').value.trim();
+      const exps=[1,2,3].map(i=>({title:document.getElementById('f-exp-t-'+i).value.trim(),place:document.getElementById('f-exp-p-'+i).value.trim(),period:document.getElementById('f-exp-d-'+i).value.trim()})).filter(e=>e.title);
+      if(uid)row.university_id=uid;
+      if(formation)row.formation=formation;
+      if(skills)row.skills=skills;
+      if(portfolio)row.portfolio_url=portfolio;
+      if(exps.length)row.experiences=exps;
+    }
+
     const {error}=await sb.from('clients').insert([row]);
     if(error)throw error;
  
