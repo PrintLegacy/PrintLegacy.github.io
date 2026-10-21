@@ -321,6 +321,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
       <div class="field"><label>Université partenaire</label>
         <select id="f-univ" style="width:100%;padding:.8rem 1rem;border:1px solid var(--cream3);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--w);outline:none"><option value="">— Aucune / autre établissement —</option></select>
       </div>
+      <div class="field"><label>🎓 Numéro étudiant</label><input type="text" id="f-student-id" placeholder="Ex : 22012345"></div>
       <div class="field"><label>Formation</label><input type="text" id="f-formation" placeholder="Ex : Master 2 Finance"></div>
       <div class="field"><label>💼 Expériences (3 maximum)</label>
         <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:.5rem;margin-bottom:.5rem">
@@ -585,6 +586,12 @@ async function loadUniversitiesOrder(){
     if(error||!data)return;
     const sel=document.getElementById('f-univ');if(!sel)return;
     sel.innerHTML='<option value="">— Aucune / autre établissement —</option>'+data.map(u=>'<option value="'+u.id+'">'+u.name.replace(/</g,'&lt;')+'</option>').join('');
+    // Lien d'inscription : ?produit=student&univ=<id de l'université> (ou un mot du nom, ex. "dauphine") présélectionne l'université
+    const want=(new URLSearchParams(location.search).get('univ')||'').trim().toLowerCase();
+    if(want){
+      const m=data.find(u=>String(u.id).toLowerCase()===want)||data.find(u=>String(u.name||'').toLowerCase().includes(want));
+      if(m) sel.value=m.id;
+    }
   }catch(e){}
 }
 loadUniversitiesOrder();
@@ -925,7 +932,9 @@ async function submit(){
       const skills=document.getElementById('f-skills').value.trim();
       const portfolio=document.getElementById('f-portfolio').value.trim();
       const exps=[1,2,3].map(i=>({title:document.getElementById('f-exp-t-'+i).value.trim(),place:document.getElementById('f-exp-p-'+i).value.trim(),period:document.getElementById('f-exp-d-'+i).value.trim()})).filter(e=>e.title);
+      const sid=document.getElementById('f-student-id').value.trim();
       if(uid)row.university_id=uid;
+      if(sid)row.student_id=sid;
       if(formation)row.formation=formation;
       if(skills)row.skills=skills;
       if(portfolio)row.portfolio_url=portfolio;
