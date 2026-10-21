@@ -47,12 +47,6 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 .sb-item.order-menu-wrap .order-menu{top:0;left:calc(100% + 6px);right:auto;min-width:220px}
 .content{flex:1;overflow-y:auto;padding:24px 28px}
 .page{display:none}.page.active{display:block}
-body:not(.authed) .app{display:none}
-.auth-loader{display:flex;align-items:center;justify-content:center;height:100vh;font-family:'Jost',sans-serif;color:var(--smoke2);font-size:13px}
-body.authed .auth-loader{display:none}
-.admin-badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:100px;text-transform:uppercase}
-.admin-badge.pending{background:rgba(184,149,58,.14);color:var(--gold)}
-.admin-badge.approved{background:rgba(46,125,50,.12);color:var(--success)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .sc{background:var(--w);border:1px solid var(--cream2);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .sc:hover{border-color:var(--gold2)}
@@ -127,19 +121,6 @@ tr:hover td{background:var(--cream)}
 .edit-input{padding:8px 12px;border:1px solid var(--cream2);border-radius:var(--r);font-size:12.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;transition:.15s}
 .edit-input:focus{border-color:var(--gold);background:#FFFDF7}
 .edit-section{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--smoke2);padding:10px 0 8px;border-bottom:1px solid var(--cream2);margin-top:6px;grid-column:1/-1}
-#clientEditBox{--edit-accent:var(--gold);--edit-accent-soft:var(--gold4);--edit-accent-text:var(--ink);--edit-accent-ink:var(--gold)}
-.edit-tabs{display:flex;gap:4px;padding:4px;background:var(--cream);border:1px solid var(--cream2);border-radius:10px;margin-bottom:20px;transition:background .25s}
-.edit-tab{flex:1;text-align:center;padding:10px 4px;border-radius:7px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--smoke2);cursor:pointer;transition:.18s;background:transparent;border:none;font-family:'Jost',sans-serif;white-space:nowrap}
-.edit-tab:hover{color:var(--ink);background:rgba(0,0,0,.04)}
-.edit-tab.active{background:var(--edit-accent);color:var(--edit-accent-text);box-shadow:0 3px 10px rgba(0,0,0,.12)}
-.edit-tab-panel{display:none}
-.edit-tab-panel.active{display:grid}
-.edit-uni-banner{display:none;grid-column:1/-1;align-items:center;gap:10px;background:var(--edit-accent-soft);border:1px solid var(--edit-accent);border-radius:8px;padding:9px 14px;font-size:11.5px;color:var(--edit-accent-ink);font-weight:600}
-.edit-uni-banner.show{display:flex}
-.edit-uni-banner img{height:20px;width:auto;max-width:60px;object-fit:contain;background:#fff;border-radius:3px;padding:2px}
-.edit-field-highlight{grid-column:1/-1;background:var(--edit-accent-soft);border:1px solid var(--edit-accent);border-radius:8px;padding:12px 14px;transition:background .25s,border-color .25s}
-.edit-field-highlight .edit-label{color:var(--edit-accent-ink);font-weight:700}
-.edit-field-highlight .edit-input{background:#fff;font-weight:600;letter-spacing:.02em;border-color:var(--edit-accent)}
 .edit-theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;grid-column:1/-1}
 .edit-theme{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.15s}
 .edit-theme.sel{border-color:var(--gold)}
@@ -162,20 +143,19 @@ tr:hover td{background:var(--cream)}
 .cover-zone .cz-hint{font-size:11px;color:var(--smoke2);text-align:center;pointer-events:none}
 .cover-zone .cz-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600}
 .cover-zone:hover .cz-overlay{display:flex}
+.cat-editor-wrap{grid-column:1/-1}
+.cat-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--cream);border:1px solid var(--cream2);border-radius:var(--r);margin-bottom:7px;position:relative}
+.cat-thumb{width:52px;height:52px;border-radius:6px;background:var(--cream2);border:2px dashed var(--cream2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;overflow:hidden;position:relative;transition:.15s}
+.cat-thumb:hover{border-color:var(--gold);background:var(--gold4)}
+.cat-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:4px}
+.cat-fields{flex:1;display:grid;grid-template-columns:1fr 1fr 80px;gap:5px}
+.cat-inp{padding:5px 8px;border:1px solid var(--cream2);border-radius:var(--r);font-size:11.5px;font-family:'Jost',sans-serif;color:var(--ink);background:var(--w);outline:none;width:100%;transition:.15s}
+.cat-inp:focus{border-color:var(--gold)}
+.cat-del{width:24px;height:24px;border-radius:50%;background:#FFEBEE;border:1px solid #FFCDD2;color:#C62828;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:2px dashed var(--cream2);border-radius:var(--r);background:none;font-size:11px;font-weight:600;color:var(--smoke);cursor:pointer;font-family:'Jost',sans-serif;transition:.2s}
+.cat-add-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
 .save-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:500;z-index:9999;white-space:nowrap}
 .save-toast.show{display:block}
-
-/* ── PROFIL ÉTUDIANT (Dauphine) ── */
-.edit-sec-title{grid-column:1/-1;font-size:13px;font-weight:600;color:var(--edit-accent-ink);padding:2px 0 7px;border-bottom:1px solid var(--cream2);margin-top:4px}
-.exp-row{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid var(--cream2);border-radius:8px;margin-bottom:8px;background:var(--cream)}
-.exp-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.exp-grid .exp-periode{grid-column:1/-1}
-.exp-del{background:none;border:none;color:#C62828;cursor:pointer;font-size:13px;padding:6px}
-.exp-add{width:100%;padding:9px;border:1px dashed var(--edit-accent);border-radius:8px;background:transparent;color:var(--edit-accent-ink);font-weight:600;font-size:11px;letter-spacing:.04em;cursor:pointer;font-family:'Jost',sans-serif}
-.exp-add:hover{background:var(--edit-accent-soft)}
-.chip-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:500;background:color-mix(in srgb,var(--edit-accent) 9%,#fff);color:var(--edit-accent)}
-@media (max-width:860px){.exp-grid{grid-template-columns:1fr}}
 
 /* ── CRÉATIONS ── */
 .creation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:20px}
@@ -232,29 +212,6 @@ tr:hover td{background:var(--cream)}
 .bar-mini-nfc{background:var(--gold)}
 .bar-mini-link{background:var(--smoke2)}
 
-/* ── UNIVERSITÉS / PARTENARIATS ── */
-.uni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:20px}
-.uni-card{border:1px solid var(--cream2);border-radius:8px;overflow:hidden;background:var(--w);transition:.15s;cursor:pointer}
-.uni-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(184,149,58,.1)}
-.uni-card-top{height:78px;display:flex;align-items:center;justify-content:center;padding:14px;position:relative}
-.uni-card-logo{max-width:100%;max-height:100%;object-fit:contain}
-.uni-card-logo-fallback{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600}
-.uni-card-body{padding:12px 14px;border-top:1px solid var(--cream2)}
-.uni-card-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.uni-card-sub{font-size:10.5px;color:var(--smoke2);display:flex;align-items:center;justify-content:space-between}
-.uni-card-swatches{display:flex;gap:4px}
-.uni-swatch{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.08)}
-.uni-card-actions{display:flex;gap:6px;padding:0 14px 12px}
-.uni-mini-btn{flex:1;text-align:center;padding:6px 8px;font-size:10px;font-weight:600;border-radius:var(--r);cursor:pointer;border:1px solid var(--cream2);background:var(--cream);color:var(--ink);letter-spacing:.03em}
-.uni-mini-btn:hover{border-color:var(--gold);color:var(--gold)}
-.uni-mini-btn.primary{background:var(--ink);color:var(--gold2);border-color:var(--ink)}
-.uni-mini-btn.primary:hover{background:var(--gold);color:var(--ink)}
-.uni-add-card{border:2px dashed var(--cream2);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:172px;cursor:pointer;color:var(--smoke2);transition:.15s}
-.uni-add-card:hover{border-color:var(--gold);color:var(--gold);background:var(--gold4)}
-.color-field{display:flex;align-items:center;gap:8px}
-.color-field input[type=color]{width:38px;height:34px;border:1px solid var(--cream2);border-radius:var(--r);padding:2px;background:var(--w);cursor:pointer}
-.color-field input[type=text]{flex:1}
-
 /* ── MOBILE / RESPONSIVE ── */
 .hamburger{display:none;width:34px;height:34px;border-radius:var(--r);border:1px solid var(--cream2);background:var(--w);align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998}
@@ -287,14 +244,13 @@ tr:hover td{background:var(--cream)}
   .edit-grid{grid-template-columns:1fr}
   .edit-box,.nfc-box{width:94vw;max-height:88vh}
   .edit-theme-grid{grid-template-columns:repeat(3,1fr)}
+  .cat-fields{grid-template-columns:1fr;gap:6px}
   .creation-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:12px}
   .card-stats-mini{grid-template-columns:1fr}
-  .uni-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}
 }
 </style>
 </head>
 <body>
-<div class="auth-loader">Vérification de la session…</div>
 <div class="app">
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
   <div class="sidebar" id="sidebar">
@@ -313,14 +269,12 @@ tr:hover td{background:var(--cream)}
       <div class="sb-item" id="nav-all" onclick="setPage('dashboard');setView('all')"><span class="ico">👥</span> Tous les clients</div>
       <div class="sb-item" id="nav-pending" onclick="setPage('dashboard');setView('pending')"><span class="ico">⏳</span> En attente <span id="sb-pending" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
       <div class="sb-item" id="nav-active" onclick="setPage('dashboard');setView('active')"><span class="ico">✅</span> Actifs</div>
-      <div class="sb-sec">Partenariats</div>
-      <div class="sb-item" id="nav-universities" onclick="setPage('universities')"><span class="ico">🎓</span> Universités</div>
       <div class="sb-sec">Studio</div>
       <div class="sb-item" id="nav-creations" onclick="setPage('creations')"><span class="ico">🎨</span> Créations</div>
       <div class="sb-item" id="nav-impressions" onclick="setPage('impressions')"><span class="ico">🖨️</span> Impressions</div>
+      <div class="sb-item" id="nav-universites" onclick="setPage('universites')"><span class="ico">🏛️</span> Universités</div>
       <div class="sb-item" id="nav-stats" onclick="setPage('stats')"><span class="ico">📈</span> Statistiques</div>
       <div class="sb-sec">Compte</div>
-      <div class="sb-item" id="nav-admins" onclick="setPage('admins')"><span class="ico">🛡️</span> Administrateurs <span id="sb-pending-admins" style="margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px"></span></div>
       <div class="sb-item" onclick="window.location.href='https://printlegacy.github.io'"><span class="ico">🌐</span> Voir le site</div>
       <div class="sb-item" onclick="logout()"><span class="ico">🔒</span> Déconnexion</div>
     </div>
@@ -376,31 +330,6 @@ tr:hover td{background:var(--cream)}
         </div>
       </div>
 
-      <!-- PAGE: UNIVERSITÉS -->
-      <div class="page" id="page-universities">
-        <div class="card-stats-mini">
-          <div class="csm"><div class="csm-lbl">Universités partenaires</div><div class="csm-num" id="uni-stat-total">—</div><div class="csm-sub">Établissements actifs</div></div>
-          <div class="csm"><div class="csm-lbl">🎓 Cartes étudiantes</div><div class="csm-num" id="uni-stat-cards">—</div><div class="csm-sub">Toutes universités confondues</div></div>
-          <div class="csm"><div class="csm-lbl">⏳ En attente</div><div class="csm-num" id="uni-stat-pending">—</div><div class="csm-sub">Cartes étudiantes non actives</div></div>
-        </div>
-        <div class="card">
-          <div class="card-h">
-            <div class="card-t">🎓 Universités partenaires</div>
-            <button class="card-a" onclick="openUniModal()">+ Nouveau partenariat</button>
-          </div>
-          <div class="uni-grid" id="uniGrid"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-        <div class="card" id="uniStudentsCard" style="display:none">
-          <div class="card-h">
-            <div class="card-t" id="uniStudentsTitle">Étudiants</div>
-            <div style="display:flex;gap:8px">
-              <button class="card-a" onclick="closeUniStudents()">Fermer</button>
-            </div>
-          </div>
-          <div id="uniStudentsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
       <!-- PAGE: CRÉATIONS -->
       <div class="page" id="page-creations">
         <div class="card">
@@ -453,6 +382,14 @@ tr:hover td{background:var(--cream)}
         </div>
       </div>
 
+      <!-- PAGE: UNIVERSITÉS -->
+      <div class="page" id="page-universites">
+        <div class="card">
+          <div class="card-h"><div class="card-t">🏛️ Universités partenaires</div><button class="card-a" onclick="openUniModal()">+ Nouvelle université →</button></div>
+          <div id="uniWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+        </div>
+      </div>
+
       <!-- PAGE: STATISTIQUES -->
       <div class="page" id="page-stats">
         <div class="stats">
@@ -490,14 +427,6 @@ tr:hover td{background:var(--cream)}
         </div>
       </div>
 
-      <!-- PAGE: ADMINISTRATEURS -->
-      <div class="page" id="page-admins">
-        <div class="card">
-          <div class="card-h"><div class="card-t">🛡️ Comptes administrateurs</div><button class="card-a" onclick="loadAdmins()">Actualiser →</button></div>
-          <div id="adminsWrap"><div class="loading"><span class="spin"></span> Chargement...</div></div>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
@@ -527,19 +456,11 @@ tr:hover td{background:var(--cream)}
 
 <!-- EDIT MODAL -->
 <div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
-  <div class="edit-box" id="clientEditBox">
-    <div class="modal-hd"><div class="modal-hd-title" id="editModalTitle">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
+  <div class="edit-box">
+    <div class="modal-hd"><div class="modal-hd-title">✏️ Modifier le profil</div><button class="modal-hd-close" onclick="closeEdit()">✕</button></div>
     <div class="edit-body">
-      <div class="edit-tabs" id="editTabs">
-        <button type="button" class="edit-tab active" data-tab="identite" onclick="switchEditTab('identite')">🪪 Identité</button>
-        <button type="button" class="edit-tab" data-tab="contact" onclick="switchEditTab('contact')">📞 Contact</button>
-        <button type="button" class="edit-tab" data-tab="reseaux" onclick="switchEditTab('reseaux')">🔗 Réseaux</button>
-        <button type="button" class="edit-tab" data-tab="parcours" onclick="switchEditTab('parcours')">💼 Portfolio</button>
-        <button type="button" class="edit-tab" data-tab="apparence" onclick="switchEditTab('apparence')">🎨 Apparence</button>
-        <button type="button" class="edit-tab" data-tab="statut" onclick="switchEditTab('statut')">🚦 Statut</button>
-      </div>
-
-      <div class="edit-tab-panel edit-grid active" data-tab="identite">
+      <div class="edit-grid">
+        <div class="edit-section">Identité</div>
         <div class="edit-field full">
           <div class="edit-label">🖼️ Photo de couverture</div>
           <div class="cover-zone" id="editCoverZone" onclick="document.getElementById('editCoverInput').click()">
@@ -556,7 +477,7 @@ tr:hover td{background:var(--cream)}
         <div class="edit-field"><div class="edit-label">Prénom</div><input class="edit-input" id="edit-firstname" placeholder="Prénom"></div>
         <div class="edit-field"><div class="edit-label">Nom</div><input class="edit-input" id="edit-lastname" placeholder="Nom"></div>
         <div class="edit-field"><div class="edit-label">Type de produit</div>
-          <select class="edit-input" id="edit-produit" onchange="toggleStudentMode()">
+          <select class="edit-input" id="edit-produit">
             <option value="">— Non défini —</option>
             <option value="student">🎓 Carte NFC Student</option>
             <option value="pro">💼 Carte NFC Pro</option>
@@ -565,17 +486,8 @@ tr:hover td{background:var(--cream)}
             <option value="porteclefs">🔑 Porte-clés NFC</option>
           </select>
         </div>
-        <div class="edit-field">
-          <div class="edit-label">🎓 Université</div>
-          <select class="edit-input" id="edit-university_id" onchange="onEditUniversityChange()">
-            <option value="">— Aucune —</option>
-          </select>
-        </div>
-        <div class="edit-uni-banner" id="editUniBanner">
-          <img id="editUniBannerLogo" style="display:none">
-          <span id="editUniBannerText"></span>
-        </div>
         <div class="edit-field full">
+          <div class="edit-label">👤 Photo de profil</div>
           <div style="display:flex;align-items:center;gap:12px">
             <div class="cover-zone" id="editPhotoZone" style="width:100px;height:100px;flex-shrink:0;border-radius:50%" onclick="document.getElementById('editPhotoInput').click()">
               <input type="file" id="editPhotoInput" accept="image/*" style="display:none" onchange="onEditPhotoChange(event)">
@@ -583,35 +495,14 @@ tr:hover td{background:var(--cream)}
               <div class="cz-hint" id="editPhotoHint" style="font-size:1.4rem">👤</div>
               <div class="cz-overlay">📷</div>
             </div>
-            <div style="flex:1">
-              <div class="edit-label" style="margin-bottom:6px">👤 Photo de profil</div>
-              <div id="editPhotoMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2)">
-                <span id="editPhotoMetaName"></span>
-                <button onclick="clearEditPhoto(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-              </div>
+            <div id="editPhotoMeta" style="display:none;align-items:center;gap:8px;font-size:10px;color:var(--smoke2)">
+              <span id="editPhotoMetaName"></span>
+              <button onclick="clearEditPhoto(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
             </div>
           </div>
         </div>
-        <div class="edit-field-highlight" id="editStudentIdWrap" style="display:none">
-          <div class="edit-label">🎓 Numéro étudiant</div>
-          <input class="edit-input" id="edit-student_id" placeholder="ex: 22012345">
-        </div>
-        <div class="edit-field" id="editCompanyWrap"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field"><div class="edit-label">Poste</div><input class="edit-input" id="edit-jobtitle" placeholder="CEO..."></div>
-        <div class="edit-field full"><div class="edit-label" id="editBioLabel">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
-        <div class="edit-field full" id="editCompanyLogoWrap">
-          <div class="edit-label">🏢 Logo de l'entreprise</div>
-          <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
-            <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
-            <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
-            <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
-            <div class="cz-overlay">📷 Changer</div>
-          </div>
-          <div id="editCompanyLogoMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
-            <span id="editCompanyLogoMetaName"></span>
-            <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
-          </div>
-        </div>
+        <div class="edit-field"><div class="edit-label">Entreprise</div><input class="edit-input" id="edit-company" placeholder="Entreprise"></div>
         <div class="edit-field full">
           <!-- Champ CV/Portfolio : uploadé en base à l'origine sur order.html, -->
           <!-- mais jamais rajouté ici dans le modal d'édition admin -->
@@ -625,43 +516,65 @@ tr:hover td{background:var(--cream)}
             <button onclick="clearEditCv(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
           </div>
         </div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="contact">
+        <div class="edit-field full"><div class="edit-label">Bio</div><textarea class="edit-input" id="edit-bio" rows="3" style="resize:vertical"></textarea></div>
+        <div class="edit-field"><div class="edit-label">Localisation</div><input class="edit-input" id="edit-location" placeholder="Dakar"></div>
+        <div class="edit-section">Profil universitaire (cartes Student)</div>
+        <div class="edit-field full"><div class="edit-label">🎓 Université partenaire</div>
+          <select class="edit-input" id="edit-university_id"><option value="">— Aucune (profil classique) —</option></select>
+        </div>
+        <div class="edit-field full"><div class="edit-label">Formation</div><input class="edit-input" id="edit-formation" placeholder="Ex : Master 2 Finance"></div>
+        <div class="edit-field full"><div class="edit-label">💼 Expériences (3 max)</div>
+          <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:6px;margin-bottom:6px">
+            <input class="edit-input" id="edit-exp-t-1" placeholder="Poste / mission">
+            <input class="edit-input" id="edit-exp-p-1" placeholder="Organisation">
+            <input class="edit-input" id="edit-exp-d-1" placeholder="Période">
+          </div>
+          <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:6px;margin-bottom:6px">
+            <input class="edit-input" id="edit-exp-t-2" placeholder="Poste / mission">
+            <input class="edit-input" id="edit-exp-p-2" placeholder="Organisation">
+            <input class="edit-input" id="edit-exp-d-2" placeholder="Période">
+          </div>
+          <div style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:6px;margin-bottom:6px">
+            <input class="edit-input" id="edit-exp-t-3" placeholder="Poste / mission">
+            <input class="edit-input" id="edit-exp-p-3" placeholder="Organisation">
+            <input class="edit-input" id="edit-exp-d-3" placeholder="Période">
+          </div>
+        </div>
+        <div class="edit-field full"><div class="edit-label">Compétences (séparées par des virgules, 6 max)</div><input class="edit-input" id="edit-skills" placeholder="Python, Excel, Finance de marché"></div>
+        <div class="edit-field full"><div class="edit-label">Portfolio (lien)</div><input class="edit-input" id="edit-portfolio_url" placeholder="https://..."></div>
+        <div class="edit-section">Entreprise</div>
+        <div class="edit-field full">
+          <div class="edit-label">🏢 Logo de l'entreprise</div>
+          <div class="cover-zone" id="editCompanyLogoZone" style="height:100px" onclick="document.getElementById('editCompanyLogoInput').click()">
+            <input type="file" id="editCompanyLogoInput" accept="image/*" style="display:none" onchange="onEditCompanyLogoChange(event)">
+            <img id="editCompanyLogoImg" style="object-fit:contain;padding:8px">
+            <div class="cz-hint" id="editCompanyLogoHint"><div style="font-size:1.4rem">🏢</div><div>Cliquer pour ajouter le logo</div></div>
+            <div class="cz-overlay">📷 Changer</div>
+          </div>
+          <div id="editCompanyLogoMeta" style="display:none;margin-top:5px;font-size:10px;color:var(--smoke2);align-items:center;gap:8px">
+            <span id="editCompanyLogoMetaName"></span>
+            <button onclick="clearEditCompanyLogo(event)" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:10px;font-family:'Jost',sans-serif">✕ Supprimer</button>
+          </div>
+        </div>
+        <div class="edit-field full"><div class="edit-label">À propos de l'entreprise</div><textarea class="edit-input" id="edit-company_about" rows="3" placeholder="Ce que fait l'entreprise, son activité..." style="resize:vertical"></textarea></div>
+        <div class="edit-field full"><div class="edit-label">Horaires d'ouverture</div><input class="edit-input" id="edit-company_hours" placeholder="Lun-Ven 9h-18h, Sam 9h-13h"></div>
+        <div class="edit-section">Contact</div>
         <div class="edit-field"><div class="edit-label">Téléphone</div><input class="edit-input" id="edit-phone" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">WhatsApp</div><input class="edit-input" id="edit-whatsapp" placeholder="+221 78..."></div>
         <div class="edit-field"><div class="edit-label">Email</div><input class="edit-input" id="edit-email" placeholder="email@..."></div>
         <div class="edit-field"><div class="edit-label">Site web</div><input class="edit-input" id="edit-website" placeholder="https://..."></div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="reseaux">
+        <div class="edit-section">Réseaux sociaux</div>
         <div class="edit-field"><div class="edit-label">📸 Instagram</div><input class="edit-input" id="edit-instagram" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">💼 LinkedIn</div><input class="edit-input" id="edit-linkedin" placeholder="linkedin.com/in/..."></div>
+        <div class="edit-field"><div class="edit-label">🎵 TikTok</div><input class="edit-input" id="edit-tiktok" placeholder="@compte"></div>
+        <div class="edit-field"><div class="edit-label">👻 Snapchat</div><input class="edit-input" id="edit-snapchat" placeholder="@compte"></div>
         <div class="edit-field"><div class="edit-label">▶️ YouTube</div><input class="edit-input" id="edit-youtube" placeholder="youtube.com/..."></div>
         <div class="edit-field"><div class="edit-label">📘 Facebook</div><input class="edit-input" id="edit-facebook" placeholder="facebook.com/..."></div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="parcours">
-        <div class="edit-sec-title">Lien portfolio</div>
-        <div class="edit-field full"><div class="edit-label">🔗 Portfolio (site, Behance, Notion…)</div><input class="edit-input" id="edit-portfolio" placeholder="https://..."></div>
-        <div class="edit-sec-title">Expériences</div>
-        <div class="edit-field full">
-          <div id="expList"></div>
-          <button type="button" class="exp-add" onclick="addExpRow()">+ Ajouter une expérience</button>
-        </div>
-        <div class="edit-sec-title">Compétences</div>
-        <div class="edit-field full">
-          <div class="edit-label">Compétences (séparées par des virgules)</div>
-          <input class="edit-input" id="edit-skills" placeholder="Finance de marché, Python, Excel, Analyse financière" oninput="updateSkillsPreview()">
-          <div class="chip-wrap" id="skillsPreview"></div>
-        </div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="apparence">
+        <div class="edit-section">Catalogue produits</div>
+        <div class="cat-editor-wrap"><div id="catRowsList"></div><button class="cat-add-btn" id="catAddBtn">＋ Ajouter un produit</button></div>
+        <div class="edit-section">Apparence</div>
         <div class="edit-theme-grid" id="editThemeGrid"></div>
-      </div>
-
-      <div class="edit-tab-panel edit-grid" data-tab="statut">
+        <div class="edit-section">Statut</div>
         <div class="edit-status">
           <div class="edit-status-opt" id="st-pending" onclick="selStatus('pending')">⏳ En attente</div>
           <div class="edit-status-opt" id="st-active" onclick="selStatus('active')">✅ Actif</div>
@@ -670,7 +583,7 @@ tr:hover td{background:var(--cream)}
       </div>
     </div>
     <div class="edit-foot">
-      <button class="edit-delete" id="editDeleteBtn" onclick="deleteClient()">🗑 Supprimer</button>
+      <button class="edit-delete" onclick="deleteClient()">🗑 Supprimer</button>
       <button class="edit-cancel" onclick="closeEdit()">Annuler</button>
       <button class="edit-save" id="editSaveBtn" onclick="saveEdit()">💾 Sauvegarder</button>
     </div>
@@ -679,38 +592,23 @@ tr:hover td{background:var(--cream)}
 
 <!-- UNIVERSITY MODAL -->
 <div class="ov" id="uniOv" onclick="if(event.target===this)closeUniModal()">
-  <div class="edit-box" style="width:460px">
-    <div class="modal-hd"><div class="modal-hd-title" id="uniModalTitle">🎓 Nouveau partenariat</div><button class="modal-hd-close" onclick="closeUniModal()">✕</button></div>
+  <div class="edit-box" style="width:520px">
+    <div class="modal-hd"><div class="modal-hd-title" id="uniModalTitle">🏛️ Université</div><button class="modal-hd-close" onclick="closeUniModal()">✕</button></div>
     <div class="edit-body">
       <div class="edit-grid">
-        <div class="edit-field full">
-          <div class="edit-label">🖼️ Logo de l'université</div>
-          <div class="cover-zone" id="uniLogoZone" style="height:100px" onclick="document.getElementById('uniLogoInput').click()">
-            <input type="file" id="uniLogoInput" accept="image/*" style="display:none" onchange="onUniLogoChange(event)">
-            <img id="uniLogoImg" style="object-fit:contain;padding:10px">
-            <div class="cz-hint" id="uniLogoHint"><div style="font-size:1.4rem">🏫</div><div>Cliquer pour ajouter le logo</div></div>
-            <div class="cz-overlay">📷 Changer</div>
-          </div>
-        </div>
-        <div class="edit-field full"><div class="edit-label">Nom de l'université</div><input class="edit-input" id="uni-name" placeholder="Université Paris Dauphine - PSL"></div>
-        <div class="edit-field">
-          <div class="edit-label">Couleur principale</div>
-          <div class="color-field"><input type="color" id="uni-primary" value="#2F4486"><input type="text" id="uni-primary-hex" class="edit-input" value="#2F4486"></div>
-        </div>
-        <div class="edit-field">
-          <div class="edit-label">Couleur secondaire</div>
-          <div class="color-field"><input type="color" id="uni-secondary" value="#FFFFFF"><input type="text" id="uni-secondary-hex" class="edit-input" value="#FFFFFF"></div>
-        </div>
-        <div class="edit-field full" style="background:var(--cream);border-radius:var(--r);padding:12px 14px">
-          <div class="edit-label" style="margin-bottom:6px">Aperçu du thème</div>
-          <div id="uniPreviewSwatch" style="height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;letter-spacing:.05em">CARTE ÉTUDIANTE</div>
-        </div>
+        <div class="edit-field full"><div class="edit-label">Nom *</div><input class="edit-input" id="uni-name" placeholder="Université Paris Dauphine-PSL"></div>
+        <div class="edit-field full"><div class="edit-label">Slogan</div><input class="edit-input" id="uni-slogan" placeholder="Université de recherche et de décision"></div>
+        <div class="edit-field full"><div class="edit-label">🔗 Lien du portail Kairos</div><input class="edit-input" id="uni-kairos" placeholder="https://paris-dauphine.kairossuite.com/..."></div>
+        <div class="edit-field"><div class="edit-label">Couleur principale</div><input class="edit-input" type="color" id="uni-primary" value="#1f3a8a" style="padding:2px;height:38px"></div>
+        <div class="edit-field"><div class="edit-label">Couleur d'accent</div><input class="edit-input" type="color" id="uni-accent" value="#8fb4e3" style="padding:2px;height:38px"></div>
+        <div class="edit-field"><div class="edit-label">Logo</div><input class="edit-input" type="file" id="uni-logo" accept="image/*" onchange="uniLogoFile=this.files[0]||null"><div id="uni-logo-cur" style="font-size:10px;color:var(--smoke2)"></div></div>
+        <div class="edit-field"><div class="edit-label">Photo du campus</div><input class="edit-input" type="file" id="uni-campus" accept="image/*" onchange="uniCampusFile=this.files[0]||null"><div id="uni-campus-cur" style="font-size:10px;color:var(--smoke2)"></div></div>
       </div>
     </div>
     <div class="edit-foot">
-      <button class="edit-delete" id="uniDeleteBtn" onclick="deleteUniversity()" style="display:none">🗑 Supprimer</button>
+      <button class="edit-delete" id="uniDelBtn" onclick="deleteUni()">🗑 Supprimer</button>
       <button class="edit-cancel" onclick="closeUniModal()">Annuler</button>
-      <button class="edit-save" id="uniSaveBtn" onclick="saveUniversity()">💾 Enregistrer</button>
+      <button class="edit-save" id="uniSaveBtn" onclick="saveUni()">💾 Sauvegarder</button>
     </div>
   </div>
 </div>
@@ -745,7 +643,7 @@ tr:hover td{background:var(--cream)}
 const {createClient}=supabase;
 const sb=createClient(
   'https://szpjpytpciptplqjfwyd.supabase.co',
-  'sb_publishable_NuZqQ3yjdULy5THdoXJpeQ_F2Il1rEu'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6cGpweXRwY2lwdHBscWpmd3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDA3MTMsImV4cCI6MjA5MzIxNjcxM30.WWXHihsbAKge_oHdbBAPLM40swm2P0XMco7kSrCO9e4'
 );
 
 document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
@@ -753,16 +651,13 @@ document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('
 // ── ÉTAT GLOBAL ──
 let currentTheme='noir', currentStatus='pending', currentId=null;
 let allData=[], currentView='all', searchQuery='';
+let catRows=[], catCounter=0;
+const catFiles={};
 let newCoverFile=null, coverDeleted=false;
 let newCompanyLogoFile=null, companyLogoDeleted=false;
 let newPhotoFile=null, photoDeleted=false;
 let newCvFile=null, cvDeleted=false;
 let currentPage='dashboard';
-let allUniversities=[];
-
-let currentUniId=null, newUniLogoFile=null;
-let pendingUniversityId=null;
-let activeUniFilter=null;
 
 // ── DÉTECTION PANNE RÉSEAU / DB EN PAUSE ──
 function isNetworkFailure(err){
@@ -799,33 +694,15 @@ const THEMES=[
   {id:'arctic',name:'Arctique',h1:'#0A1018',ac:'#80CBC4',tc:'#004D40'},
   {id:'bronze',name:'Bronze',h1:'#120E08',ac:'#A0744C',tc:'#fff'},
 ];
-function renderThemeGrid(){
-  const tg=document.getElementById('editThemeGrid');
-  tg.innerHTML='';
-  THEMES.forEach(t=>{
-    tg.innerHTML+=`<div class="edit-theme" id="et-${t.id}" onclick="selTheme('${t.id}')">
-      <div class="edit-theme-top" style="background:${t.h1}"></div>
-      <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
-    </div>`;
-  });
-}
-renderThemeGrid();
+const tg=document.getElementById('editThemeGrid');
+THEMES.forEach(t=>{
+  tg.innerHTML+=`<div class="edit-theme" id="et-${t.id}" onclick="selTheme('${t.id}')">
+    <div class="edit-theme-top" style="background:${t.h1}"></div>
+    <div class="edit-theme-bot" style="background:${t.ac};color:${t.tc}">${t.name}</div>
+  </div>`;
+});
 
-// Enregistre dynamiquement une université comme thème sélectionnable
-// (id préfixé "uni-" pour ne jamais entrer en collision avec les thèmes standards)
-function registerUniversityTheme(u){
-  const themeId='uni-'+u.id;
-  const existingIdx=THEMES.findIndex(t=>t.id===themeId);
-  const entry={id:themeId,name:'🎓 '+u.name,h1:u.primary_color||'#0A0A0A',ac:u.secondary_color||'#D4AF6A',tc:isLightColor(u.secondary_color)?'#0A0A0A':'#fff'};
-  if(existingIdx>-1) THEMES[existingIdx]=entry; else THEMES.push(entry);
-}
-function isLightColor(hex){
-  if(!hex) return false;
-  const c=hex.replace('#','');
-  if(c.length!==6) return false;
-  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
-  return (0.299*r+0.587*g+0.114*b)>170;
-}
+document.getElementById('catAddBtn').addEventListener('click',()=>addCatRow());
 
 // ── NAVIGATION ──
 function setPage(page){
@@ -834,61 +711,12 @@ function setPage(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.sb-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
   document.getElementById('nav-'+page)?.classList.add('active');
-  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques',admins:'🛡️ Administrateurs',universities:'🎓 Universités'};
+  const titles={dashboard:'Tableau de bord',creations:'🎨 Créations',impressions:'🖨️ Impressions',stats:'📈 Statistiques',universites:'🏛️ Universités'};
   document.getElementById('pageTitle').innerHTML=titles[page]+' <span id="dateLabel2" style="color:var(--smoke2);font-style:italic;font-size:13px;font-family:\'Jost\',sans-serif;margin-left:8px;font-weight:300"></span>';
   if(page==='creations') loadCreations();
   if(page==='impressions'){loadImpressions();loadClientsForImpressions();}
   if(page==='stats'){loadStats();loadCardStats();}
-  if(page==='admins') loadAdmins();
-  if(page==='universities') loadUniversities();
-}
-
-let currentUserId=null;
-
-async function loadAdmins(){
-  const wrap=document.getElementById('adminsWrap');
-  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    const {data,error}=await sb.from('admins').select('*').order('created_at',{ascending:true});
-    if(error)throw error;
-    const pending=(data||[]).filter(a=>!a.approved).length;
-    const badge=document.getElementById('sb-pending-admins');
-    badge.textContent=pending>0?pending:'';
-    badge.style.display=pending>0?'inline-block':'none';
-    if(!data||!data.length){wrap.innerHTML=friendlyEmptyState();return;}
-    wrap.innerHTML=data.map(a=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--cream2)">
-        <div>
-          <div style="font-size:13px;font-weight:500">${a.email}${a.id===currentUserId?' <span style="color:var(--smoke2);font-size:11px">(vous)</span>':''}</div>
-          <div style="font-size:10.5px;color:var(--smoke2);margin-top:2px">Inscrit le ${new Date(a.created_at).toLocaleDateString('fr-FR')}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span class="admin-badge ${a.approved?'approved':'pending'}">${a.approved?'Validé':'En attente'}</span>
-          ${!a.approved?`<button class="imp-btn" onclick="approveAdmin('${a.id}')">Approuver</button>`:''}
-          ${a.approved&&a.id!==currentUserId?`<button class="imp-btn" style="background:var(--w);color:#c62828;border:1px solid #c62828" onclick="revokeAdmin('${a.id}')">Révoquer</button>`:''}
-        </div>
-      </div>`).join('');
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();wrap.innerHTML=friendlyEmptyState();}
-    else{wrap.innerHTML='<div class="empty">Erreur: '+(err.message||'')+'</div>';}
-  }
-}
-
-async function approveAdmin(id){
-  try{
-    await sb.from('admins').update({approved:true}).eq('id',id);
-    showToast('Administrateur validé');
-    loadAdmins();
-  }catch(err){showToast('Erreur: '+(err.message||''));}
-}
-
-async function revokeAdmin(id){
-  if(!confirm('Révoquer l\'accès de cet administrateur ?'))return;
-  try{
-    await sb.from('admins').update({approved:false}).eq('id',id);
-    showToast('Accès révoqué');
-    loadAdmins();
-  }catch(err){showToast('Erreur: '+(err.message||''));}
+  if(page==='universites') loadUniversities();
 }
 
 function setView(view){
@@ -906,7 +734,7 @@ function refreshPage(){
   else if(currentPage==='creations') loadCreations();
   else if(currentPage==='impressions') loadImpressions();
   else if(currentPage==='stats'){loadStats();loadCardStats();}
-  else if(currentPage==='universities') loadUniversities();
+  else if(currentPage==='universites') loadUniversities();
 }
 
 // ── SIDEBAR MOBILE ──
@@ -923,6 +751,20 @@ document.querySelectorAll('.sb-item').forEach(el=>{
 });
 
 // ── HELPERS ──
+// Lien du PROFIL PUBLIC : celui à graver sur la carte NFC physique.
+// Ne contient PAS de token — n'importe qui peut le consulter (mais pas le modifier).
+async function copyProfileLink(slug){
+  const link=`https://printlegacy-platform.vercel.app/?carte=${slug}`;
+  try{
+    await navigator.clipboard.writeText(link);
+    showToast('🌐 Lien du profil public copié !');
+  }catch(e){
+    prompt('Copiez ce lien manuellement :',link);
+  }
+}
+
+// Lien de MODIFICATION PRIVÉ : contient un token secret, à envoyer uniquement
+// au client par email/WhatsApp — ne JAMAIS graver ce lien sur la carte NFC.
 async function copyEditLink(slug,token){
   if(!token){
     showToast('⚠️ Ce client n\'a pas encore de jeton — exécutez la migration SQL puis rechargez');
@@ -938,16 +780,6 @@ async function copyEditLink(slug,token){
 }
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-// For values interpolated inside a single-quoted JS string literal within an
-// onclick="..." attribute (e.g. onclick="fn('${escAttr(c.slug)}')") — escapes
-// backslash/quote for the JS layer first, then HTML-escapes the result so it
-// also survives as an HTML attribute value.
-function escAttr(s){return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"));}
-
-function slugify(s){
-  return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-}
 
 // ── Menu déroulant "Nouvelle commande" ──
 const ORDER_PRODUCTS=[
@@ -958,7 +790,7 @@ const ORDER_PRODUCTS=[
   {key:'bracelet',  icon:'🎫', label:'Bracelet NFC',        price:'Sur devis'},
 ];
 function buildOrderMenuHtml(){
-  return ORDER_PRODUCTS.map(p=>`<a class="order-menu-item" href="https://printlegacy.github.io/order.html?produit=${p.key}"><span class="om-ico">${p.icon}</span>${p.label}<span class="om-price">${p.price}</span></a>`).join('');
+  return ORDER_PRODUCTS.map(p=>`<a class="order-menu-item" href="https://printlegacy.github.io/order?produit=${p.key}"><span class="om-ico">${p.icon}</span>${p.label}<span class="om-price">${p.price}</span></a>`).join('');
 }
 document.addEventListener('DOMContentLoaded',()=>{
   const sbMenu=document.getElementById('sbOrderMenu');
@@ -980,11 +812,10 @@ document.addEventListener('click',(e)=>{
 });
 function initials(fn,ln){return ((fn||'')[0]+(ln||'')[0]).toUpperCase()}
 function avatarHTML(c){
-  const raw=initials(c.firstname,c.lastname);
-  const iniAttr=escAttr(raw);
-  if(c.photo) return `<img src="${esc(c.photo)}" onerror="this.outerHTML='${iniAttr}'">`;
-  if(c.company_logo_url) return `<img src="${esc(c.company_logo_url)}" onerror="this.outerHTML='${iniAttr}'">`;
-  return esc(raw);
+  const ini=esc(initials(c.firstname,c.lastname));
+  if(c.photo) return `<img src="${c.photo}" onerror="this.outerHTML='${ini}'">`;
+  if(c.company_logo_url) return `<img src="${c.company_logo_url}" onerror="this.outerHTML='${ini}'">`;
+  return ini;
 }
 function statusBadge(s){
   if(!s||s==='pending') return '<span class="status st-p"><span class="sd"></span>En attente</span>';
@@ -996,7 +827,7 @@ function fmtNum(n){return Math.round(n||0).toString().replace(/\B(?=(\d{3})+(?!\
 
 // ── CLIENTS TABLE ──
 const PRODUIT_META={
-  student:{label:'🎓 Student',bg:'#E8EDF8',fg:'#2F4486'},
+  student:{label:'🎓 Student',bg:'#EAF2FF',fg:'#2563EB'},
   pro:{label:'💼 Pro',bg:'var(--gold4)',fg:'var(--gold)'},
   plaque:{label:'🪧 Plaque',bg:'#FDEFE0',fg:'#B26A00'},
   bracelet:{label:'⌚ Bracelet',bg:'#F3E8FF',fg:'#7C3AED'},
@@ -1007,7 +838,6 @@ function produitBadge(p){
   if(!m) return '<span class="badge" style="background:var(--cream2);color:var(--smoke2)">—</span>';
   return `<span class="badge" style="background:${m.bg};color:${m.fg}">${m.label}</span>`;
 }
-function universityById(id){return allUniversities.find(u=>u.id===id);}
 function renderTable(){
   let data=allData;
   if(currentView==='pending') data=data.filter(c=>!c.status||c.status==='pending');
@@ -1021,26 +851,27 @@ function renderTable(){
     return;
   }
   const rows=data.map(c=>{
-    const uni=c.university_id?universityById(c.university_id):null;
+    const catCount=Array.isArray(c.catalogue)?c.catalogue.length:0;
     return `<tr>
       <td><div class="cl">
         <div class="av${(!c.photo&&c.company_logo_url)?' is-logo':''}">${avatarHTML(c)}</div>
-        <div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.company||c.jobtitle||'')}${uni?' · 🎓 '+esc(uni.name):''}</div></div>
+        <div><div class="cn">${c.firstname||''} ${c.lastname||''}</div><div class="cs">${c.company||c.jobtitle||''}</div></div>
       </div></td>
       <td>${produitBadge(c.produit)}</td>
-      <td>${esc(c.jobtitle||'—')}</td>
-      <td>${esc(c.phone||'—')}</td>
-      <td>${esc(c.email||'—')}</td>
-      <td><span class="badge b-p">${esc(c.theme||'noir')}</span></td>
+      <td>${c.jobtitle||'—'}</td>
+      <td>${c.phone||'—'}</td>
+      <td>${c.email||'—'}</td>
+      <td><span class="badge b-p">${c.theme||'noir'}</span>${catCount>0?` <span style="font-size:9px;color:var(--smoke2)">🛍️${catCount}</span>`:''}</td>
       <td>${statusBadge(c.status)}</td>
       <td style="font-size:10px;color:var(--smoke2)">${new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
       <td><div style="display:flex;gap:6px;align-items:center">
-        ${c.cv_url?`<a href="${esc(c.cv_url)}" target="_blank" style="font-size:14px;text-decoration:none">📄</a>`:''}
-        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${escAttr(c.slug)}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
-        <span onclick="openNFC('${escAttr(c.slug)}','${escAttr(c.firstname||'')} ${escAttr(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
-        <span onclick="openEdit('${escAttr(c.id)}')" style="cursor:pointer;font-size:14px">✏️</span>
-        <span onclick="copyEditLink('${escAttr(c.slug)}','${escAttr(c.edit_token||'')}')" title="Copier le lien d'édition client" style="cursor:pointer;font-size:14px">🔗</span>
-        <span onclick="toggleStatus('${escAttr(c.id)}','${escAttr(c.status||'pending')}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
+        ${c.cv_url?`<a href="${c.cv_url}" target="_blank" style="font-size:14px;text-decoration:none">📄</a>`:''}
+        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${c.slug}&src=admin','_blank')" title="Voir le profil public" style="cursor:pointer;font-size:14px">👁️</span>
+        <span onclick="copyProfileLink('${c.slug}')" title="Copier le lien du PROFIL PUBLIC — c'est celui-ci qu'il faut graver sur la carte NFC" style="cursor:pointer;font-size:14px">🌐</span>
+        <span onclick="openNFC('${c.slug}','${esc(c.firstname||'')} ${esc(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
+        <span onclick="openEdit('${c.id}')" style="cursor:pointer;font-size:14px">✏️</span>
+        <span onclick="copyEditLink('${c.slug}','${c.edit_token||''}')" title="Copier le lien de MODIFICATION PRIVÉ — à envoyer au client par email uniquement, jamais sur la carte NFC" style="cursor:pointer;font-size:14px">🔗</span>
+        <span onclick="toggleStatus('${c.id}','${c.status||'pending'}')" style="cursor:pointer;font-size:14px">${c.status==='active'?'⏸️':'▶️'}</span>
       </div></td>
     </tr>`;
   }).join('');
@@ -1053,7 +884,6 @@ function renderTable(){
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
   try{
-    if(!allUniversities.length) await loadUniversitiesQuiet();
     const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
     if(error){document.getElementById('tableWrap').innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+error.message+'</div>';return;}
     hideDbBanner();
@@ -1087,232 +917,6 @@ async function toggleStatus(id,current){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
     else{showToast('Erreur: '+(err.message||''));}
   }
-}
-
-// ── UNIVERSITÉS / PARTENARIATS ──
-async function loadUniversitiesQuiet(){
-  try{
-    const {data,error}=await sb.from('universities').select('*').order('created_at',{ascending:true});
-    if(!error&&data){allUniversities=data;allUniversities.forEach(registerUniversityTheme);renderThemeGrid();}
-  }catch(e){/* silencieux : chargé aussi via loadUniversities() */}
-}
-
-async function loadUniversities(){
-  const grid=document.getElementById('uniGrid');
-  grid.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  try{
-    const [{data:unis,error:uErr},{data:clients,error:cErr}]=await Promise.all([
-      sb.from('universities').select('*').order('created_at',{ascending:true}),
-      sb.from('clients').select('id,university_id,status')
-    ]);
-    if(uErr){
-      if((uErr.message||'').toLowerCase().includes('does not exist')||(uErr.message||'').toLowerCase().includes('relation')){
-        grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🎓</div>La table <strong>universities</strong> n'existe pas encore dans Supabase.<br><span style="font-size:11px">Exécutez le script SQL fourni pour activer les partenariats universitaires.</span></div>`;
-        ['uni-stat-total','uni-stat-cards','uni-stat-pending'].forEach(id=>document.getElementById(id).textContent='—');
-        return;
-      }
-      throw uErr;
-    }
-    hideDbBanner();
-    allUniversities=unis||[];
-    allUniversities.forEach(registerUniversityTheme);
-    renderThemeGrid();
-
-    const allClients=clients||[];
-    const studentClients=allClients.filter(c=>c.university_id);
-    document.getElementById('uni-stat-total').textContent=allUniversities.length;
-    document.getElementById('uni-stat-cards').textContent=studentClients.length;
-    document.getElementById('uni-stat-pending').textContent=studentClients.filter(c=>!c.status||c.status==='pending').length;
-
-    populateUniversitySelect();
-
-    if(!allUniversities.length){
-      grid.innerHTML=`<div class="uni-add-card" onclick="openUniModal()">
-        <div style="font-size:1.8rem">🎓</div>
-        <div style="font-size:12px;font-weight:600">Ajouter votre premier partenariat</div>
-      </div>`;
-      return;
-    }
-
-    const cardsHtml=allUniversities.map(u=>{
-      const count=allClients.filter(c=>c.university_id===u.id).length;
-      const logo=u.logo_url?`<img class="uni-card-logo" src="${esc(u.logo_url)}">`:`<div class="uni-card-logo-fallback" style="color:${u.primary_color||'#0A0A0A'}">${esc((u.name||'?').slice(0,2).toUpperCase())}</div>`;
-      return `<div class="uni-card">
-        <div class="uni-card-top" style="background:${u.secondary_color||'#F5F5F5'}" onclick="openUniStudents('${escAttr(u.id)}')">${logo}</div>
-        <div class="uni-card-body" onclick="openUniStudents('${escAttr(u.id)}')">
-          <div class="uni-card-name">${esc(u.name)}</div>
-          <div class="uni-card-sub"><span>${count} carte(s) étudiante(s)</span>
-            <span class="uni-card-swatches"><span class="uni-swatch" style="background:${u.primary_color||'#0A0A0A'}"></span><span class="uni-swatch" style="background:${u.secondary_color||'#fff'}"></span></span>
-          </div>
-        </div>
-        <div class="uni-card-actions">
-          <div class="uni-mini-btn primary" onclick="event.stopPropagation();createStudentFor('${escAttr(u.id)}')">+ Étudiant</div>
-          <div class="uni-mini-btn" onclick="event.stopPropagation();openUniModal('${escAttr(u.id)}')">✏️ Éditer</div>
-        </div>
-      </div>`;
-    }).join('');
-
-    grid.innerHTML=cardsHtml+`<div class="uni-add-card" onclick="openUniModal()">
-      <div style="font-size:1.8rem">＋</div>
-      <div style="font-size:12px;font-weight:600">Nouveau partenariat</div>
-    </div>`;
-  }catch(err){
-    if(isNetworkFailure(err)){
-      showDbBanner();
-      grid.innerHTML='<div style="grid-column:1/-1">'+friendlyEmptyState()+'</div>';
-    }else{
-      grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';
-    }
-  }
-}
-
-function populateUniversitySelect(){
-  const sel=document.getElementById('edit-university_id');
-  const keep=sel.value;
-  sel.innerHTML='<option value="">— Aucune —</option>'+allUniversities.map(u=>`<option value="${escAttr(u.id)}">${esc(u.name)}</option>`).join('');
-  if(keep) sel.value=keep;
-}
-
-function openUniModal(id){
-  currentUniId=id||null;
-  newUniLogoFile=null;
-  document.getElementById('uniModalTitle').textContent=id?'✏️ Modifier le partenariat':'🎓 Nouveau partenariat';
-  document.getElementById('uniDeleteBtn').style.display=id?'inline-block':'none';
-  const img=document.getElementById('uniLogoImg');
-  img.style.display='none';img.src='';
-  document.getElementById('uniLogoHint').style.display='block';
-  document.getElementById('uni-name').value='';
-  document.getElementById('uni-primary').value='#2F4486';
-  document.getElementById('uni-primary-hex').value='#2F4486';
-  document.getElementById('uni-secondary').value='#FFFFFF';
-  document.getElementById('uni-secondary-hex').value='#FFFFFF';
-  if(id){
-    const u=universityById(id);
-    if(u){
-      document.getElementById('uni-name').value=u.name||'';
-      const pc=u.primary_color||'#2F4486', sc=u.secondary_color||'#FFFFFF';
-      document.getElementById('uni-primary').value=pc;document.getElementById('uni-primary-hex').value=pc;
-      document.getElementById('uni-secondary').value=sc;document.getElementById('uni-secondary-hex').value=sc;
-      if(u.logo_url){img.src=u.logo_url;img.style.display='block';document.getElementById('uniLogoHint').style.display='none';}
-    }
-  }
-  updateUniPreview();
-  document.getElementById('uniOv').classList.add('open');
-}
-function closeUniModal(){document.getElementById('uniOv').classList.remove('open');}
-
-function onUniLogoChange(e){
-  const f=e.target.files[0];if(!f)return;
-  newUniLogoFile=f;
-  const r=new FileReader();
-  r.onload=x=>{const img=document.getElementById('uniLogoImg');img.src=x.target.result;img.style.display='block';document.getElementById('uniLogoHint').style.display='none';};
-  r.readAsDataURL(f);
-}
-
-function updateUniPreview(){
-  const pc=document.getElementById('uni-primary-hex').value||'#2F4486';
-  const sc=document.getElementById('uni-secondary-hex').value||'#FFFFFF';
-  const sw=document.getElementById('uniPreviewSwatch');
-  sw.style.background=pc;
-  sw.style.color=isLightColor(sc)?pc:sc;
-  sw.style.border=isLightColor(pc)?'1px solid rgba(0,0,0,.1)':'none';
-}
-['uni-primary','uni-secondary'].forEach(id=>{
-  document.addEventListener('DOMContentLoaded',()=>{
-    const colorInp=document.getElementById(id);
-    const hexInp=document.getElementById(id+'-hex');
-    if(!colorInp||!hexInp) return;
-    colorInp.addEventListener('input',()=>{hexInp.value=colorInp.value;updateUniPreview();});
-    hexInp.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(hexInp.value)){colorInp.value=hexInp.value;}updateUniPreview();});
-  });
-});
-
-async function saveUniversity(){
-  const name=document.getElementById('uni-name').value.trim();
-  if(!name){showToast('Le nom de l\'université est obligatoire');return;}
-  const btn=document.getElementById('uniSaveBtn');
-  btn.disabled=true;btn.textContent='💾 Enregistrement...';
-  try{
-    const updates={
-      name,
-      primary_color:document.getElementById('uni-primary-hex').value||'#0A0A0A',
-      secondary_color:document.getElementById('uni-secondary-hex').value||'#D4AF6A'
-    };
-    if(newUniLogoFile){
-      const url=await upFile(newUniLogoFile,'universities');
-      if(url) updates.logo_url=url;
-    }
-    let error;
-    if(currentUniId){
-      ({error}=await sb.from('universities').update(updates).eq('id',currentUniId));
-    }else{
-      ({error}=await sb.from('universities').insert(updates));
-    }
-    if(error) throw error;
-    closeUniModal();
-    showToast('✓ Partenariat enregistré !');
-    loadUniversities();
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }finally{
-    btn.disabled=false;btn.textContent='💾 Enregistrer';
-  }
-}
-
-async function deleteUniversity(){
-  if(!currentUniId)return;
-  if(!confirm('Supprimer ce partenariat ? Les cartes étudiantes déjà créées ne seront pas supprimées, mais perdront leur rattachement.'))return;
-  try{
-    await sb.from('universities').delete().eq('id',currentUniId);
-    closeUniModal();
-    showToast('Partenariat supprimé');
-    loadUniversities();
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
-    else{showToast('Erreur: '+(err.message||''));}
-  }
-}
-
-async function openUniStudents(uniId){
-  activeUniFilter=uniId;
-  const u=universityById(uniId);
-  const card=document.getElementById('uniStudentsCard');
-  const wrap=document.getElementById('uniStudentsWrap');
-  document.getElementById('uniStudentsTitle').textContent='🎓 Étudiants · '+(u?u.name:'');
-  card.style.display='block';
-  wrap.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
-  card.scrollIntoView({behavior:'smooth',block:'start'});
-  try{
-    const {data,error}=await sb.from('clients').select('*').eq('university_id',uniId).order('created_at',{ascending:false});
-    if(error) throw error;
-    if(!data||!data.length){
-      wrap.innerHTML=`<div class="empty"><div class="empty-ico">🎓</div>Aucune carte étudiante pour cette université pour le moment.<br><button class="imp-btn" style="margin-top:12px" onclick="createStudentFor('${escAttr(uniId)}')">+ Ajouter le premier·ère étudiant·e</button></div>`;
-      return;
-    }
-    const rows=data.map(c=>`<tr>
-      <td><div class="cl"><div class="av">${avatarHTML(c)}</div><div><div class="cn">${esc(c.firstname||'')} ${esc(c.lastname||'')}</div><div class="cs">${esc(c.student_id||'')}</div></div></div></td>
-      <td>${esc(c.phone||'—')}</td>
-      <td>${esc(c.email||'—')}</td>
-      <td>${statusBadge(c.status)}</td>
-      <td><div style="display:flex;gap:6px">
-        <span onclick="window.open('https://printlegacy-platform.vercel.app/?carte=${escAttr(c.slug)}&src=admin','_blank')" style="cursor:pointer;font-size:14px">👁️</span>
-        <span onclick="openNFC('${escAttr(c.slug)}','${escAttr(c.firstname||'')} ${escAttr(c.lastname||'')}')" style="cursor:pointer;font-size:14px">📶</span>
-        <span onclick="openEdit('${escAttr(c.id)}')" style="cursor:pointer;font-size:14px">✏️</span>
-      </div></td>
-    </tr>`).join('');
-    wrap.innerHTML=`<table><thead><tr><th>Étudiant</th><th>Téléphone</th><th>Email</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
-  }catch(err){
-    if(isNetworkFailure(err)){showDbBanner();wrap.innerHTML=friendlyEmptyState();}
-    else{wrap.innerHTML='<div class="empty"><div class="empty-ico">⚠️</div>'+(err.message||'Erreur inconnue')+'</div>';}
-  }
-}
-function closeUniStudents(){
-  document.getElementById('uniStudentsCard').style.display='none';
-  activeUniFilter=null;
-}
-function createStudentFor(uniId){
-  openEdit(null, uniId);
 }
 
 // ── CRÉATIONS ──
@@ -1854,6 +1458,85 @@ function buildInvoicePDF(imp){
   doc.save(`Facture_${numeroFacture}_${(imp.client_name||'client').replace(/\s+/g,'_')}.pdf`);
 }
 
+
+// ── UNIVERSITÉS PARTENAIRES ──
+let allUnis=[], currentUniId=null, uniLogoFile=null, uniCampusFile=null;
+
+async function loadUniversities(){
+  try{
+    const {data,error}=await sb.from('universities').select('*').order('name');
+    if(error){
+      allUnis=[];
+      if(currentPage==='universites') document.getElementById('uniWrap').innerHTML='<div class="empty"><div class="empty-ico">🏛️</div>La table <strong>universities</strong> n\'existe pas encore.<br><span style="font-size:11px">Exécute le fichier migration_universites.sql dans Supabase.</span></div>';
+      populateUniSelect();return;
+    }
+    allUnis=data||[];
+  }catch(e){allUnis=[];}
+  populateUniSelect();
+  if(currentPage==='universites') renderUniversities();
+}
+function populateUniSelect(){
+  const sel=document.getElementById('edit-university_id');if(!sel)return;
+  const keep=sel.value;
+  sel.innerHTML='<option value="">— Aucune (profil classique) —</option>'+allUnis.map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('');
+  sel.value=keep;
+}
+function renderUniversities(){
+  if(!allUnis.length){document.getElementById('uniWrap').innerHTML='<div class="empty"><div class="empty-ico">🏛️</div>Aucune université. Clique sur « + Nouvelle université ».</div>';return;}
+  const rows=allUnis.map(u=>{
+    const n=allData.filter(c=>c.university_id===u.id).length;
+    return `<tr>
+      <td><div class="cl"><div class="av is-logo">${u.logo_url?`<img src="${esc(u.logo_url)}">`:esc((u.name||'?').slice(0,2).toUpperCase())}</div><div><div class="cn">${esc(u.name)}</div><div class="cs">${esc(u.slogan||'')}</div></div></div></td>
+      <td><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${esc(u.primary_color||'#1f3a8a')};vertical-align:middle"></span> <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${esc(u.accent_color||'#8fb4e3')};vertical-align:middle"></span></td>
+      <td>${u.kairos_url?`<a href="${esc(u.kairos_url)}" target="_blank" style="color:var(--gold);text-decoration:none">🎓 Kairos</a>`:'—'}</td>
+      <td>${n} étudiant(s)</td>
+      <td><span onclick="openUniModal('${u.id}')" style="cursor:pointer;font-size:14px">✏️</span></td></tr>`;
+  }).join('');
+  document.getElementById('uniWrap').innerHTML=`<table><thead><tr><th>Université</th><th>Couleurs</th><th>Portail</th><th>Étudiants</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function openUniModal(id){
+  currentUniId=id||null;uniLogoFile=null;uniCampusFile=null;
+  const u=id?allUnis.find(x=>x.id===id):null;
+  document.getElementById('uniModalTitle').textContent=u?'✏️ Modifier l\'université':'🏛️ Nouvelle université';
+  document.getElementById('uni-name').value=u?.name||'';
+  document.getElementById('uni-slogan').value=u?.slogan||'';
+  document.getElementById('uni-kairos').value=u?.kairos_url||'';
+  document.getElementById('uni-primary').value=u?.primary_color||'#1f3a8a';
+  document.getElementById('uni-accent').value=u?.accent_color||'#8fb4e3';
+  document.getElementById('uni-logo').value='';document.getElementById('uni-campus').value='';
+  document.getElementById('uni-logo-cur').textContent=u?.logo_url?'Logo actuel conservé si vide':'';
+  document.getElementById('uni-campus-cur').textContent=u?.campus_image_url?'Photo actuelle conservée si vide':'';
+  document.getElementById('uniDelBtn').style.display=u?'':'none';
+  document.getElementById('uniOv').classList.add('open');
+}
+function closeUniModal(){document.getElementById('uniOv').classList.remove('open');}
+async function saveUni(){
+  const name=document.getElementById('uni-name').value.trim();
+  if(!name){showToast('Le nom est obligatoire');return;}
+  const btn=document.getElementById('uniSaveBtn');btn.disabled=true;btn.textContent='💾 Sauvegarde...';
+  try{
+    const rec={name,slogan:document.getElementById('uni-slogan').value.trim()||null,
+      kairos_url:document.getElementById('uni-kairos').value.trim()||null,
+      primary_color:document.getElementById('uni-primary').value,
+      accent_color:document.getElementById('uni-accent').value,secondary_color:'#FFFFFF'};
+    if(uniLogoFile){const u=await upFile(uniLogoFile,'universities');if(u)rec.logo_url=u;}
+    if(uniCampusFile){const u=await upFile(uniCampusFile,'universities');if(u)rec.campus_image_url=u;}
+    const q=currentUniId?sb.from('universities').update(rec).eq('id',currentUniId).select():sb.from('universities').insert(rec).select();
+    const {data,error}=await q;
+    if(error)throw error;
+    if(!data||!data.length){showToast('⚠️ Aucune ligne modifiée — vérifiez les permissions (RLS)');return;}
+    closeUniModal();showToast('✓ Université enregistrée !');await loadUniversities();
+  }catch(err){showToast('Erreur: '+(err.message||''));}
+  finally{btn.disabled=false;btn.textContent='💾 Sauvegarder';}
+}
+async function deleteUni(){
+  if(!currentUniId)return;
+  if(!confirm('Supprimer cette université ? Les étudiants rattachés repasseront en profil classique.'))return;
+  const {error}=await sb.from('universities').delete().eq('id',currentUniId);
+  if(error){showToast('Erreur: '+error.message);return;}
+  closeUniModal();showToast('Université supprimée');loadUniversities();loadData();
+}
+
 // ── NFC ──
 function openNFC(slug,name){
   document.getElementById('nfcClientName').textContent=name.trim();
@@ -1870,75 +1553,6 @@ function copyNFC(){
 }
 
 // ── EDIT ──
-function switchEditTab(name){
-  document.querySelectorAll('.edit-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
-  document.querySelectorAll('.edit-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.tab===name));
-}
-// ── PARCOURS ÉTUDIANT : expériences + compétences ──
-function expRowHtml(e){
-  e=e||{};
-  return `<div class="exp-row"><div class="exp-grid">
-    <input class="edit-input exp-poste" placeholder="Poste (ex: Stagiaire analyste)" value="${esc(e.poste)}">
-    <input class="edit-input exp-org" placeholder="Société" value="${esc(e.org)}">
-    <input class="edit-input exp-periode" placeholder="Juin – Août 2025" value="${esc(e.periode)}">
-  </div><button type="button" class="exp-del" title="Supprimer" onclick="this.closest('.exp-row').remove()">✕</button></div>`;
-}
-function setExperiences(list){
-  if(typeof list==='string'){try{list=JSON.parse(list);}catch(e){list=[];}}
-  if(!Array.isArray(list)) list=[];
-  document.getElementById('expList').innerHTML=list.map(expRowHtml).join('');
-}
-function addExpRow(){
-  document.getElementById('expList').insertAdjacentHTML('beforeend',expRowHtml({}));
-}
-function collectExperiences(){
-  return Array.from(document.querySelectorAll('#expList .exp-row')).map(r=>({
-    poste:r.querySelector('.exp-poste').value.trim(),
-    org:r.querySelector('.exp-org').value.trim(),
-    periode:r.querySelector('.exp-periode').value.trim()
-  })).filter(e=>e.poste||e.org||e.periode);
-}
-function updateSkillsPreview(){
-  const v=(document.getElementById('edit-skills').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-  document.getElementById('skillsPreview').innerHTML=v.map(s=>`<span class="chip">${esc(s)}</span>`).join('');
-}
-
-function toggleStudentMode(){
-  const isStudent=document.getElementById('edit-produit').value==='student';
-  document.getElementById('editStudentIdWrap').style.display=isStudent?'block':'none';
-  document.getElementById('editCompanyWrap').style.display=isStudent?'none':'block';
-  document.getElementById('editCompanyLogoWrap').style.display=isStudent?'none':'block';
-  document.getElementById('editBioLabel').textContent=isStudent?'À propos':'Bio';
-}
-function onEditUniversityChange(){
-  setEditUniversityTheme(document.getElementById('edit-university_id').value);
-}
-function setEditUniversityTheme(uniId){
-  const box=document.getElementById('clientEditBox');
-  const banner=document.getElementById('editUniBanner');
-  const logo=document.getElementById('editUniBannerLogo');
-  const text=document.getElementById('editUniBannerText');
-  const u=uniId?universityById(uniId):null;
-  if(!u){
-    box.style.removeProperty('--edit-accent');
-    box.style.removeProperty('--edit-accent-soft');
-    box.style.removeProperty('--edit-accent-text');
-    box.style.removeProperty('--edit-accent-ink');
-    banner.classList.remove('show');
-    return;
-  }
-  const primary=u.primary_color||'#2F4486';
-  const secondary=u.secondary_color||'#FFFFFF';
-  box.style.setProperty('--edit-accent',primary);
-  box.style.setProperty('--edit-accent-soft',isLightColor(secondary)?'color-mix(in srgb,'+primary+' 8%,#ffffff)':secondary);
-  // Texte sur fond primaire (onglet actif) : blanc si primaire foncée, sombre sinon
-  box.style.setProperty('--edit-accent-text',isLightColor(primary)?'#1a1a1a':'#ffffff');
-  // Texte sur fond secondaire clair (bannière, encart) : la couleur primaire elle-même si lisible
-  box.style.setProperty('--edit-accent-ink',isLightColor(secondary)?primary:'#1a1a1a');
-  if(u.logo_url){logo.src=u.logo_url;logo.style.display='block';}else{logo.style.display='none';}
-  text.textContent='Carte aux couleurs de '+u.name;
-  banner.classList.add('show');
-}
 function selTheme(id){
   document.querySelectorAll('.edit-theme').forEach(t=>t.classList.remove('sel'));
   document.getElementById('et-'+id)?.classList.add('sel');
@@ -2011,56 +1625,60 @@ function clearEditCv(e){
   document.getElementById('editCvInput').value='';
 }
 
-// openEdit(clientId) → mode édition d'un profil existant.
-// openEdit(null, universityId) → mode création d'une nouvelle carte étudiante
-// pré-rattachée à l'université universityId (utilisé depuis la page Universités).
-async function openEdit(clientId, presetUniversityId){
-  currentId=clientId||null;
-  pendingUniversityId=presetUniversityId||null;
+function addCatRow(existing){
+  const id=++catCounter;
+  const row={id,title:existing?.title||'',desc:existing?.desc||'',price:existing?.price||'',image_url:existing?.image_url||null};
+  catRows.push(row);
+  catFiles[id]={file:null,previewUrl:existing?.image_url||null,uploadedUrl:existing?.image_url||null};
+  const wrap=document.getElementById('catRowsList');
+  const div=document.createElement('div');
+  div.className='cat-row';div.id='catrow-'+id;
+  div.innerHTML=`<div class="cat-thumb" id="catthumb-${id}" title="Photo">
+    ${existing?.image_url?`<img id="catimg-${id}" src="${existing.image_url}">`:`<span id="catimg-${id}">🖼️</span>`}
+  </div>
+  <div class="cat-fields">
+    <input class="cat-inp" type="text" placeholder="Nom" value="${esc(row.title)}" id="catname-${id}">
+    <input class="cat-inp" type="text" placeholder="Description" value="${esc(row.desc)}" id="catdesc-${id}">
+    <input class="cat-inp" type="number" placeholder="Prix" value="${row.price||''}" id="catprice-${id}" style="text-align:right">
+  </div>
+  <button class="cat-del" id="catdel-${id}">✕</button>`;
+  wrap.appendChild(div);
+  div.querySelector('#catthumb-'+id).addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>catFileChange(e,id);inp.click();});
+  div.querySelector('#catdel-'+id).addEventListener('click',()=>{catRows=catRows.filter(r=>r.id!==id);delete catFiles[id];div.remove();});
+}
+
+function catFileChange(e,id){
+  const f=e.target.files[0];if(!f)return;
+  catFiles[id].file=f;
+  const reader=new FileReader();
+  reader.onload=x=>{
+    catFiles[id].previewUrl=x.target.result;
+    const el=document.getElementById('catimg-'+id);
+    if(el&&el.tagName==='IMG'){el.src=x.target.result;}
+    else{const img=document.createElement('img');img.id='catimg-'+id;img.src=x.target.result;if(el)el.replaceWith(img);}
+  };
+  reader.readAsDataURL(f);
+}
+
+async function openEdit(clientId){
+  currentId=clientId;
+  catRows=[];catCounter=0;
+  Object.keys(catFiles).forEach(k=>delete catFiles[k]);
+  document.getElementById('catRowsList').innerHTML='';
   newCoverFile=null;coverDeleted=false;
   newCompanyLogoFile=null;companyLogoDeleted=false;
   newPhotoFile=null;photoDeleted=false;
   newCvFile=null;cvDeleted=false;
   document.getElementById('editCvHint').innerHTML=`📄 <span>Cliquer pour ajouter un fichier</span>`;
   document.getElementById('editCvMeta').style.display='none';
+  populateUniSelect();
   document.getElementById('editOv').classList.add('open');
-  document.getElementById('editDeleteBtn').style.display=clientId?'inline-block':'none';
-  switchEditTab('identite');
-  populateUniversitySelect();
-
-  if(!clientId){
-    // ── MODE CRÉATION ──
-    document.getElementById('editModalTitle').textContent=presetUniversityId?'🎓 Nouvelle carte étudiante':'➕ Nouveau profil';
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value='';});
-    document.getElementById('edit-produit').value=presetUniversityId?'student':'';
-    document.getElementById('edit-university_id').value=presetUniversityId||'';
-    setEditUniversityTheme(presetUniversityId||'');setExperiences([]);updateSkillsPreview();
-    if(presetUniversityId){
-      document.getElementById('edit-company').value=(universityById(presetUniversityId)||{}).name||'';
-    }
-    ['editCoverImg','editCompanyLogoImg','editPhotoImg'].forEach(id=>{const img=document.getElementById(id);img.style.display='none';img.src='';});
-    ['editCoverHint','editCompanyLogoHint','editPhotoHint'].forEach(id=>document.getElementById(id).style.display='block');
-    ['editCoverMeta','editCompanyLogoMeta','editPhotoMeta'].forEach(id=>document.getElementById(id).style.display='none');
-    const presetTheme=presetUniversityId?('uni-'+presetUniversityId):'noir';
-    selTheme(THEMES.find(t=>t.id===presetTheme)?presetTheme:'noir');
-    selStatus('pending');
-    toggleStudentMode();
-    const btn=document.getElementById('editSaveBtn');
-    btn.disabled=false;btn.textContent='💾 Créer la carte';
-    return;
-  }
-
-  // ── MODE ÉDITION ──
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='⏳ Chargement...';
-  document.getElementById('editModalTitle').textContent='✏️ Modifier le profil';
   try{
     const {data:c,error}=await sb.from('clients').select('*').eq('id',clientId).single();
     if(error||!c){showToast('Erreur');closeEdit();return;}
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
-    document.getElementById('edit-university_id').value=c.university_id||'';
-    setEditUniversityTheme(c.university_id||'');setExperiences(c.experiences);updateSkillsPreview();
-    toggleStudentMode();
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','produit','university_id','formation','skills','portfolio_url'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)el.value=c[f]||'';});
     const img=document.getElementById('editCoverImg');img.style.display='none';img.src='';
     document.getElementById('editCoverHint').style.display='block';
     document.getElementById('editCoverMeta').style.display='none';
@@ -2074,6 +1692,15 @@ async function openEdit(clientId, presetUniversityId){
     document.getElementById('editPhotoMeta').style.display='none';
     if(c.photo){pimg.src=c.photo;pimg.style.display='block';document.getElementById('editPhotoHint').style.display='none';showPhotoMeta(c.photo.split('/').pop().slice(0,40));}
     if(c.cv_url){document.getElementById('editCvHint').innerHTML=`📄 <span>Fichier actuel</span>`;showEditCvMeta(c.cv_url.split('/').pop().slice(0,40));}
+    let items=[];try{items=Array.isArray(c.catalogue)?c.catalogue:(typeof c.catalogue==='string'?JSON.parse(c.catalogue):[]);}catch(e){}
+    items.forEach(item=>addCatRow(item));
+    // Expériences (3 lignes)
+    let exps=c.experiences;if(typeof exps==='string'){try{exps=JSON.parse(exps);}catch(e){exps=[];}}
+    exps=Array.isArray(exps)?exps:[];
+    [1,2,3].forEach(i=>{const e=exps[i-1]||{};
+      document.getElementById('edit-exp-t-'+i).value=e.title||'';
+      document.getElementById('edit-exp-p-'+i).value=e.place||'';
+      document.getElementById('edit-exp-d-'+i).value=e.period||'';});
     selTheme(c.theme||'noir');selStatus(c.status||'pending');
     btn.disabled=false;btn.textContent='💾 Sauvegarder';
   }catch(err){
@@ -2082,7 +1709,7 @@ async function openEdit(clientId, presetUniversityId){
     else{showToast('Erreur: '+(err.message||''));}
   }
 }
-function closeEdit(){document.getElementById('editOv').classList.remove('open');pendingUniversityId=null;setEditUniversityTheme('');}
+function closeEdit(){document.getElementById('editOv').classList.remove('open')}
 
 async function upFile(file,folder){
   if(!file)return null;
@@ -2094,13 +1721,12 @@ async function upFile(file,folder){
 }
 
 async function saveEdit(){
+  if(!currentId)return;
   const btn=document.getElementById('editSaveBtn');
-  btn.disabled=true;btn.textContent=currentId?'💾 Sauvegarde...':'💾 Création...';
+  btn.disabled=true;btn.textContent='💾 Sauvegarde...';
   try{
     const updates={theme:currentTheme,status:currentStatus};
-    ['firstname','lastname','jobtitle','company','bio','phone','whatsapp','email','website','instagram','linkedin','youtube','facebook','produit','student_id','portfolio','skills'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
-    updates.university_id=document.getElementById('edit-university_id').value||null;
-    updates.experiences=collectExperiences();
+    ['firstname','lastname','jobtitle','company','bio','location','phone','whatsapp','email','website','instagram','linkedin','tiktok','snapchat','youtube','facebook','company_about','company_hours','produit','university_id','formation','skills','portfolio_url'].forEach(f=>{const el=document.getElementById('edit-'+f);if(el)updates[f]=el.value.trim()||null;});
     if(newCoverFile){const url=await upFile(newCoverFile,'covers');if(url)updates.cover_url=url;}
     else if(coverDeleted){updates.cover_url=null;}
     if(newCompanyLogoFile){const url=await upFile(newCompanyLogoFile,'company-logos');if(url)updates.company_logo_url=url;}
@@ -2109,29 +1735,18 @@ async function saveEdit(){
     else if(photoDeleted){updates.photo=null;}
     if(newCvFile){const url=await upFile(newCvFile,'cvs');if(url)updates.cv_url=url;}
     else if(cvDeleted){updates.cv_url=null;}
-
-    if(!currentId){
-      // ── CRÉATION ──
-      if(!updates.firstname&&!updates.lastname){showToast('Prénom ou nom requis');btn.disabled=false;btn.textContent='💾 Créer la carte';return;}
-      const base=slugify(`${updates.firstname||''}-${updates.lastname||''}`)||'carte';
-      let inserted=null, lastErr=null;
-      for(let attempt=0;attempt<5&&!inserted;attempt++){
-        const slug=attempt===0?base:`${base}-${Math.floor(1000+Math.random()*9000)}`;
-        const {data,error}=await sb.from('clients').insert({...updates,slug}).select();
-        if(!error&&data&&data.length){inserted=data[0];break;}
-        lastErr=error;
-        // si l'erreur n'est pas un conflit d'unicité de slug, on arrête d'essayer
-        if(error&&!(error.message||'').toLowerCase().includes('duplicate')&&!(error.message||'').toLowerCase().includes('unique')) break;
-      }
-      if(!inserted){throw lastErr||new Error('Création impossible');}
-      closeEdit();showToast('✓ Carte créée !');
-      if(activeUniFilter) openUniStudents(activeUniFilter);
-      loadData();
-      if(currentPage==='universities') loadUniversities();
-      return;
+    const catalogue=[];
+    for(const row of catRows){
+      let imgUrl=catFiles[row.id]?.uploadedUrl||row.image_url||null;
+      if(catFiles[row.id]?.file){const uploaded=await upFile(catFiles[row.id].file,'catalogue');if(uploaded){imgUrl=uploaded;catFiles[row.id].uploadedUrl=uploaded;}}
+      const title=(document.getElementById('catname-'+row.id)?.value||row.title||'').trim();
+      const desc=(document.getElementById('catdesc-'+row.id)?.value||row.desc||'').trim();
+      const price=document.getElementById('catprice-'+row.id)?.value||row.price||'';
+      if(title||desc||price) catalogue.push({title,desc,price:price?parseInt(price):null,image_url:imgUrl});
     }
-
-    // ── ÉDITION ──
+    const expArr=[1,2,3].map(i=>({title:document.getElementById('edit-exp-t-'+i).value.trim(),place:document.getElementById('edit-exp-p-'+i).value.trim(),period:document.getElementById('edit-exp-d-'+i).value.trim()})).filter(e=>e.title);
+    updates.experiences=expArr.length?expArr:null;
+    updates.catalogue=catalogue.length>0?catalogue:null;
     const {data,error}=await sb.from('clients').update(updates).eq('id',currentId).select();
     if(error)throw error;
     if(!data||data.length===0){
@@ -2139,12 +1754,11 @@ async function saveEdit(){
       return;
     }
     closeEdit();showToast('✓ Profil mis à jour !');loadData();
-    if(activeUniFilter) openUniStudents(activeUniFilter);
   }catch(err){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
     else{showToast('Erreur: '+(err.message||''));}
   }
-  finally{btn.disabled=false;btn.textContent=currentId?'💾 Sauvegarder':'💾 Créer la carte';}
+  finally{btn.disabled=false;btn.textContent='💾 Sauvegarder';}
 }
 
 async function deleteClient(){
@@ -2153,7 +1767,6 @@ async function deleteClient(){
   try{
     await sb.from('clients').delete().eq('id',currentId);
     closeEdit();loadData();showToast('Client supprimé');
-    if(activeUniFilter) openUniStudents(activeUniFilter);
   }catch(err){
     if(isNetworkFailure(err)){showDbBanner();showToast('Connexion indisponible — réessayez dans quelques instants');}
     else{showToast('Erreur: '+(err.message||''));}
@@ -2176,17 +1789,8 @@ async function bootDashboard() {
     window.location.href = 'https://printlegacy.github.io/';
     return;
   }
-  const { data: adminRow } = await sb.from('admins').select('approved').eq('id', session.user.id).maybeSingle();
-  if (!adminRow || !adminRow.approved) {
-    await sb.auth.signOut();
-    window.location.href = 'https://printlegacy.github.io/';
-    return;
-  }
-  currentUserId = session.user.id;
-  document.body.classList.add('authed');
-  loadUniversitiesQuiet();
+  await loadUniversities();
   loadData();
-  loadAdmins();
   setInterval(loadData, 30000);
 }
 
